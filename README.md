@@ -25,3 +25,10 @@ Open `server/.env` and fill in the API keys.
 ```
 cd ..
 npm run dev
+
+## Notes:
+Frontend: http://localhost:5173 <br>
+Backend: http://localhost:5000
+
+- Formatting happens automatically on save. Don't fight the formatter.
+- ESLint warnings show as yellow underlines. Fix them before pushing.
