@@ -558,6 +558,226 @@ a:focus-visible {
     color: var(--text-ink-mid);
 }
 
+/* Notebook setup page */
+.notebook-page-shell {
+    min-height: min(76rem, calc(100svh - 7rem));
+    border-radius: var(--radius-xl);
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 90%, transparent);
+    background: color-mix(in srgb, var(--bg-warm-white) 62%, var(--bg-cream));
+    box-shadow: var(--ui-shadow-card);
+    overflow: hidden;
+}
+
+.notebook-layout-split {
+    display: grid;
+    grid-template-columns: 3fr 2fr;
+    min-height: inherit;
+}
+
+.notebook-left-column {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+    background: color-mix(in srgb, var(--bg-warm-white) 86%, var(--bg-cream));
+    border-right: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+.notebook-right-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: var(--space-5);
+    background: var(--bg-parchment);
+}
+
+.notebook-milestone-title {
+    margin: 0;
+    font-size: 1.375rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.notebook-milestone-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+}
+
+.notebook-milestone-draft-btn {
+    min-height: 3rem;
+    border-radius: 9999px;
+    border: 1px dashed color-mix(in srgb, var(--text-muted) 52%, var(--ui-divider));
+    background: color-mix(in srgb, var(--bg-parchment) 80%, var(--bg-warm-white));
+    color: var(--text-muted);
+    font-size: 1.875rem;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+}
+
+.notebook-continue-btn {
+    align-self: center;
+    min-height: 3rem;
+    min-width: 15rem;
+    border-radius: 9999px;
+    font-size: 1.5rem;
+}
+
+.notebook-skip-btn {
+    align-self: center;
+    min-height: 2.5rem;
+    color: var(--text-muted);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+    font-size: 1.125rem;
+}
+
+.notebook-input-shell {
+    flex: 1;
+    min-height: 0;
+}
+
+.notebook-input {
+    width: 100%;
+    height: 100%;
+    min-height: min(46rem, calc(100svh - 18rem));
+    border: 0;
+    border-radius: 0;
+    padding: 1.45rem 1.2rem 1.2rem 3.75rem;
+    font-size: 2.25rem;
+    line-height: 1.55;
+    resize: none;
+    caret-color: var(--text-ink);
+    background:
+        linear-gradient(to right,
+            transparent 0,
+            transparent 3.1rem,
+            color-mix(in srgb, var(--accent-rust) 16%, var(--ui-divider)) 3.1rem,
+            color-mix(in srgb, var(--accent-rust) 16%, var(--ui-divider)) 3.2rem,
+            transparent 3.2rem),
+        repeating-linear-gradient(to bottom,
+            transparent 0,
+            transparent 3.12rem,
+            color-mix(in srgb, var(--accent-rust-light) 40%, var(--ui-divider)) 3.12rem,
+            color-mix(in srgb, var(--accent-rust-light) 40%, var(--ui-divider)) 3.24rem);
+    background-color: color-mix(in srgb, var(--bg-warm-white) 92%, var(--bg-cream));
+}
+
+.notebook-input:focus-visible {
+    outline: none;
+}
+
+.notebook-input-prompt {
+    color: var(--accent-rust);
+}
+
+.notebook-input-active {
+    color: var(--text-ink);
+}
+
+.scheduler-shell {
+    border-left: 0;
+    border-right: 0;
+    border-bottom: 0;
+    border-radius: 0;
+}
+
+.scheduler-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 2.75rem;
+    border: 0;
+    background: color-mix(in srgb, var(--accent-rust-light) 26%, var(--accent-rust-pale));
+    color: var(--accent-rust);
+}
+
+.scheduler-panel {
+    padding: 0 var(--space-5) var(--space-5);
+}
+
+.scheduler-title {
+    margin: 0;
+    color: var(--accent-rust);
+    font-size: 2rem;
+    font-weight: 700;
+    text-transform: lowercase;
+}
+
+.scheduler-description {
+    margin: 0.375rem 0 1.25rem;
+    max-width: 34rem;
+    color: var(--text-ink-soft);
+    font-size: 1.5rem;
+}
+
+.scheduler-pills {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: var(--space-4);
+}
+
+.scheduler-pill {
+    min-height: 2.75rem;
+    min-width: 7.5rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 38%, var(--ui-divider));
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.scheduler-pill-idle {
+    background: color-mix(in srgb, var(--bg-warm-white) 74%, var(--bg-cream));
+    color: var(--text-ink-soft);
+}
+
+.scheduler-pill-selected {
+    background: color-mix(in srgb, var(--accent-rust-light) 42%, var(--bg-warm-white));
+    color: var(--accent-rust);
+    border-color: color-mix(in srgb, var(--accent-rust) 58%, var(--accent-rust-light));
+}
+
+.scheduler-custom-input-wrap {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: 0 0.625rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid color-mix(in srgb, var(--text-muted) 38%, var(--ui-divider));
+    background: color-mix(in srgb, var(--bg-warm-white) 74%, var(--bg-cream));
+}
+
+.scheduler-custom-input {
+    width: 3.5rem;
+    min-height: 2.2rem;
+    border: 0;
+    background: transparent;
+    text-align: center;
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: var(--text-ink-mid);
+}
+
+.scheduler-custom-input:focus-visible {
+    outline: none;
+}
+
+@media (max-width: 56rem) {
+    .notebook-layout-split {
+        grid-template-columns: 1fr;
+    }
+
+    .notebook-left-column {
+        border-right: 0;
+        border-bottom: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    }
+
+    .notebook-right-column {
+        min-height: 24rem;
+    }
+}
 /* Lucide icon helpers */
 .icon,
 .lucide {

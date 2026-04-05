@@ -1,5 +1,5 @@
-import { Outlet } from "react-router";
-import FloatingWorkflowNav from "./FloatingWorkflowNav";
+import { Outlet } from 'react-router';
+import FloatingWorkflowNav from './FloatingWorkflowNav';
 
 export default function WorkflowLayout() {
   return (

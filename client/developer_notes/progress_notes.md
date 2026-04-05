@@ -29,3 +29,19 @@ The navigation system is implemented in [client/components/FloatingWorkflowNav.t
 
 ### Layout
 The [client/components/WorkflowLayout.tsx](client/components/WorkflowLayout.tsx) provides a shared shell for all workflow pages, ensuring the floating nav is persistent and content is centered with appropriate safe-area padding.
+
+## Notebook Page: Phase 1 to Phase 4
+
+Implemented initial notebook experience in [client/pages/NotebookPage.tsx](client/pages/NotebookPage.tsx) with modular components and semantic CSS in [client/src/index.css](client/src/index.css).
+
+### What was built
+- **Phase 1 (screen structure):** Added a stable 60/40 split shell using normal document flow (`grid-template-columns: 3fr 2fr`). Left side is notebook, right side is milestone board zone.
+- **Phase 2 (real notebook input):** Added [client/components/NotebookInputSurface.tsx](client/components/NotebookInputSurface.tsx) using a real `<textarea>` as the notebook surface (no overlay input). Ruled lines and margin line are drawn via textarea background layers. Initial visible prompt text is `what are you here to make today?` in handwriting style, then switches to primary ink text during real writing.
+- **Phase 3 (typing performance):** Kept notebook typing state local to `NotebookInputSurface` so keystrokes do not trigger parent/sibling re-renders. Scheduler and milestone board are isolated from live typing updates.
+- **Phase 4 (scheduler shell):** Added [client/components/SchedulerCollapse.tsx](client/components/SchedulerCollapse.tsx), collapsed by default and anchored at the bottom of notebook column. Expanded panel contains local-only schedule UI for `2 min`, `5 min`, and `X min` with editable numeric input.
+
+### Design and safety notes
+- Did **not** add an extra back button to the notebook screen because workflow nav already handles back/home controls.
+- Avoided fixed-position notebook/scheduler shells inside the page content; layout remains stable in normal flow with a single major page scroll context.
+- Reused existing semantic classes first and added only minimal notebook/scheduler class group in `index.css` for reusability.
+- Added a simple stacked fallback under narrow widths (`max-width: 56rem`) so layout still loads safely outside iPad dimensions.

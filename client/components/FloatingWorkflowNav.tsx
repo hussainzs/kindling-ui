@@ -1,6 +1,6 @@
-import { ArrowLeft, Home, Menu } from "lucide-react";
-import { useLocation, useNavigate } from "react-router";
-import { useState } from "react";
+import { ArrowLeft, Home, Menu } from 'lucide-react';
+import { useLocation, useNavigate } from 'react-router';
+import { useState } from 'react';
 
 export default function FloatingWorkflowNav() {
   const navigate = useNavigate();
@@ -8,7 +8,7 @@ export default function FloatingWorkflowNav() {
   const [isOpen, setIsOpen] = useState(false);
 
   const onBack = () => {
-    if (location.pathname === "/") {
+    if (location.pathname === '/') {
       return;
     }
 
@@ -16,7 +16,7 @@ export default function FloatingWorkflowNav() {
   };
 
   const onHome = () => {
-    navigate("/");
+    navigate('/');
     setIsOpen(false);
   };
 
@@ -39,7 +39,9 @@ export default function FloatingWorkflowNav() {
 
         <div
           className={`surface-nav border-divider absolute left-0 z-10 flex items-center gap-2 overflow-hidden rounded-full border py-2 shadow-card transition-all duration-300 ${
-            isOpen ? "max-w-64 pl-12 pr-3 opacity-100" : "max-w-0 px-0 opacity-0"
+            isOpen
+              ? 'max-w-64 pl-12 pr-3 opacity-100'
+              : 'max-w-0 px-0 opacity-0'
           }`}
           aria-hidden={!isOpen}
         >
