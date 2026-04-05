@@ -25,9 +25,8 @@
     "noUncheckedSideEffectImports": true,
 
     /* Path Aliases */
-    "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
+      "@/*": ["./src/*"] // this maps to: ...\kindling-ui\client\src\*
     }
   },
   "include": ["src"]
