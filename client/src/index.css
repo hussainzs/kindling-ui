@@ -1,3 +1,709 @@
 @import "tailwindcss";
 
-/* === DESIGN TOKENS (from your Figma) === */
+/*
+	Kindling UI global style system
+	- Tailwind CSS v4 compatible via @theme tokens
+	- Semantic design tokens for consistent AI-generated screens
+	- iPad/WebKit-safe layout and interaction primitives
+*/
+
+:root {
+    color-scheme: light;
+
+    /* Background and surfaces */
+    --bg-cream: #f5efe4;
+    --bg-parchment: #ede5d8;
+    --bg-warm-white: #faf6f0;
+
+    /* Text */
+    --text-ink: #1c1510;
+    --text-ink-mid: #3a2e24;
+    --text-ink-soft: #6b5d52;
+    --text-muted: #8c8078;
+    --text-dust: #bfb4a6;
+
+    /* Accent: rust */
+    --accent-rust: #b8431f;
+    --accent-rust-light: #d97b5a;
+    --accent-rust-pale: #f2ddd5;
+
+    /* Accent: gold */
+    --accent-gold: #c9973a;
+    --accent-gold-light: #e8c06a;
+    --accent-gold-pale: #f8edd4;
+
+    /* Accent: sage */
+    --accent-sage: #5e8060;
+    --accent-sage-pale: #d8eada;
+
+    /* UI primitives */
+    --ui-divider: #e8e0d4;
+    --ui-shadow-rgb: 0 0 0;
+    --ui-shadow-card: 0 4px 24px rgb(var(--ui-shadow-rgb) / 8%);
+
+    /* Radii */
+    --radius-xs: 0.5rem;
+    --radius-sm: 0.75rem;
+    --radius-md: 1rem;
+    --radius-lg: 1.25rem;
+    --radius-xl: 1.5rem;
+    --radius-2xl: 2rem;
+
+    /* Spacing */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.25rem;
+    --space-6: 1.5rem;
+    --space-8: 2rem;
+    --space-10: 2.5rem;
+    --space-12: 3rem;
+
+    /* Typography scale */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-md: 1rem;
+    --font-size-lg: 1.125rem;
+    --font-size-xl: 1.25rem;
+    --font-size-2xl: 1.5rem;
+    --font-size-3xl: 1.875rem;
+
+    --line-height-tight: 1.2;
+    --line-height-normal: 1.45;
+    --line-height-loose: 1.6;
+
+    /* Safe area helpers */
+    --safe-top: env(safe-area-inset-top, 0px);
+    --safe-right: env(safe-area-inset-right, 0px);
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-left: env(safe-area-inset-left, 0px);
+}
+
+/* Font aliases for semantic class usage */
+:root {
+    --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-hand: "Shadows Into Light", "Comic Sans MS", cursive;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+    width: 100%;
+    min-height: 100%;
+}
+
+html {
+    font-family: var(--font-sans);
+    text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: transparent;
+    background: var(--bg-cream);
+}
+
+body {
+    margin: 0;
+    min-height: 100svh;
+    background: var(--bg-cream);
+    color: var(--text-ink);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-normal);
+    font-weight: 500;
+    font-family: var(--font-sans);
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-wrap: break-word;
+}
+
+img,
+svg,
+video,
+canvas {
+    display: block;
+    max-width: 100%;
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+    color: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+::selection {
+    background: color-mix(in srgb, var(--accent-rust) 22%, white);
+    color: var(--text-ink);
+}
+
+/* Typography semantics */
+.text-section-header {
+    font-size: var(--font-size-xl);
+    font-weight: 700;
+    text-transform: lowercase;
+    letter-spacing: 0.005em;
+    color: var(--text-ink);
+}
+
+.text-mini-header {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--text-ink-soft);
+}
+
+.text-body {
+    font-size: var(--font-size-md);
+    font-weight: 500;
+    line-height: var(--line-height-normal);
+    color: var(--text-ink-mid);
+}
+
+.text-caption {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    line-height: var(--line-height-normal);
+    color: var(--text-ink-soft);
+}
+
+.text-metadata {
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.text-label,
+.text-button {
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--text-ink-mid);
+}
+
+.text-note-hand {
+    font-family: var(--font-hand);
+    line-height: var(--line-height-loose);
+    color: var(--text-ink-mid);
+}
+
+/* App layout primitives */
+.app-shell {
+    min-height: 100svh;
+    background: var(--bg-cream);
+    color: var(--text-ink);
+}
+
+.app-shell-dvh {
+    min-height: 100dvh;
+}
+
+.safe-area-pad {
+    padding-top: max(var(--space-4), var(--safe-top));
+    padding-right: max(var(--space-4), var(--safe-right));
+    padding-bottom: max(var(--space-4), var(--safe-bottom));
+    padding-left: max(var(--space-4), var(--safe-left));
+}
+
+.safe-area-pad-x {
+    padding-right: max(var(--space-4), var(--safe-right));
+    padding-left: max(var(--space-4), var(--safe-left));
+}
+
+.safe-area-pad-bottom {
+    padding-bottom: max(var(--space-4), var(--safe-bottom));
+}
+
+.main-scroll {
+    overflow-y: auto;
+    overscroll-behavior-y: contain;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Surface system */
+.surface-app {
+    background: var(--bg-cream);
+}
+
+.surface-sidebar,
+.surface-hud,
+.surface-parchment {
+    background: var(--bg-parchment);
+}
+
+.surface-card,
+.surface-sheet,
+.surface-nav {
+    background: var(--bg-warm-white);
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    box-shadow: var(--ui-shadow-card);
+    border-radius: var(--radius-lg);
+}
+
+.surface-sticky-note,
+.surface-notebook {
+    background: color-mix(in srgb, var(--bg-warm-white) 82%, var(--accent-gold-pale));
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 24%, var(--ui-divider));
+    border-radius: var(--radius-md);
+}
+
+/* Accent surfaces */
+.surface-rust-soft {
+    background: var(--accent-rust-pale);
+    border: 1px solid color-mix(in srgb, var(--accent-rust-light) 45%, var(--ui-divider));
+}
+
+.surface-gold-soft {
+    background: var(--accent-gold-pale);
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 35%, var(--ui-divider));
+}
+
+.surface-sage-soft {
+    background: var(--accent-sage-pale);
+    border: 1px solid color-mix(in srgb, var(--accent-sage) 26%, var(--ui-divider));
+}
+
+/* Borders and dividers */
+.border-divider {
+    border-color: color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+.border-rust {
+    border-color: var(--accent-rust-light);
+}
+
+.border-gold {
+    border-color: color-mix(in srgb, var(--accent-gold) 65%, var(--ui-divider));
+}
+
+.border-sage {
+    border-color: color-mix(in srgb, var(--accent-sage) 65%, var(--ui-divider));
+}
+
+.divider-line {
+    height: 1px;
+    background: color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+/* Buttons */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.75rem;
+    padding: 0.625rem 1rem;
+    border-radius: var(--radius-md);
+    border: 1px solid transparent;
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    line-height: 1;
+    transition: background-color 160ms ease, border-color 160ms ease, color 160ms ease,
+        box-shadow 160ms ease, transform 160ms ease;
+    touch-action: manipulation;
+}
+
+.btn:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.btn-primary {
+    background: var(--accent-rust);
+    color: #fff;
+    border-color: color-mix(in srgb, var(--accent-rust-light) 55%, var(--accent-rust));
+    box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 10%);
+}
+
+.btn-primary:hover {
+    background: color-mix(in srgb, var(--accent-rust) 88%, #000 12%);
+    border-color: var(--accent-rust-light);
+}
+
+.btn-primary:active {
+    transform: translateY(1px);
+}
+
+.btn-secondary {
+    background: var(--bg-warm-white);
+    color: var(--text-ink-mid);
+    border-color: color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+.btn-secondary:hover {
+    background: color-mix(in srgb, var(--bg-warm-white) 80%, var(--bg-cream));
+}
+
+.btn-ghost {
+    background: transparent;
+    color: var(--text-ink-mid);
+    border-color: transparent;
+}
+
+.btn-ghost:hover {
+    background: color-mix(in srgb, var(--bg-warm-white) 62%, transparent);
+}
+
+.btn-gold {
+    background: var(--accent-gold);
+    color: #fff;
+    border-color: color-mix(in srgb, var(--accent-gold-light) 54%, var(--accent-gold));
+}
+
+.btn-sage {
+    background: var(--accent-sage);
+    color: #fff;
+    border-color: color-mix(in srgb, var(--accent-sage) 75%, #fff);
+}
+
+/* Input and form controls */
+.input,
+.select,
+.textarea {
+    width: 100%;
+    min-height: 2.75rem;
+    padding: 0.625rem 0.875rem;
+    border-radius: var(--radius-md);
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    background: var(--bg-warm-white);
+    color: var(--text-ink-mid);
+    font-size: var(--font-size-md);
+    line-height: var(--line-height-normal);
+}
+
+.textarea {
+    min-height: 7rem;
+    resize: vertical;
+}
+
+.input::placeholder,
+.select::placeholder,
+.textarea::placeholder {
+    color: var(--text-muted);
+}
+
+.input:focus-visible,
+.select:focus-visible,
+.textarea:focus-visible,
+.btn:focus-visible,
+[role="button"]:focus-visible,
+a:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--accent-rust) 70%, white);
+    outline-offset: 2px;
+}
+
+.input[aria-invalid="true"],
+.select[aria-invalid="true"],
+.textarea[aria-invalid="true"] {
+    border-color: color-mix(in srgb, var(--accent-rust) 70%, var(--accent-rust-light));
+    background: color-mix(in srgb, var(--accent-rust-pale) 26%, var(--bg-warm-white));
+}
+
+.field-label {
+    display: inline-block;
+    margin-bottom: var(--space-2);
+    font-size: var(--font-size-sm);
+    font-weight: 700;
+    color: var(--text-ink-mid);
+}
+
+.field-help {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-xs);
+    color: var(--text-ink-soft);
+}
+
+.field-error {
+    margin-top: var(--space-2);
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    color: var(--accent-rust);
+}
+
+/* Cards and list rows */
+.card {
+    background: var(--bg-warm-white);
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    border-radius: var(--radius-lg);
+    box-shadow: var(--ui-shadow-card);
+    padding: var(--space-4);
+}
+
+.card-title {
+    font-size: var(--font-size-lg);
+    font-weight: 700;
+    color: var(--text-ink);
+    text-transform: lowercase;
+}
+
+.card-subtitle {
+    font-size: var(--font-size-sm);
+    color: var(--text-ink-soft);
+}
+
+.list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    min-height: 3rem;
+    padding: 0.625rem 0;
+}
+
+.list-row+.list-row {
+    border-top: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+/* Tags, badges, status chips */
+.tag,
+.badge,
+.chip {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    min-height: 1.75rem;
+    padding: 0.125rem 0.625rem;
+    border-radius: 9999px;
+    border: 1px solid transparent;
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+
+.tag-rust {
+    background: var(--accent-rust-pale);
+    color: var(--accent-rust);
+    border-color: color-mix(in srgb, var(--accent-rust-light) 48%, var(--ui-divider));
+}
+
+.tag-gold {
+    background: var(--accent-gold-pale);
+    color: color-mix(in srgb, var(--accent-gold) 88%, #000 12%);
+    border-color: color-mix(in srgb, var(--accent-gold) 36%, var(--ui-divider));
+}
+
+.tag-sage {
+    background: var(--accent-sage-pale);
+    color: var(--accent-sage);
+    border-color: color-mix(in srgb, var(--accent-sage) 36%, var(--ui-divider));
+}
+
+/* Navigation and sticky bars */
+.nav-bar {
+    position: sticky;
+    top: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--bg-warm-white) 94%, transparent);
+    border-bottom: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 5%);
+    backdrop-filter: saturate(120%);
+}
+
+.bottom-bar {
+    position: sticky;
+    bottom: 0;
+    z-index: 40;
+    background: color-mix(in srgb, var(--bg-warm-white) 94%, transparent);
+    border-top: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    padding-bottom: max(var(--space-3), var(--safe-bottom));
+}
+
+/* Modal and sheets */
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    background: rgb(var(--ui-shadow-rgb) / 32%);
+}
+
+.sheet {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 70;
+    background: var(--bg-warm-white);
+    border-top-left-radius: var(--radius-xl);
+    border-top-right-radius: var(--radius-xl);
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    box-shadow: 0 -8px 30px rgb(var(--ui-shadow-rgb) / 12%);
+    padding: var(--space-4);
+    padding-bottom: max(var(--space-4), var(--safe-bottom));
+    max-height: min(82svh, 42rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* Notes and handwriting surfaces */
+.note-surface {
+    background: color-mix(in srgb, var(--accent-gold-pale) 55%, var(--bg-warm-white));
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 24%, var(--ui-divider));
+    border-radius: var(--radius-md);
+    box-shadow: var(--ui-shadow-card);
+    padding: var(--space-4);
+}
+
+.note-text {
+    font-family: var(--font-hand);
+    font-size: 1.125rem;
+    line-height: 1.5;
+    color: var(--text-ink-mid);
+}
+
+/* Lucide icon helpers */
+.icon,
+.lucide {
+    width: 1.25rem;
+    height: 1.25rem;
+    stroke-width: 2.25;
+    flex-shrink: 0;
+}
+
+.icon-sm {
+    width: 1rem;
+    height: 1rem;
+}
+
+.icon-lg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.icon-muted {
+    color: var(--text-muted);
+}
+
+.icon-rust {
+    color: var(--accent-rust);
+}
+
+.icon-gold {
+    color: var(--accent-gold);
+}
+
+.icon-sage {
+    color: var(--accent-sage);
+}
+
+/* Utility classes for quick semantic styling */
+.bg-cream {
+    background-color: var(--bg-cream);
+}
+
+.bg-parchment {
+    background-color: var(--bg-parchment);
+}
+
+.bg-warm-white {
+    background-color: var(--bg-warm-white);
+}
+
+.bg-rust {
+    background-color: var(--accent-rust);
+}
+
+.bg-rust-pale {
+    background-color: var(--accent-rust-pale);
+}
+
+.bg-gold {
+    background-color: var(--accent-gold);
+}
+
+.bg-gold-pale {
+    background-color: var(--accent-gold-pale);
+}
+
+.bg-sage {
+    background-color: var(--accent-sage);
+}
+
+.bg-sage-pale {
+    background-color: var(--accent-sage-pale);
+}
+
+.text-ink {
+    color: var(--text-ink);
+}
+
+.text-ink-mid {
+    color: var(--text-ink-mid);
+}
+
+.text-ink-soft {
+    color: var(--text-ink-soft);
+}
+
+.text-muted {
+    color: var(--text-muted);
+}
+
+.text-rust {
+    color: var(--accent-rust);
+}
+
+.text-gold {
+    color: var(--accent-gold);
+}
+
+.text-sage {
+    color: var(--accent-sage);
+}
+
+.shadow-card {
+    box-shadow: var(--ui-shadow-card);
+}
+
+.touch-pan-y {
+    touch-action: pan-y;
+}
+
+.touch-pan-x {
+    touch-action: pan-x;
+}
+
+.touch-manipulation {
+    touch-action: manipulation;
+}
+
+/* Scrollbar polish (non-critical decoration) */
+*::-webkit-scrollbar {
+    width: 12px;
+    height: 12px;
+}
+
+*::-webkit-scrollbar-track {
+    background: color-mix(in srgb, var(--bg-cream) 80%, var(--bg-warm-white));
+}
+
+*::-webkit-scrollbar-thumb {
+    border-radius: 9999px;
+    border: 3px solid transparent;
+    background-clip: padding-box;
+    background: color-mix(in srgb, var(--text-dust) 80%, var(--text-muted));
+}
+
+*::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in srgb, var(--text-muted) 82%, var(--text-ink-soft));
+}
+
+/* Motion defaults kept subtle for WebKit reliability */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+        animation-duration: 1ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 1ms !important;
+        scroll-behavior: auto !important;
+    }
+}
