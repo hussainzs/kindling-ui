@@ -28,13 +28,9 @@
 	15. Notes & Handwriting Surfaces | note-surface, note-text
 	16. Notebook Page Components | notebook-*, milestone-*
 	17. Scheduler Components | scheduler-shell, scheduler-pill
-                                                                18. Check-in Page Components | checkin-* 19. Responsive Media Queries | @media (max-width: 56rem) 20. Lucide Icon Helpers | icon,
-                                                                icon-sm,
-                                                                icon-lg,
-                                                                variants 21. Utility Classes | bg-*,
-                                                                text-*,
-                                                                shadow-card,
-                                                                touch-* 22. Scrollbar Polish | webkit-scrollbar 23. Motion & Accessibility | prefers-reduced-motion */
+                18. Check-in Page Components | checkin-* 19. Responsive Media Queries | @media (max-width: 56rem) 20. Lucide Icon Helpers | icon,
+                21. Utility Classes | bg-*,
+                22. Scrollbar Polish | webkit-scrollbar 23. Motion & Accessibility | prefers-reduced-motion */
 
 
 /* SECTION: Design Tokens | color palette, spacing, radius, typography scale, shadows, safe-area */
@@ -352,6 +348,12 @@ button {
     opacity: 0.6;
 }
 
+.btn-compact {
+    min-height: 2rem;
+    height: 2rem;
+    padding: 0 0.5rem;
+    font-size: 0.75rem;
+}
 .btn-primary {
     background: var(--accent-rust);
     color: #fff;
@@ -578,6 +580,100 @@ a:focus-visible {
     -webkit-overflow-scrolling: touch;
 }
 
+.quick-milestones-overlay {
+    z-index: 79;
+}
+
+.quick-milestones-sheet {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    right: auto;
+    bottom: auto;
+    transform: translate(-50%, -50%);
+    z-index: 80;
+    width: min(38rem, calc(100vw - 2 * var(--space-4)));
+    min-height: min(32rem, calc(100svh - 2 * var(--space-4)));
+    max-height: min(86svh, 46rem);
+    border-radius: var(--radius-xl);
+    padding: var(--space-4);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    overflow: hidden;
+}
+
+.quick-milestones-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.quick-milestones-title {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-ink-soft);
+}
+
+.quick-milestones-close {
+    min-height: 2.2rem;
+    width: 2.2rem;
+    border-radius: 9999px;
+    padding: 0;
+}
+
+.quick-milestones-grid {
+    gap: var(--space-4);
+    padding: var(--space-2) var(--space-1);
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+}
+
+.quick-milestones-grid .milestone-card:nth-child(3n+1),
+.quick-milestones-grid .milestone-card:nth-child(3n+2),
+.quick-milestones-grid .milestone-card:nth-child(3n) {
+    max-width: 92%;
+}
+
+.quick-milestones-empty {
+    margin: 0;
+    padding: var(--space-2) var(--space-1);
+    min-height: 0;
+}
+
+.quick-milestone-input-shell {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    margin-top: var(--space-1);
+    padding-top: var(--space-2);
+    border-top: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+.quick-milestone-input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    gap: var(--space-2);
+}
+
+.quick-milestone-input {
+    min-height: 2.3rem;
+    max-height: 7.5rem;
+    font-size: 1rem;
+    line-height: 1.3;
+    overflow-y: auto;
+    resize: none;
+}
+
+.quick-milestone-submit {
+    width: 2.35rem;
+    min-height: 2.35rem;
+    border-radius: 9999px;
+    padding: 0;
+}
 /* SECTION: Notes & Handwriting Surfaces | note-surface, note-text, notebook, Shadows Into Light font */
 .note-surface {
     background: color-mix(in srgb, var(--accent-gold-pale) 55%, var(--bg-warm-white));
@@ -714,6 +810,9 @@ a:focus-visible {
         color: var(--text-ink);
         padding: 0;
     }
+.milestone-card-complete-btn {
+    color: var(--accent-sage);
+}
     
     .milestone-card-gold {
         background: color-mix(in srgb, var(--accent-gold-pale) 78%, var(--bg-warm-white));
@@ -1444,6 +1543,12 @@ a:focus-visible {
     .workflow-main-frame {
             margin-top: 0;
         }
+.quick-milestones-sheet {
+    width: min(94vw, 36rem);
+    min-height: min(28rem, 78svh);
+    max-height: 88svh;
+    padding: var(--space-3);
+}
     
         .notebook-page-shell {
             height: auto;
