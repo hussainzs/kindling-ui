@@ -28,6 +28,28 @@ KINDLING-UI/
 └── README.md
 ```
 
+## CSS Organization & index.css Pattern
+
+### Grep-Friendly Section Markers
+Avoid reading the entire index.css, its too long. The `client/src/index.css` file uses consistent section markers to enable fast discovery by AI agents and developers:
+
+**Format:** `/* SECTION: Name | keyword1, keyword2, keyword3 */`
+
+**Benefits:**
+- Fast grep search: `grep "SECTION:" client/src/index.css` lists all sections
+- Specific lookups: `grep "SECTION: Button" client/src/index.css` finds button section
+- Keywords allow semantic discovery even without exact section names. Read a few lines from the section start to read the section.
+
+**TOC Location:**
+The file includes a comprehensive Table of Contents (TOC) at the top with all sections, keywords, and usage guide. This TOC explains how to use grep search and when each section should be consulted.
+
+### CSS Class Reuse Protocol
+When writing React components, always:
+1. Check the index.css TOC for relevant sections
+2. Grep for keywords before adding new classes: `grep "btn-" client/src/index.css`
+3. Prefer composition of existing classes over one-off additions, unless necessary.
+4. If adding a new class, place it in the correct section using section markers as guides
+
 ## Client (Frontend) Conventions
 - **Tech Stack**: React 19, TypeScript, Vite, and Tailwind CSS v4.
 - **React Compiler**: Enabled via `babel-plugin-react-compiler`. Avoid manually wrapping components/hooks in `useMemo`, `useCallback`, or `memo` unless explicitly necessary—let the compiler handle it.

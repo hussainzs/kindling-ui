@@ -1,12 +1,41 @@
 @import "tailwindcss";
 
-/*
-	Kindling UI global style system
+
+	/* Kindling UI Global Style System
 	- Tailwind CSS v4 compatible via @theme tokens
 	- Semantic design tokens for consistent AI-generated screens
 	- iPad/WebKit-safe layout and interaction primitives
-*/
 
+	SECTION MARKERS & GREP SEARCH:
+	Use: grep "SECTION:" client/src/index.css to list all sections
+	Format: SECTION: Name | keywords */
+
+	/* SECTION INDEX:
+	1. Design Tokens | colors, spacing, radii, typography, shadows
+	2. Font Aliases | --font-sans, --font-hand
+	3. Base & Reset | html, body, reset, img, button, select
+	4. Typography Semantics | text-*, heading, body, caption
+	5. App Layout Primitives | app-shell, safe-area-pad, main-scroll
+	6. Surface System | surface-card, surface-sheet, surface-nav
+	7. Accent Surfaces | surface-*-soft (rust, gold, sage)
+	8. Borders & Dividers | border-*, divider-line
+	9. Buttons | btn, btn-primary, btn-secondary, btn-ghost, variants
+	10. Input & Form Controls | input, select, textarea, field-*
+	11. Cards & List Rows | card, card-title, list-row
+	12. Tags / Badges / Chips | tag, badge, chip, variants
+	13. Navigation & Sticky Bars | nav-bar, bottom-bar, overlay
+	14. Modal & Sheets | overlay, sheet, fixed positioning
+	15. Notes & Handwriting Surfaces | note-surface, note-text
+	16. Notebook Page Components | notebook-*, milestone-*
+	17. Scheduler Components | scheduler-shell, scheduler-pill
+	18. Responsive Media Queries | @media (max-width: 56rem)
+	19. Lucide Icon Helpers | icon, icon-sm, icon-lg, variants
+	20. Utility Classes | bg-*, text-*, shadow-card, touch-*
+	21. Scrollbar Polish | webkit-scrollbar
+	22. Motion & Accessibility | prefers-reduced-motion */
+
+
+/* SECTION: Design Tokens | color palette, spacing, radius, typography scale, shadows, safe-area */
 :root {
     color-scheme: light;
 
@@ -80,12 +109,13 @@
     --safe-left: env(safe-area-inset-left, 0px);
 }
 
-/* Font aliases for semantic class usage */
+/* SECTION: Font Aliases | font-family, Inter, Shadows Into Light */
 :root {
     --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     --font-hand: "Shadows Into Light", "Comic Sans MS", cursive;
 }
 
+/* SECTION: Base & Reset | box-sizing, html, body, globals, img, button, select */
 * {
     box-sizing: border-box;
 }
@@ -145,7 +175,7 @@ button {
     color: var(--text-ink);
 }
 
-/* Typography semantics */
+/* SECTION: Typography Semantics | text-section-header, text-mini-header, text-body, text-caption, text-metadata, text-label, text-button, text-note-hand */
 .text-section-header {
     font-size: var(--font-size-xl);
     font-weight: 700;
@@ -197,7 +227,7 @@ button {
     color: var(--text-ink-mid);
 }
 
-/* App layout primitives */
+/* SECTION: App Layout Primitives | app-shell, safe-area-pad, main-scroll, workflow-main-frame */
 .app-shell {
     min-height: 100dvh;
     background: var(--bg-cream);
@@ -224,10 +254,6 @@ button {
     padding-bottom: max(var(--space-4), var(--safe-bottom));
 }
 
-.main-scroll {
-    /* Removed custom overflow container to restore native body scrolling */
-}
-
 .workflow-main-frame {
     position: relative;
     width: min(100%, 74rem);
@@ -235,7 +261,7 @@ button {
     margin-top: 0;
     padding-inline: 0.25rem;
 }
-/* Surface system */
+/* SECTION: Surface System | surface-card, surface-sheet, surface-nav, surface-sidebar, surface-hud, surface-parchment, surface-notebook */
 .surface-app {
     background: var(--bg-cream);
 }
@@ -262,7 +288,7 @@ button {
     border-radius: var(--radius-md);
 }
 
-/* Accent surfaces */
+/* SECTION: Accent Surfaces | surface-rust-soft, surface-gold-soft, surface-sage-soft */
 .surface-rust-soft {
     background: var(--accent-rust-pale);
     border: 1px solid color-mix(in srgb, var(--accent-rust-light) 45%, var(--ui-divider));
@@ -278,7 +304,7 @@ button {
     border: 1px solid color-mix(in srgb, var(--accent-sage) 26%, var(--ui-divider));
 }
 
-/* Borders and dividers */
+/* SECTION: Borders & Dividers | border-divider, border-rust, border-gold, border-sage, divider-line */
 .border-divider {
     border-color: color-mix(in srgb, var(--ui-divider) 88%, transparent);
 }
@@ -300,7 +326,7 @@ button {
     background: color-mix(in srgb, var(--ui-divider) 88%, transparent);
 }
 
-/* Buttons */
+/* SECTION: Buttons | btn, btn-primary, btn-secondary, btn-ghost, btn-gold, btn-sage */
 .btn {
     display: inline-flex;
     align-items: center;
@@ -371,7 +397,7 @@ button {
     border-color: color-mix(in srgb, var(--accent-sage) 75%, #fff);
 }
 
-/* Input and form controls */
+/* SECTION: Input & Form Controls | input, select, textarea, field-label, field-help, field-error */
 .input,
 .select,
 .textarea {
@@ -435,7 +461,7 @@ a:focus-visible {
     color: var(--accent-rust);
 }
 
-/* Cards and list rows */
+/* SECTION: Cards & List Rows | card, card-title, card-subtitle, list-row */
 .card {
     background: var(--bg-warm-white);
     border: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
@@ -469,7 +495,7 @@ a:focus-visible {
     border-top: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
 }
 
-/* Tags, badges, status chips */
+/* SECTION: Tags / Badges / Chips | tag, badge, chip, tag-rust, tag-gold, tag-sage */
 .tag,
 .badge,
 .chip {
@@ -503,7 +529,7 @@ a:focus-visible {
     border-color: color-mix(in srgb, var(--accent-sage) 36%, var(--ui-divider));
 }
 
-/* Navigation and sticky bars */
+/* SECTION: Navigation & Sticky Bars | nav-bar, bottom-bar, sticky, overlay */
 .nav-bar {
     position: sticky;
     top: 0;
@@ -523,7 +549,7 @@ a:focus-visible {
     padding-bottom: max(var(--space-3), var(--safe-bottom));
 }
 
-/* Modal and sheets */
+/* SECTION: Modal & Sheets | overlay, sheet, fixed positioning, z-index */
 .overlay {
     position: fixed;
     inset: 0;
@@ -549,7 +575,7 @@ a:focus-visible {
     -webkit-overflow-scrolling: touch;
 }
 
-/* Notes and handwriting surfaces */
+/* SECTION: Notes & Handwriting Surfaces | note-surface, note-text, notebook, Shadows Into Light font */
 .note-surface {
     background: color-mix(in srgb, var(--accent-gold-pale) 55%, var(--bg-warm-white));
     border: 1px solid color-mix(in srgb, var(--accent-gold) 24%, var(--ui-divider));
@@ -565,7 +591,7 @@ a:focus-visible {
     color: var(--text-ink-mid);
 }
 
-/* Notebook setup page */
+/* SECTION: Notebook Page Components | notebook-page-shell, notebook-left-column, notebook-right-column, milestone */
 .notebook-page-shell {
     width: 100%;
         min-height: 42rem;
@@ -844,6 +870,7 @@ a:focus-visible {
 .notebook-input-entry {
     padding-top: calc(0.55rem + 2.46rem);
 }
+/* SECTION: Scheduler Components | scheduler-shell, scheduler-pill, scheduler-toggle, scheduler-panel */
 .scheduler-shell {
     background: color-mix(in srgb, var(--accent-rust-pale) 70%, var(--bg-warm-white));
         border-top: 1px solid color-mix(in srgb, var(--accent-rust-light) 36%, var(--ui-divider));
@@ -966,6 +993,7 @@ a:focus-visible {
     font-size: 0.9rem;
     white-space: nowrap;
 }
+/* SECTION: Responsive Media Queries | max-width, tablet, narrow */
 @media (max-width: 56rem) {
     .workflow-main-frame {
             margin-top: 0;
@@ -990,7 +1018,7 @@ a:focus-visible {
     }
 
 }
-/* Lucide icon helpers */
+/* SECTION: Lucide Icon Helpers | icon, lucide, icon-sm, icon-lg, icon-muted, icon-rust, icon-gold, icon-sage */
 .icon,
 .lucide {
     width: 1.25rem;
@@ -1025,7 +1053,7 @@ a:focus-visible {
     color: var(--accent-sage);
 }
 
-/* Utility classes for quick semantic styling */
+/* SECTION: Utility Classes | bg-*, text-*, shadow-card, touch-pan-y, touch-pan-x, touch-manipulation */
 .bg-cream {
     background-color: var(--bg-cream);
 }
@@ -1106,7 +1134,7 @@ a:focus-visible {
     touch-action: manipulation;
 }
 
-/* Scrollbar polish (non-critical decoration) */
+/* SECTION: Scrollbar Polish | scrollbar, webkit-scrollbar */
 *::-webkit-scrollbar {
     width: 12px;
     height: 12px;
@@ -1127,7 +1155,7 @@ a:focus-visible {
     background: color-mix(in srgb, var(--text-muted) 82%, var(--text-ink-soft));
 }
 
-/* Motion defaults kept subtle for WebKit reliability */
+/* SECTION: Motion & Accessibility | prefers-reduced-motion, animation, transition */
 @media (prefers-reduced-motion: reduce) {
 
     *,

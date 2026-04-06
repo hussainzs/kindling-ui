@@ -258,28 +258,27 @@ Use only the following semantic assignments.
 * Do not animate app-level wrappers that contain sticky/fixed descendants.
 
 ---
-## index.css reuse protocol (read this before adding classes)
+## index.css organization guide
 
-Use this quick process so you do not need to read the full file every time:
+The `index.css` file is organized into 22 semantic sections, each marked with grep-friendly headers for fast discovery.
 
-1. Search by intent + known prefixes in `client/src/index.css` (example patterns: `^\\.btn-`, `^\\.surface-`, `^\\.text-`, `^\\.bg-`, `^\\.icon-`, `^\\.safe-area-`, `^\\.touch-`).
-2. Reuse an existing semantic class when possible. Prefer composition of existing classes over creating one-off classes.
-3. Only add a new class if no existing class fits. Keep additions minimal and semantic (no raw color names tied to one screen).
-4. If adding a class, place it in the nearest existing section in `index.css` so future agents can discover it by scanning section headers.
+### Quick Workflow for Adding Classes
+1. **Consult the TOC**: Read the Table of Contents at the top of `client/src/index.css` to understand all sections and keywords.
+2. **Grep for similar classes**: Use `grep "keyword" client/src/index.css` to find existing classes that might fit your need.
+   - Example: `grep "btn-" client/src/index.css` to find all button variants
+   - Example: `grep "text-" client/src/index.css` to find all typography classes
+3. **Reuse existing classes**: Prefer composition of existing classes over creating one-off classes.
+4. **Add minimally**: Only add a new class if no existing class fits.
+5. **Place correctly**: Use section markers (`/* SECTION: Name */`) to find the right location in the file.
 
-Current class families already defined in `client/src/index.css`:
+### Section Markers Format
+Each major section uses the format: `/* SECTION: Name | keyword1, keyword2 */`
 
-* Typography: `text-section-header`, `text-mini-header`, `text-body`, `text-caption`, `text-metadata`, `text-label`, `text-button`, `text-note-hand`.
-* Layout/safe area: `app-shell`, `app-shell-dvh`, `safe-area-pad`, `safe-area-pad-x`, `safe-area-pad-bottom`, `main-scroll`.
-* Surfaces: `surface-*` including `surface-card`, `surface-sheet`, `surface-nav`, `surface-sidebar`, `surface-hud`, `surface-notebook`, `surface-rust-soft`, `surface-gold-soft`, `surface-sage-soft`.
-* Borders/dividers: `border-divider`, `border-rust`, `border-gold`, `border-sage`, `divider-line`.
-* Controls: `btn`, `btn-primary`, `btn-secondary`, `btn-ghost`, `btn-gold`, `btn-sage`, plus `input`, `select`, `textarea`, `field-*`.
-* Content: `card`, `card-title`, `card-subtitle`, `list-row`.
-* Tags/status: `tag`, `badge`, `chip`, `tag-rust`, `tag-gold`, `tag-sage`.
-* Navigation/overlay: `nav-bar`, `bottom-bar`, `overlay`, `sheet`.
-* Notes: `note-surface`, `note-text`.
-* Icons (Lucide): `icon`, `icon-sm`, `icon-lg`, `icon-muted`, `icon-rust`, `icon-gold`, `icon-sage`.
-* Semantic utilities: `bg-*`, `text-*`, `shadow-card`, `touch-pan-y`, `touch-pan-x`, `touch-manipulation`.
+Examples:
+- `/* SECTION: Typography Semantics | text-section-header, text-mini-header, text-body, text-caption, text-metadata, text-label, text-button, text-note-hand */`
+- `/* SECTION: Buttons | btn, btn-primary, btn-secondary, btn-ghost, btn-gold, btn-sage */`
+- `/* SECTION: Utility Classes | bg-*, text-*, shadow-card, touch-pan-y, touch-pan-x, touch-manipulation */`
+
 ---
 
 Final reminder: Most importantly, your job is to implement your design as well as you can. The designs were already made for iPad screen only. If you find yourself needing to make a judgment call between “following the design” and “following the style guide,” default to following the design but call out any conflict in your summary to me after you finish.
