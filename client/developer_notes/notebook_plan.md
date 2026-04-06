@@ -4,6 +4,12 @@ We will be building the notebook page in a series of phases. I will provide the 
 
 Build the page as a **stable iPad-first 60/40 split layout**.
 
+Landscape target (required baseline for sizing decisions):
+
+* Design and tune the notebook screen for **iPad landscape**, approximately **1180px width x 820px height** usable frame.
+* Do **not** tune primary spacing/font/layout decisions around portrait-first dimensions.
+* Portrait behavior can be a fallback adaptation, but landscape is the source-of-truth target.
+
 * The **left 60%** is the notebook area.
 * The **right 40%** is the milestone board.
 * Keep the layout in **normal document flow**, not with complex fixed-position shells.

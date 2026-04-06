@@ -1,7 +1,35 @@
+import { useState } from 'react';
+import MilestoneBoard from '../components/MilestoneBoard';
 import NotebookInputSurface from '../components/NotebookInputSurface';
 import SchedulerCollapse from '../components/SchedulerCollapse';
 
 export default function NotebookPage() {
+  const [draftMilestone, setDraftMilestone] = useState('');
+  const [milestones, setMilestones] = useState<string[]>([]);
+
+  const addMilestone = () => {
+    const normalizedMilestone = draftMilestone.trim().replace(/\s+/g, ' ');
+    if (!normalizedMilestone) {
+      return;
+    }
+
+    setMilestones((currentMilestones) => [
+      ...currentMilestones,
+      normalizedMilestone,
+    ]);
+    setDraftMilestone('');
+  };
+
+  const ignoreDraft = () => {
+    setDraftMilestone('');
+  };
+
+  const deleteMilestone = (indexToDelete: number) => {
+    setMilestones((currentMilestones) =>
+      currentMilestones.filter((_, index) => index !== indexToDelete),
+    );
+  };
+
   return (
     <section
       className="notebook-page-shell"
@@ -16,37 +44,14 @@ export default function NotebookPage() {
           <SchedulerCollapse />
         </section>
 
-        <aside className="notebook-right-column" aria-label="Milestone board">
-          <h2 className="text-caption notebook-milestone-title">
-            your milestones
-          </h2>
-
-          <div className="notebook-milestone-actions">
-            <button
-              type="button"
-              className="notebook-milestone-draft-btn"
-              aria-label="Add milestone"
-            >
-              + add milestone
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-primary notebook-continue-btn"
-              aria-label="Continue to thumbnails"
-            >
-              continue to thumbnails
-            </button>
-
-            <button
-              type="button"
-              className="btn btn-ghost notebook-skip-btn"
-              aria-label="Skip to canvas"
-            >
-              skip straight to canvas
-            </button>
-          </div>
-        </aside>
+        <MilestoneBoard
+          milestones={milestones}
+          draftMilestone={draftMilestone}
+          onDraftChange={setDraftMilestone}
+          onAddMilestone={addMilestone}
+          onIgnoreDraft={ignoreDraft}
+          onDeleteMilestone={deleteMilestone}
+        />
       </div>
     </section>
   );

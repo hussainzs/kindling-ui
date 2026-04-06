@@ -192,6 +192,8 @@ button {
 .text-note-hand {
     font-family: var(--font-hand);
     line-height: var(--line-height-loose);
+    font-weight: 700;
+        letter-spacing: 0.01em;
     color: var(--text-ink-mid);
 }
 
@@ -228,6 +230,13 @@ button {
     -webkit-overflow-scrolling: touch;
 }
 
+.workflow-main-frame {
+    position: relative;
+    width: min(100%, 74rem);
+    margin-inline: auto;
+    margin-top: 0;
+    padding-inline: 0.25rem;
+}
 /* Surface system */
 .surface-app {
     background: var(--bg-cream);
@@ -560,18 +569,19 @@ a:focus-visible {
 
 /* Notebook setup page */
 .notebook-page-shell {
-    min-height: min(76rem, calc(100svh - 7rem));
+    width: 100%;
+        min-height: 42rem;
+        height: min(51.25rem, calc(100svh - 2rem));
     border-radius: var(--radius-xl);
     border: 1px solid color-mix(in srgb, var(--ui-divider) 90%, transparent);
     background: color-mix(in srgb, var(--bg-warm-white) 62%, var(--bg-cream));
     box-shadow: var(--ui-shadow-card);
-    overflow: hidden;
 }
 
 .notebook-layout-split {
     display: grid;
     grid-template-columns: 3fr 2fr;
-    min-height: inherit;
+    height: 100%;
 }
 
 .notebook-left-column {
@@ -586,79 +596,249 @@ a:focus-visible {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: var(--space-5);
+    min-height: 0;
+        padding: var(--space-4);
     background: var(--bg-parchment);
+    gap: var(--space-4);
+        overflow: hidden;
 }
 
 .notebook-milestone-title {
     margin: 0;
-    font-size: 1.375rem;
+    font-size: 1.125rem;
     color: var(--text-muted);
     font-weight: 500;
 }
 
-.notebook-milestone-actions {
+.milestone-board-canvas {
+    flex: 1;
+    min-height: 0;
     display: flex;
     flex-direction: column;
     gap: var(--space-4);
+    overflow-y: auto;
+        overscroll-behavior-y: contain;
+        -webkit-overflow-scrolling: touch;
+        padding-right: 0.25rem;
 }
 
-.notebook-milestone-draft-btn {
-    min-height: 3rem;
+.milestone-board-empty {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--text-ink-soft);
+}
+
+.milestone-card-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 1.35rem;
+    align-items: stretch;
+    padding: var(--space-2) var(--space-1) var(--space-3);
+}
+
+.milestone-card-grid .milestone-card:nth-child(3n+1) {
+    align-self: flex-start;
+    max-width: 76%;
+}
+
+.milestone-card-grid .milestone-card:nth-child(3n+2) {
+    align-self: flex-end;
+    max-width: 70%;
+}
+
+.milestone-card-grid .milestone-card:nth-child(3n) {
+    align-self: flex-start;
+    max-width: 74%;
+}
+
+.milestone-card {
+    position: relative;
+    width: fit-content;
+    min-height: 0;
+    border-radius: 0.2rem;
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 84%, transparent);
+    box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 9%);
+    padding: 0.84rem 0.9rem 0.74rem;
+    transform-origin: 50% 15%;
+}
+
+.milestone-card-actions {
+    position: absolute;
+    top: -0.72rem;
+    right: -0.15rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    z-index: 2;
+    background: color-mix(in srgb, var(--bg-warm-white) 88%, var(--bg-cream));
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 76%, transparent);
     border-radius: 9999px;
-    border: 1px dashed color-mix(in srgb, var(--text-muted) 52%, var(--ui-divider));
-    background: color-mix(in srgb, var(--bg-parchment) 80%, var(--bg-warm-white));
+    padding: 0.15rem;
+        box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 10%);
+    }
+    
+    .milestone-card-delete-btn,
+    .milestone-card-keep-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 1.55rem;
+        min-height: 1.55rem;
+        border-radius: 9999px;
+        border: 1px solid color-mix(in srgb, var(--text-muted) 28%, var(--ui-divider));
+        padding: 0;
+    }
+    
+    .milestone-card-delete-btn {
+        background: color-mix(in srgb, var(--accent-rust-pale) 84%, var(--bg-warm-white));
+        color: var(--accent-rust);
+    }
+    
+    .milestone-card-keep-btn {
+        background: color-mix(in srgb, var(--bg-warm-white) 82%, var(--bg-cream));
+        color: var(--text-ink-soft);
+    }
+    
+    .milestone-card-gold {
+        background: color-mix(in srgb, var(--accent-gold-pale) 78%, var(--bg-warm-white));
+    }
+    
+    .milestone-card-rose {
+        background: color-mix(in srgb, var(--accent-rust-pale) 58%, var(--bg-warm-white));
+    }
+    
+    .milestone-card-sage {
+        background: color-mix(in srgb, var(--accent-sage-pale) 63%, var(--bg-warm-white));
+    }
+    
+    .milestone-card-pin {
+        position: absolute;
+        top: -0.5rem;
+        left: 50%;
+        width: 0.8rem;
+        height: 0.8rem;
+        border-radius: 9999px;
+        border: 2px solid color-mix(in srgb, var(--bg-warm-white) 62%, transparent);
+        transform: translateX(-50%);
+        box-shadow: 0 1px 4px rgb(var(--ui-shadow-rgb) / 15%);
+    }
+    
+    .milestone-card-pin-gold {
+        background: var(--accent-gold);
+    }
+    
+    .milestone-card-pin-rose {
+        background: var(--accent-rust);
+    }
+    
+    .milestone-card-pin-sage {
+        background: var(--accent-sage);
+    }
+    
+    .milestone-card-text {
+        margin: 0;
+        font-size: 1.22rem;
+        color: var(--text-ink-mid);
+        line-height: 1.2;
+        white-space: pre-wrap;
+        overflow-wrap: anywhere;
+    }
+    
+    .milestone-draft-shell {
+        display: flex;
+        flex-direction: column;
+        gap: var(--space-2);
+        border-radius: var(--radius-lg);
+        border: 1px solid color-mix(in srgb, var(--text-muted) 35%, var(--ui-divider));
+        background: color-mix(in srgb, var(--bg-warm-white) 72%, var(--bg-parchment));
+        box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 7%);
+        padding: 0.75rem;
+    }
+    
+    .milestone-draft-label {
+        margin: 0;
+        font-size: 0.9rem;
+        color: var(--text-ink-soft);
+    }
+    
+    .milestone-draft-input {
+        width: 100%;
+        min-height: 4rem;
+        border: 1px dashed color-mix(in srgb, var(--text-muted) 46%, var(--ui-divider));
+        border-radius: var(--radius-md);
+        background: color-mix(in srgb, var(--bg-warm-white) 88%, var(--bg-cream));
+        color: var(--text-ink-mid);
+        padding: 0.6rem 0.8rem;
+        font-size: 1.25rem;
+        resize: none;
+    }
+    
+    .milestone-draft-input::placeholder {
     color: var(--text-muted);
-    font-size: 1.875rem;
-    font-weight: 500;
-    letter-spacing: 0.01em;
 }
 
-.notebook-continue-btn {
-    align-self: center;
-    min-height: 3rem;
-    min-width: 15rem;
+.milestone-draft-actions {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.milestone-draft-add {
+    min-height: 2.5rem;
     border-radius: 9999px;
-    font-size: 1.5rem;
+    padding-inline: 1rem;
+        font-size: 1rem;
 }
 
-.notebook-skip-btn {
-    align-self: center;
+.milestone-draft-ignore {
     min-height: 2.5rem;
     color: var(--text-muted);
     text-decoration: underline;
     text-underline-offset: 0.18em;
-    font-size: 1.125rem;
+    font-size: 0.95rem;
 }
 
 .notebook-input-shell {
+    position: relative;
     flex: 1;
     min-height: 0;
 }
 
+.notebook-input-default {
+    position: absolute;
+    top: 0.55rem;
+    left: 3.05rem;
+    right: 1rem;
+    margin: 0;
+    font-size: 1.56rem;
+    line-height: 2.46rem;
+    color: var(--accent-rust);
+    pointer-events: none;
+}
 .notebook-input {
     width: 100%;
     height: 100%;
-    min-height: min(46rem, calc(100svh - 18rem));
+    min-height: 0;
     border: 0;
     border-radius: 0;
-    padding: 1.45rem 1.2rem 1.2rem 3.75rem;
-    font-size: 2.25rem;
-    line-height: 1.55;
+    padding: 0.55rem 1rem 0.8rem 3.05rem;
+        font-size: 1.56rem;
+        line-height: 2.46rem;
     resize: none;
     caret-color: var(--text-ink);
     background:
         linear-gradient(to right,
             transparent 0,
-            transparent 3.1rem,
-            color-mix(in srgb, var(--accent-rust) 16%, var(--ui-divider)) 3.1rem,
-            color-mix(in srgb, var(--accent-rust) 16%, var(--ui-divider)) 3.2rem,
-            transparent 3.2rem),
+            transparent 2.48rem,
+                color-mix(in srgb, var(--accent-rust) 16%, var(--ui-divider)) 2.48rem,
+                color-mix(in srgb, var(--accent-rust) 16%, var(--ui-divider)) 2.56rem,
+                transparent 2.56rem),
         repeating-linear-gradient(to bottom,
             transparent 0,
-            transparent 3.12rem,
-            color-mix(in srgb, var(--accent-rust-light) 40%, var(--ui-divider)) 3.12rem,
-            color-mix(in srgb, var(--accent-rust-light) 40%, var(--ui-divider)) 3.24rem);
+            transparent 2.38rem,
+                color-mix(in srgb, var(--accent-rust-light) 40%, var(--ui-divider)) 2.38rem,
+                color-mix(in srgb, var(--accent-rust-light) 40%, var(--ui-divider)) 2.46rem);
     background-color: color-mix(in srgb, var(--bg-warm-white) 92%, var(--bg-cream));
 }
 
@@ -674,7 +854,12 @@ a:focus-visible {
     color: var(--text-ink);
 }
 
+.notebook-input-entry {
+    padding-top: calc(0.55rem + 2.46rem);
+}
 .scheduler-shell {
+    background: color-mix(in srgb, var(--accent-rust-pale) 70%, var(--bg-warm-white));
+        border-top: 1px solid color-mix(in srgb, var(--accent-rust-light) 36%, var(--ui-divider));
     border-left: 0;
     border-right: 0;
     border-bottom: 0;
@@ -686,29 +871,48 @@ a:focus-visible {
     align-items: center;
     justify-content: center;
     width: 100%;
-    min-height: 2.75rem;
+    min-height: 1.95rem;
     border: 0;
-    background: color-mix(in srgb, var(--accent-rust-light) 26%, var(--accent-rust-pale));
+    background: color-mix(in srgb, var(--accent-rust-light) 28%, var(--accent-rust-pale));
     color: var(--accent-rust);
 }
 
+.scheduler-chevron {
+    transition: transform 220ms ease;
+}
+
+.scheduler-panel-wrap {
+    overflow: hidden;
+    transition: max-height 260ms ease, opacity 220ms ease;
+}
+
+.scheduler-panel-wrap-expanded {
+    max-height: 18rem;
+    opacity: 1;
+}
+
+.scheduler-panel-wrap-collapsed {
+    max-height: 0;
+    opacity: 0;
+}
 .scheduler-panel {
-    padding: 0 var(--space-5) var(--space-5);
+    padding: 0 var(--space-5) var(--space-4);
 }
 
 .scheduler-title {
     margin: 0;
+    padding-top: 0.2rem;
     color: var(--accent-rust);
-    font-size: 2rem;
+    font-size: 1.25rem;
     font-weight: 700;
     text-transform: lowercase;
 }
 
 .scheduler-description {
-    margin: 0.375rem 0 1.25rem;
+    margin: 0.35rem 0 0.85rem;
     max-width: 34rem;
     color: var(--text-ink-soft);
-    font-size: 1.5rem;
+    font-size: 1rem;
 }
 
 .scheduler-pills {
@@ -719,11 +923,11 @@ a:focus-visible {
 }
 
 .scheduler-pill {
-    min-height: 2.75rem;
-    min-width: 7.5rem;
+    min-height: 2.4rem;
+        min-width: 5.5rem;
     border-radius: var(--radius-sm);
     border: 1px solid color-mix(in srgb, var(--text-muted) 38%, var(--ui-divider));
-    font-size: 1.25rem;
+    font-size: 0.95rem;
     font-weight: 700;
 }
 
@@ -738,24 +942,28 @@ a:focus-visible {
     border-color: color-mix(in srgb, var(--accent-rust) 58%, var(--accent-rust-light));
 }
 
-.scheduler-custom-input-wrap {
+.scheduler-custom-pill {
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
-    min-height: 2.75rem;
-    padding: 0 0.625rem;
-    border-radius: var(--radius-sm);
-    border: 1px solid color-mix(in srgb, var(--text-muted) 38%, var(--ui-divider));
-    background: color-mix(in srgb, var(--bg-warm-white) 74%, var(--bg-cream));
+    min-width: 7rem;
+        padding-inline: 0.55rem;
+        cursor: text;
+    }
+    
+    .scheduler-custom-label {
+        font-size: 0.92rem;
+        font-weight: 700;
+        color: var(--text-ink-soft);
 }
 
 .scheduler-custom-input {
-    width: 3.5rem;
-    min-height: 2.2rem;
+    width: 2.65rem;
+        min-height: 1.9rem;
     border: 0;
     background: transparent;
     text-align: center;
-    font-size: 1.125rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--text-ink-mid);
 }
@@ -764,9 +972,25 @@ a:focus-visible {
     outline: none;
 }
 
+.scheduler-set-btn {
+    min-height: 2.4rem;
+    padding-inline: 0.95rem;
+    border-radius: var(--radius-sm);
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
 @media (max-width: 56rem) {
+    .workflow-main-frame {
+            margin-top: 0;
+        }
+    
+        .notebook-page-shell {
+            height: auto;
+            min-height: 36rem;
+        }
     .notebook-layout-split {
         grid-template-columns: 1fr;
+        height: auto;
     }
 
     .notebook-left-column {
@@ -777,6 +1001,7 @@ a:focus-visible {
     .notebook-right-column {
         min-height: 24rem;
     }
+
 }
 /* Lucide icon helpers */
 .icon,

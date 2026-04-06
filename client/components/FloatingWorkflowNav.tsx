@@ -25,7 +25,7 @@ export default function FloatingWorkflowNav() {
   };
 
   return (
-    <div className="fixed left-4 top-4 z-50">
+    <div className="absolute left-2 top-2 z-50">
       <div className="relative flex items-center">
         <button
           type="button"

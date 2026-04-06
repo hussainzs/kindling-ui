@@ -10,6 +10,7 @@ Please reference this style guide alongside the provided Figma design to ensure 
 * This app is **iPad-first and iPad-only**. You should **not optimize for desktop aesthetics**, Android behavior, or cross-browser edge cases unless they also improve iPad Safari behavior. Testing on Windows Chrome device emulation is only a rough proxy; the real constraint is **WebKit on iPad**. 
 * The drawing canvas is **not** the product focus. The priority is **stable touch interactions**, UI flows, sheets, panels, cards, navigation, and predictable layout behavior on iPad Safari. 
 * Use index.css where we have our colors and fonts. If you need to add classes, add to index.css minimally and use it from there so they are reusable. We MUST write modular clean code.
+* **Default layout baseline is iPad landscape**. Size and spacing decisions should target roughly **1180px width x 820px height** first, then provide graceful fallback for narrower widths.
 
 # Typography and design tokens
 

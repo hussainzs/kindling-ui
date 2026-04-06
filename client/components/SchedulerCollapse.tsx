@@ -1,7 +1,7 @@
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Clock3 } from 'lucide-react';
 import { useState } from 'react';
 
-type SchedulerOption = '2' | '5' | 'x';
+type SchedulerOption = '2' | '5' | 'custom';
 
 export default function SchedulerCollapse() {
   const [isExpanded, setIsExpanded] = useState(false);
@@ -13,10 +13,7 @@ export default function SchedulerCollapse() {
   };
 
   return (
-    <section
-      className="scheduler-shell surface-rust-soft"
-      aria-label="Check-in scheduler"
-    >
+    <section className="scheduler-shell" aria-label="Check-in scheduler">
       <button
         type="button"
         className="scheduler-toggle"
@@ -25,14 +22,22 @@ export default function SchedulerCollapse() {
         aria-controls="scheduler-panel"
       >
         {isExpanded ? (
-          <ChevronDown className="icon" />
+          <ChevronDown className="icon scheduler-chevron" />
         ) : (
-          <ChevronUp className="icon" />
+          <ChevronUp className="icon scheduler-chevron" />
         )}
       </button>
 
-      {isExpanded ? (
-        <div id="scheduler-panel" className="scheduler-panel">
+      <div
+        id="scheduler-panel"
+        className={`scheduler-panel-wrap ${
+          isExpanded
+            ? 'scheduler-panel-wrap-expanded'
+            : 'scheduler-panel-wrap-collapsed'
+        }`}
+        aria-hidden={!isExpanded}
+      >
+        <div className="scheduler-panel">
           <h2 className="scheduler-title">check-in schedule (optional)</h2>
           <p className="scheduler-description">
             choose a gentle check-in rhythm while you work.
@@ -67,37 +72,36 @@ export default function SchedulerCollapse() {
               5 min
             </button>
 
-            <button
-              type="button"
-              className={`scheduler-pill ${
-                selectedOption === 'x'
+            <label
+              className={`scheduler-pill scheduler-custom-pill ${
+                selectedOption === 'custom'
                   ? 'scheduler-pill-selected'
                   : 'scheduler-pill-idle'
               }`}
-              onClick={() => setSelectedOption('x')}
-            >
-              X min
-            </button>
-
-            <label
-              className="scheduler-custom-input-wrap"
               htmlFor="custom-scheduler-minutes"
+              onClick={() => setSelectedOption('custom')}
             >
+              <span className="scheduler-custom-label">custom</span>
               <input
                 id="custom-scheduler-minutes"
                 type="number"
                 min={1}
                 className="scheduler-custom-input"
                 value={customMinutes}
-                onFocus={() => setSelectedOption('x')}
+                onFocus={() => setSelectedOption('custom')}
                 onChange={(event) => setCustomMinutes(event.target.value)}
                 aria-label="Custom minutes"
               />
               <span className="text-label">min</span>
             </label>
+
+            <button type="button" className="btn btn-primary scheduler-set-btn">
+              <Clock3 className="icon icon-sm" />
+              start
+            </button>
           </div>
         </div>
-      ) : null}
+      </div>
     </section>
   );
 }
