@@ -1,6 +1,7 @@
 import { useState, type Dispatch, type SetStateAction } from 'react';
 import { Outlet } from 'react-router';
 import FloatingWorkflowNav from './FloatingWorkflowNav';
+import type { DrawingStroke } from '../types/drawing';
 
 export type WorkflowOutletContext = {
   // notesSoFar = most recent notes written in Notebook. Updated only by notebook. 
@@ -15,6 +16,9 @@ export type WorkflowOutletContext = {
   //  checkInReflection = most recent reflection written in Check-in. Updated only by check-in.
   checkInReflection: string;
   setCheckInReflection: Dispatch<SetStateAction<string>>;
+  // canvasStrokes = the user's latest drawing, updated live as they draw
+  canvasStrokes: DrawingStroke[];
+  setCanvasStrokes: Dispatch<SetStateAction<DrawingStroke[]>>;
 };
 
 export default function WorkflowLayout() {
@@ -22,6 +26,7 @@ export default function WorkflowLayout() {
   const [milestones, setMilestones] = useState<string[]>([]);
   const [milestonesCompleted, setMilestonesCompleted] = useState<string[]>([]);
   const [checkInReflection, setCheckInReflection] = useState('');
+  const [canvasStrokes, setCanvasStrokes] = useState<DrawingStroke[]>([]);
 
   return (
     <div className="app-shell safe-area-pad main-scroll">
@@ -41,6 +46,8 @@ export default function WorkflowLayout() {
             setMilestonesCompleted,
             checkInReflection,
             setCheckInReflection,
+            canvasStrokes,
+            setCanvasStrokes,
           }}
         />
       </main>

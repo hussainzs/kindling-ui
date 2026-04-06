@@ -1,3 +1,4 @@
+@import "tailwindcss";
 .intervention-title-gradient {
     background: linear-gradient(90deg, #B8431F 0%, #FF6800 100%);
     -webkit-background-clip: text;
@@ -130,7 +131,7 @@
     background: rgba(255,104,0,0.08); /* debug: remove after confirming gap */
     width: 100%;
 }
-}
+
 .intervention-progress-label-current {
     color: #B8431F;
     font-weight: 700;
@@ -246,7 +247,7 @@
     background: #f5efe4;
     color: #3a2e24;
 }
-@import "tailwindcss";
+
 
 
 	/* Kindling UI Global Style System
@@ -2524,4 +2525,4 @@ a:focus-visible {
         transition-duration: 1ms !important;
         scroll-behavior: auto !important;
     }
-/* removed stray closing brace */
+}
