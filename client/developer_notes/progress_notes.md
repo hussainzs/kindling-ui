@@ -69,3 +69,52 @@ Implemented modular milestone board and editable milestone draft flow.
 ### Visual polish pass (milestone board)
 - Tuned sticky-note composition to better match the reference board: cards now use a repeating staggered pattern (`left`, `right`, `left`) with subtle width variation and preserved small tilt.
 - Updated draft placeholder copy to `+ add milestone` while keeping the editable phase-6 draft behavior intact.
+
+## Notebook Page: Phase 7 to Phase 12
+
+### Shared setup state (phase 10)
+- Updated [client/components/WorkflowLayout.tsx](client/components/WorkflowLayout.tsx) to own shared setup state through outlet context:
+  - `notesSoFar: string`
+  - `milestones: string[]`
+- This keeps notebook/canvas/thumbnail in sync during route navigation and intentionally resets on full refresh.
+- Updated [client/pages/ThumbnailPage.tsx](client/pages/ThumbnailPage.tsx) and [client/pages/CanvasPage.tsx](client/pages/CanvasPage.tsx) to read shared state and display word/milestone counts for quick verification.
+
+### Notebook typing path and sync strategy (phase 3 + phase 10 guardrail)
+- Updated [client/components/NotebookInputSurface.tsx](client/components/NotebookInputSurface.tsx) to keep live typing local and sync outward on a short debounce (`220ms`).
+- Parent-level shared `notesSoFar` now receives stable updates, so milestone logic can run without tying every keystroke to full page re-renders.
+
+### Milestone suggestion trigger + API flow (phase 7)
+- Added [client/hooks/useMilestoneSuggestions.ts](client/hooks/useMilestoneSuggestions.ts).
+- Trigger rule:
+  - Count words from full notebook text.
+  - Raise eligibility at each new multiple of 8 words (`8, 16, 24...`).
+  - Only trigger on upward threshold crossings to avoid duplicate requests for the same threshold while the user stays in the same range.
+- Request payload:
+  - Always sends full `notesSoFar`.
+  - Sends `existingMilestones` only when committed milestone list is non-empty.
+
+### Quota and throttling (phase 8)
+- Added 10-requests-per-60-seconds rolling-window quota in [client/hooks/useMilestoneSuggestions.ts](client/hooks/useMilestoneSuggestions.ts).
+- When quota is exhausted:
+  - requests pause immediately
+  - only the latest eligible threshold remains pending
+  - retry is scheduled for the next available slot
+- Dispatch always uses latest `notesSoFar` and latest committed `milestones`, preventing stale queued sends.
+
+### API integration and error handling (phase 7 + phase 12)
+- Added [client/services/milestoneSuggestionsApi.ts](client/services/milestoneSuggestionsApi.ts) for `/api/milestone-suggestions` POST calls.
+- Added typed request error handling for non-2xx responses and invalid success payloads.
+- UI surfaces a concise status message in the milestone draft area for request failures or temporary quota pause state.
+
+### Draft milestone attention feedback (phase 9)
+- Updated [client/components/MilestoneDraftInput.tsx](client/components/MilestoneDraftInput.tsx) and [client/src/index.css](client/src/index.css) to apply a short warm highlight animation when a new AI suggestion arrives.
+- Motion is intentionally subtle (no bounce, no layout shift).
+
+### Navigation buttons (phase 11)
+- Updated [client/components/MilestoneBoard.tsx](client/components/MilestoneBoard.tsx) and [client/pages/NotebookPage.tsx](client/pages/NotebookPage.tsx) to add route actions:
+  - `continue to thumbnails` -> `/thumbnail`
+  - `move to canvas` -> `/canvas`
+
+### Final pass notes (phase 12)
+- Kept notebook/scheduler/milestone shell layout structure unchanged from validated UI baseline.
+- Added only minimal CSS classes for attention/status/navigation actions and reused existing semantic tokens and button styles.

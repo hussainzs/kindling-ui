@@ -8,6 +8,10 @@ type MilestoneBoardProps = {
   onAddMilestone: () => void;
   onIgnoreDraft: () => void;
   onDeleteMilestone: (index: number) => void;
+  isDraftAttentionActive: boolean;
+  draftStatusMessage: string | null;
+  onMoveToCanvas: () => void;
+  onContinueToThumbnails: () => void;
 };
 
 const NOTE_VARIANTS: Array<{ tone: 'rose' | 'gold' | 'sage'; tilt: number }> = [
@@ -25,6 +29,10 @@ export default function MilestoneBoard({
   onAddMilestone,
   onIgnoreDraft,
   onDeleteMilestone,
+  isDraftAttentionActive,
+  draftStatusMessage,
+  onMoveToCanvas,
+  onContinueToThumbnails,
 }: MilestoneBoardProps) {
   return (
     <aside className="notebook-right-column" aria-label="Milestone board">
@@ -59,7 +67,26 @@ export default function MilestoneBoard({
         onDraftChange={onDraftChange}
         onAddMilestone={onAddMilestone}
         onIgnoreDraft={onIgnoreDraft}
+        isAttentionActive={isDraftAttentionActive}
+        statusMessage={draftStatusMessage}
       />
+
+      <div className="notebook-route-actions" aria-label="Notebook navigation actions">
+        <button
+          type="button"
+          className="btn btn-secondary notebook-route-btn"
+          onClick={onContinueToThumbnails}
+        >
+          continue to thumbnails
+        </button>
+        <button
+          type="button"
+          className="btn btn-primary notebook-route-btn"
+          onClick={onMoveToCanvas}
+        >
+          move to canvas
+        </button>
+      </div>
     </aside>
   );
 }

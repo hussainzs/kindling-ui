@@ -5,6 +5,8 @@ type MilestoneDraftInputProps = {
   onDraftChange: (value: string) => void;
   onAddMilestone: () => void;
   onIgnoreDraft: () => void;
+  isAttentionActive: boolean;
+  statusMessage: string | null;
 };
 
 export default function MilestoneDraftInput({
@@ -12,6 +14,8 @@ export default function MilestoneDraftInput({
   onDraftChange,
   onAddMilestone,
   onIgnoreDraft,
+  isAttentionActive,
+  statusMessage,
 }: MilestoneDraftInputProps) {
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -28,7 +32,12 @@ export default function MilestoneDraftInput({
   };
 
   return (
-    <section className="milestone-draft-shell" aria-label="Milestone draft editor">
+    <section
+      className={`milestone-draft-shell ${
+        isAttentionActive ? 'milestone-draft-shell-attention' : ''
+      }`}
+      aria-label="Milestone draft editor"
+    >
       <label className="text-caption milestone-draft-label" htmlFor="milestone-draft-input">
         milestone idea
       </label>
@@ -61,6 +70,12 @@ export default function MilestoneDraftInput({
           ignore
         </button>
       </div>
+
+      {statusMessage ? (
+        <p className="milestone-draft-status text-metadata" role="status" aria-live="polite">
+          {statusMessage}
+        </p>
+      ) : null}
     </section>
   );
 }

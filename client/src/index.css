@@ -767,7 +767,23 @@ a:focus-visible {
         box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 7%);
         padding: 0.75rem;
     }
+
+        .milestone-draft-shell-attention {
+            animation: milestone-draft-attention 1.35s ease-out;
+            border-color: color-mix(in srgb, var(--accent-rust) 35%, var(--ui-divider));
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent-rust-pale) 62%, transparent),
+                0 2px 10px rgb(var(--ui-shadow-rgb) / 8%);
+        }
     
+        @keyframes milestone-draft-attention {
+            0% {
+                background: color-mix(in srgb, var(--accent-rust-pale) 62%, var(--bg-warm-white));
+            }
+    
+            100% {
+                background: color-mix(in srgb, var(--bg-warm-white) 72%, var(--bg-parchment));
+            }
+        }
     .milestone-draft-label {
         margin: 0;
         font-size: 0.9rem;
@@ -812,6 +828,25 @@ a:focus-visible {
     font-size: 0.95rem;
 }
 
+.milestone-draft-status {
+    margin: 0;
+    min-height: 1.05rem;
+    color: var(--text-ink-soft);
+}
+
+.notebook-route-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+}
+
+.notebook-route-btn {
+    flex: 1;
+    min-height: 2.55rem;
+    border-radius: 9999px;
+    padding-inline: 0.9rem;
+    font-size: 0.92rem;
+}
 .notebook-input-shell {
     position: relative;
     flex: 1;
@@ -828,6 +863,7 @@ a:focus-visible {
     line-height: 2.46rem;
     color: var(--accent-rust);
     pointer-events: none;
+    transition: opacity 180ms ease;
 }
 .notebook-input {
     width: 100%;
@@ -1017,6 +1053,13 @@ a:focus-visible {
         min-height: 24rem;
     }
 
+        .notebook-route-actions {
+            flex-direction: column;
+        }
+    
+        .notebook-route-btn {
+            width: 100%;
+        }
 }
 /* SECTION: Lucide Icon Helpers | icon, lucide, icon-sm, icon-lg, icon-muted, icon-rust, icon-gold, icon-sage */
 .icon,

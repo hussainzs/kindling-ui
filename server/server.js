@@ -17,4 +17,8 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/milestone-suggestions', milestoneSuggestionsRouter);
 
+app.listen(port, () => {
+  console.log(`Kindling server listening on port ${port}`);
+});
+
 export { app };

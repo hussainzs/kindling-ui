@@ -88,4 +88,18 @@ When writing React components, always:
 - Define an `ErrorBoundary` export in route modules to catch and isolate errors locally.
 - Hydration: For SPAs, prefer clientLoader and clientAction when bypassing server-side logic.
 
+### 5. Shared State Pattern (Outlet Context)
+**Goal**: Workflow session data (notebook text, milestones, etc.) must be accessible across all pages and modals, and must persist through navigation.
+
+**Implementation**: 
+- `WorkflowLayout` owns all shared workflow state via `useState` (see `WorkflowOutletContext` type).
+- Pass state to child pages via `<Outlet context={{ ... }}>`.
+- Child pages/components access it: `const { notesSoFar, setNotesSoFar, ... } = useOutletContext<WorkflowOutletContext>();`
+
+**When to use parent state vs. local state**:
+- **Parent state** (in WorkflowLayout): Data that flows across multiple pages (notes, milestones) or must persist through navigation.
+- **Local state** (in page/component): UI state unique to that page (e.g., draft input, attention flags, open/closed toggles).
+
+**Adding new shared state**: Update `WorkflowOutletContext` type in `WorkflowLayout.tsx`, add it to `useState`, and include it in the `Outlet context` object.
+
 > Important: Use web search when you're unsure of latest standards or conventions.
