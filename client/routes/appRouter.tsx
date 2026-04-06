@@ -15,10 +15,10 @@ export const appRouter = createBrowserRouter([
       { index: true, element: <GalleryPage /> },
       { path: 'notebook', element: <NotebookPage /> },
       { path: 'thumbnail', element: <ThumbnailPage /> },
-     
+      { path: 'canvas', element: <CanvasPage /> },
       { path: 'check-in', element: <CheckInPage /> },
       { path: 'intervention', element: <InterventionPage /> },
     ],
   },
-   { path: 'canvas', element: <CanvasPage /> },
+
 ]);
