@@ -3,6 +3,8 @@ import { useNavigate } from 'react-router';
 import MainCanvas from '../components/MainCanvas';
 import type { Layer, DrawingColor, DrawingStroke, CanvasProject } from '../types/drawing';
 import { Eye, EyeOff, Trash2, Brush, Eraser } from 'lucide-react';
+import { useOutletContext } from 'react-router';
+import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 export default function CanvasPage() {
   const navigate = useNavigate();
@@ -122,6 +124,9 @@ export default function CanvasPage() {
     }
   };
 
+
+const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
+
   const handleStrokesChange = (strokes: DrawingStroke[]) => {
     if (project) {
       const updated = {
@@ -138,6 +143,9 @@ export default function CanvasPage() {
         `kindling_project_${project.id}`,
         JSON.stringify(updated)
       );
+  
+      // Sync active layer's strokes up to WorkflowLayout
+      setCanvasStrokes(strokes);
     }
   };
 
