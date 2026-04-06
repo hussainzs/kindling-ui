@@ -7,11 +7,17 @@ export type WorkflowOutletContext = {
   setNotesSoFar: Dispatch<SetStateAction<string>>;
   milestones: string[];
   setMilestones: Dispatch<SetStateAction<string[]>>;
+  milestonesCompleted: string[];
+  setMilestonesCompleted: Dispatch<SetStateAction<string[]>>;
+  checkInReflection: string;
+  setCheckInReflection: Dispatch<SetStateAction<string>>;
 };
 
 export default function WorkflowLayout() {
   const [notesSoFar, setNotesSoFar] = useState('');
   const [milestones, setMilestones] = useState<string[]>([]);
+  const [milestonesCompleted, setMilestonesCompleted] = useState<string[]>([]);
+  const [checkInReflection, setCheckInReflection] = useState('');
 
   return (
     <div className="app-shell safe-area-pad main-scroll">
@@ -23,6 +29,10 @@ export default function WorkflowLayout() {
             setNotesSoFar,
             milestones,
             setMilestones,
+            milestonesCompleted,
+            setMilestonesCompleted,
+            checkInReflection,
+            setCheckInReflection,
           }}
         />
       </main>

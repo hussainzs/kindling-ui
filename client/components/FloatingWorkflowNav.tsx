@@ -1,4 +1,4 @@
-import { ArrowLeft, Home, Menu } from 'lucide-react';
+import { ArrowLeft, Heart, Home, Menu } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { useState } from 'react';
 
@@ -17,6 +17,11 @@ export default function FloatingWorkflowNav() {
 
   const onHome = () => {
     navigate('/');
+    setIsOpen(false);
+  };
+
+  const onCheckIn = () => {
+    navigate('/check-in');
     setIsOpen(false);
   };
 
@@ -40,7 +45,7 @@ export default function FloatingWorkflowNav() {
         <div
           className={`surface-nav border-divider absolute left-0 z-10 flex items-center gap-2 overflow-hidden rounded-full border py-2 shadow-card transition-all duration-300 ${
             isOpen
-              ? 'max-w-64 pl-12 pr-3 opacity-100'
+              ? 'max-w-96 pl-12 pr-3 opacity-100'
               : 'max-w-0 px-0 opacity-0'
           }`}
           aria-hidden={!isOpen}
@@ -63,6 +68,16 @@ export default function FloatingWorkflowNav() {
           >
             <Home className="icon icon-sm" />
             Home
+          </button>
+
+          <button
+            type="button"
+            className="btn btn-sage h-9 rounded-full px-3 text-sm"
+            onClick={onCheckIn}
+            aria-label="Go to check-in"
+          >
+            <Heart className="icon icon-sm" />
+            Check-in
           </button>
         </div>
       </div>

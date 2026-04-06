@@ -28,11 +28,13 @@
 	15. Notes & Handwriting Surfaces | note-surface, note-text
 	16. Notebook Page Components | notebook-*, milestone-*
 	17. Scheduler Components | scheduler-shell, scheduler-pill
-	18. Responsive Media Queries | @media (max-width: 56rem)
-	19. Lucide Icon Helpers | icon, icon-sm, icon-lg, variants
-	20. Utility Classes | bg-*, text-*, shadow-card, touch-*
-	21. Scrollbar Polish | webkit-scrollbar
-	22. Motion & Accessibility | prefers-reduced-motion */
+                                                                18. Check-in Page Components | checkin-* 19. Responsive Media Queries | @media (max-width: 56rem) 20. Lucide Icon Helpers | icon,
+                                                                icon-sm,
+                                                                icon-lg,
+                                                                variants 21. Utility Classes | bg-*,
+                                                                text-*,
+                                                                shadow-card,
+                                                                touch-* 22. Scrollbar Polish | webkit-scrollbar 23. Motion & Accessibility | prefers-reduced-motion */
 
 
 /* SECTION: Design Tokens | color palette, spacing, radius, typography scale, shadows, safe-area */
@@ -109,10 +111,11 @@
     --safe-left: env(safe-area-inset-left, 0px);
 }
 
-/* SECTION: Font Aliases | font-family, Inter, Shadows Into Light */
+/* SECTION: Font Aliases | font-family, Inter, Shadows Into Light, Protest Revolution */
 :root {
     --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
     --font-hand: "Shadows Into Light", "Comic Sans MS", cursive;
+    --font-accent-display: "Protest Revolution", "Shadows Into Light", cursive;
 }
 
 /* SECTION: Base & Reset | box-sizing, html, body, globals, img, button, select */
@@ -916,6 +919,413 @@ a:focus-visible {
     border-radius: 0;
 }
 
+/* SECTION: Check-in Page Components | checkin-page-shell, checkin-layout-split, checkin-notes, checkin-reflection */
+.checkin-page-shell {
+    width: 100%;
+    min-height: 42rem;
+    height: min(51.25rem, calc(100svh - 2rem));
+    border-radius: var(--radius-xl);
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 90%, transparent);
+    background: color-mix(in srgb, var(--bg-warm-white) 62%, var(--bg-cream));
+    box-shadow: var(--ui-shadow-card);
+}
+
+.checkin-layout-split {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    height: 100%;
+}
+
+.checkin-left-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: var(--space-6);
+    background: color-mix(in srgb, var(--bg-warm-white) 86%, var(--bg-cream));
+    border-right: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+.checkin-right-column {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: var(--space-6);
+    background: var(--bg-parchment);
+}
+
+.checkin-header-wrap {
+    display: grid;
+    gap: var(--space-2);
+    margin-top: -1rem;
+}
+
+.checkin-header-offset {
+    padding-top: 0;
+    padding-left: 1.5rem;
+}
+
+.checkin-title {
+    margin: 0;
+    color: var(--accent-rust);
+    font-size: clamp(1.75rem, 2.8vw, 2.3rem);
+    line-height: 1.1;
+}
+
+.checkin-subtitle {
+    margin: 0;
+}
+
+.checkin-notes-card {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-height: 0;
+    padding: var(--space-3) var(--space-4) var(--space-4);
+}
+
+.checkin-collapse-btn {
+    justify-content: flex-start;
+    width: fit-content;
+    padding-inline: 0;
+    min-height: auto;
+    color: var(--accent-rust);
+}
+
+.checkin-notes-content {
+    overflow: hidden;
+    transition: max-height 200ms ease, opacity 200ms ease;
+}
+
+.checkin-notes-content-open {
+    max-height: 15rem;
+    opacity: 1;
+}
+
+.checkin-notes-content-closed {
+    max-height: 0;
+    opacity: 0;
+}
+
+.checkin-notes-text {
+    margin: 0;
+    font-size: 1.2rem;
+    max-height: 11rem;
+    overflow-y: auto;
+    padding-right: var(--space-1);
+}
+
+.checkin-milestone-summary {
+    margin-top: auto;
+    padding-top: var(--space-2);
+}
+
+.checkin-milestone-button {
+    justify-content: flex-start;
+    width: fit-content;
+    min-height: auto;
+    padding: 0;
+}
+
+.checkin-milestone-count {
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-1);
+    color: var(--accent-rust);
+    font-size: var(--font-size-lg);
+}
+
+.checkin-milestone-star {
+    color: var(--accent-rust);
+}
+
+.checkin-milestone-detail {
+    margin-top: var(--space-1);
+    font-style: italic;
+}
+
+.checkin-reflection-input {
+    min-height: 8rem;
+    background: color-mix(in srgb, var(--bg-warm-white) 80%, var(--bg-cream));
+}
+
+.checkin-reflection-label {
+    margin-bottom: 0;
+}
+
+.checkin-right-stack {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: var(--space-4);
+    min-height: 0;
+}
+
+.checkin-reflection-wrap {
+    display: grid;
+    gap: var(--space-2);
+}
+
+.checkin-feeling-shell {
+    display: grid;
+    gap: 0.18rem;
+}
+
+.checkin-feeling-title {
+    margin: 0;
+    text-align: center;
+    color: var(--text-muted);
+}
+
+.checkin-feeling-row {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--space-3);
+}
+
+.checkin-feeling-endpoint {
+    width: 2.9rem;
+    min-height: 2.9rem;
+    border-radius: 9999px;
+    border: 2px solid color-mix(in srgb, var(--ui-divider) 86%, transparent);
+    padding: 0;
+}
+
+.checkin-feeling-endpoint-active-rust {
+    color: var(--accent-rust);
+    border-color: color-mix(in srgb, var(--accent-rust) 62%, var(--accent-rust-light));
+    background: color-mix(in srgb, var(--accent-rust-pale) 72%, var(--bg-warm-white));
+}
+
+.checkin-feeling-endpoint-active-sage {
+    color: var(--accent-sage);
+    border-color: color-mix(in srgb, var(--accent-sage) 70%, var(--ui-divider));
+    background: color-mix(in srgb, var(--accent-sage-pale) 72%, var(--bg-warm-white));
+}
+
+.checkin-feeling-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 2.5rem;
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 82%, transparent);
+    border-radius: 9999px;
+    background: linear-gradient(90deg,
+            color-mix(in srgb, var(--accent-rust) 90%, var(--accent-rust-light)) 0%,
+            color-mix(in srgb, var(--accent-gold) 88%, var(--accent-gold-light)) 50%,
+            color-mix(in srgb, var(--accent-sage) 92%, var(--accent-sage-pale)) 100%);
+}
+
+.checkin-feeling-range::-webkit-slider-runnable-track {
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: transparent;
+}
+
+.checkin-feeling-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 2.1rem;
+    height: 2.1rem;
+    margin-top: 0.17rem;
+    border-radius: 9999px;
+    border: 3px solid color-mix(in srgb, var(--bg-warm-white) 95%, var(--bg-cream));
+    background: var(--bg-warm-white);
+    box-shadow: 0 2px 8px rgb(var(--ui-shadow-rgb) / 22%);
+}
+
+.checkin-feeling-range::-moz-range-track {
+    height: 2.5rem;
+    border-radius: 9999px;
+    background: transparent;
+}
+
+.checkin-feeling-range::-moz-range-thumb {
+    width: 2.1rem;
+    height: 2.1rem;
+    border-radius: 9999px;
+    border: 3px solid color-mix(in srgb, var(--bg-warm-white) 95%, var(--bg-cream));
+    background: var(--bg-warm-white);
+    box-shadow: 0 2px 8px rgb(var(--ui-shadow-rgb) / 22%);
+}
+
+.checkin-feeling-labels {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-2);
+    margin-bottom: 0;
+}
+
+.checkin-feeling-label-left,
+.checkin-feeling-label-right {
+    margin: 0;
+    max-width: 8.25rem;
+    color: var(--text-muted);
+}
+
+.checkin-feeling-label-right {
+    text-align: right;
+}
+
+.checkin-ugly-middle-link {
+    justify-content: center;
+    width: fit-content;
+    margin: 0 auto;
+    font-family: var(--font-accent-display);
+    color: var(--accent-rust);
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+    gap: var(--space-2);
+    min-height: auto;
+    padding: 0;
+    font-size: 1.24rem;
+    line-height: 1.1;
+}
+
+.checkin-celebration {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-self: center;
+    margin-top: 0;
+    gap: var(--space-2);
+    border-radius: var(--radius-lg);
+    background: color-mix(in srgb, var(--accent-gold-pale) 84%, var(--bg-warm-white));
+    border: 1px solid color-mix(in srgb, var(--accent-gold) 38%, var(--ui-divider));
+    padding: 0.45rem 0.8rem;
+}
+
+.checkin-celebration-text {
+    margin: 0;
+    color: var(--text-ink-soft);
+    font-size: 1.08rem;
+    line-height: 1.2;
+}
+
+.checkin-confetti-dot {
+    position: absolute;
+    width: 0.36rem;
+    height: 0.36rem;
+    border-radius: 9999px;
+    animation: checkin-confetti-float 1.5s ease-in-out infinite;
+}
+
+.checkin-confetti-dot-a {
+    left: 0.8rem;
+    top: -0.25rem;
+    background: var(--accent-rust);
+}
+
+.checkin-confetti-dot-b {
+    right: 1rem;
+    top: -0.2rem;
+    background: var(--accent-gold);
+    animation-delay: 160ms;
+}
+
+.checkin-confetti-dot-c {
+    right: 0.5rem;
+    bottom: -0.22rem;
+    background: var(--accent-sage);
+    animation-delay: 280ms;
+}
+
+@keyframes checkin-confetti-float {
+
+    0%,
+    100% {
+        transform: translateY(0);
+        opacity: 0.78;
+    }
+
+    50% {
+        transform: translateY(-0.24rem);
+        opacity: 1;
+    }
+}
+
+.checkin-route-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: auto;
+}
+
+.checkin-route-btn {
+    flex: 1;
+    min-height: 2.8rem;
+    border-radius: 9999px;
+    font-size: 1rem;
+    padding-inline: 0.95rem;
+}
+
+.checkin-milestone-sheet {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(34rem, calc(100% - 2rem));
+    height: min(28rem, calc(100svh - 2rem));
+    max-height: min(28rem, calc(100svh - 2rem));
+    border-radius: var(--radius-xl);
+    box-shadow: 0 16px 38px rgb(var(--ui-shadow-rgb) / 18%);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+}
+
+.checkin-sheet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+}
+
+.checkin-sheet-title {
+    margin: 0;
+    color: var(--text-ink);
+    font-size: var(--font-size-2xl);
+}
+
+.checkin-sheet-close {
+    width: 2.25rem;
+    min-height: 2.25rem;
+    border-radius: 9999px;
+    padding: 0;
+}
+
+.checkin-sheet-list {
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: var(--space-2);
+    list-style: none;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    flex: 1;
+    min-height: 0;
+}
+
+.checkin-sheet-list-item {
+    margin: 0;
+}
+
+.checkin-sheet-note {
+    background: color-mix(in srgb, var(--accent-gold-pale) 62%, var(--bg-warm-white));
+}
+
+.checkin-sheet-note-text {
+    margin: 0;
+    font-size: 1.35rem;
+    line-height: 1.35;
+}
+
+.checkin-sheet-empty {
+    margin: 0;
+    color: var(--text-ink-soft);
+}
 .scheduler-toggle {
     display: flex;
     align-items: center;
@@ -1060,6 +1470,46 @@ a:focus-visible {
         .notebook-route-btn {
             width: 100%;
         }
+.checkin-page-shell {
+    height: auto;
+    min-height: 36rem;
+}
+
+.checkin-layout-split {
+    grid-template-columns: 1fr;
+    height: auto;
+}
+
+.checkin-left-column {
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+}
+
+.checkin-right-column {
+    min-height: 28rem;
+}
+
+.checkin-header-wrap {
+    margin-top: -1rem;
+}
+
+.checkin-header-offset {
+    padding-top: 0;
+    padding-left: 1.5rem;
+}
+
+.checkin-feeling-label-left,
+.checkin-feeling-label-right {
+    max-width: 100%;
+}
+
+.checkin-route-actions {
+    flex-direction: column;
+}
+
+.checkin-route-btn {
+    width: 100%;
+}
 }
 /* SECTION: Lucide Icon Helpers | icon, lucide, icon-sm, icon-lg, icon-muted, icon-rust, icon-gold, icon-sage */
 .icon,
