@@ -80,10 +80,11 @@ Expanded scheduler content:
 
   * `2 min`
   * `5 min`
-  * `X min`
-* `X min` should be an editable numeric entry UI
-* when a pill is selected, it should visually show selected state
+  * `custom min`
+* `custom min` should be an editable numeric entry UI
+* when a pill is selected, it should visually show selected state. Start button should be separate.
 * for now, only build the UI and local selection behavior; no actual scheduling action yet
+* Default to 2 min.
 
 ---
 

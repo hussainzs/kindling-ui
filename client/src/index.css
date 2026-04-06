@@ -94,7 +94,7 @@ html,
 body,
 #root {
     width: 100%;
-    min-height: 100%;
+    min-height: 100dvh;
 }
 
 html {
@@ -107,7 +107,7 @@ html {
 
 body {
     margin: 0;
-    min-height: 100svh;
+    min-height: 100dvh;
     background: var(--bg-cream);
     color: var(--text-ink);
     font-size: var(--font-size-md);
@@ -199,7 +199,7 @@ button {
 
 /* App layout primitives */
 .app-shell {
-    min-height: 100svh;
+    min-height: 100dvh;
     background: var(--bg-cream);
     color: var(--text-ink);
 }
@@ -225,9 +225,7 @@ button {
 }
 
 .main-scroll {
-    overflow-y: auto;
-    overscroll-behavior-y: contain;
-    -webkit-overflow-scrolling: touch;
+    /* Removed custom overflow container to restore native body scrolling */
 }
 
 .workflow-main-frame {
@@ -665,38 +663,27 @@ a:focus-visible {
 .milestone-card-actions {
     position: absolute;
     top: -0.72rem;
-    right: -0.15rem;
+    left: -0.15rem;
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
     z-index: 2;
     background: color-mix(in srgb, var(--bg-warm-white) 88%, var(--bg-cream));
     border: 1px solid color-mix(in srgb, var(--ui-divider) 76%, transparent);
     border-radius: 9999px;
-    padding: 0.15rem;
+    padding: 0;
         box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 10%);
     }
-    
-    .milestone-card-delete-btn,
-    .milestone-card-keep-btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        width: 1.55rem;
-        min-height: 1.55rem;
-        border-radius: 9999px;
-        border: 1px solid color-mix(in srgb, var(--text-muted) 28%, var(--ui-divider));
+.milestone-card-delete-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.55rem;
+    min-height: 1.55rem;
+    border-radius: 9999px;
+    border: none;
+        background: transparent;
+        color: var(--text-ink);
         padding: 0;
-    }
-    
-    .milestone-card-delete-btn {
-        background: color-mix(in srgb, var(--accent-rust-pale) 84%, var(--bg-warm-white));
-        color: var(--accent-rust);
-    }
-    
-    .milestone-card-keep-btn {
-        background: color-mix(in srgb, var(--bg-warm-white) 82%, var(--bg-cream));
-        color: var(--text-ink-soft);
     }
     
     .milestone-card-gold {

@@ -1,3 +1,5 @@
+import { useRef } from 'react';
+
 type MilestoneDraftInputProps = {
   draftMilestone: string;
   onDraftChange: (value: string) => void;
@@ -11,6 +13,20 @@ export default function MilestoneDraftInput({
   onAddMilestone,
   onIgnoreDraft,
 }: MilestoneDraftInputProps) {
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+
+  const handleAdd = () => {
+    onAddMilestone();
+    textareaRef.current?.focus();
+  };
+
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      handleAdd();
+    }
+  };
+
   return (
     <section className="milestone-draft-shell" aria-label="Milestone draft editor">
       <label className="text-caption milestone-draft-label" htmlFor="milestone-draft-input">
@@ -18,10 +34,12 @@ export default function MilestoneDraftInput({
       </label>
 
       <textarea
+        ref={textareaRef}
         id="milestone-draft-input"
         className="milestone-draft-input text-note-hand"
         value={draftMilestone}
         onChange={(event) => onDraftChange(event.target.value)}
+        onKeyDown={handleKeyDown}
         placeholder="+ add milestone"
         aria-label="Draft milestone"
       />
@@ -30,7 +48,7 @@ export default function MilestoneDraftInput({
         <button
           type="button"
           className="btn btn-primary milestone-draft-add"
-          onClick={onAddMilestone}
+          onClick={handleAdd}
         >
           add milestone
         </button>

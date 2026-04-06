@@ -8,7 +8,7 @@ export default function NotebookPage() {
   const [milestones, setMilestones] = useState<string[]>([]);
 
   const addMilestone = () => {
-    const normalizedMilestone = draftMilestone.trim().replace(/\s+/g, ' ');
+    const normalizedMilestone = draftMilestone.trim();
     if (!normalizedMilestone) {
       return;
     }
