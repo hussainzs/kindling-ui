@@ -1,256 +1,7 @@
 @import "tailwindcss";
-.intervention-title-gradient {
-    background: linear-gradient(90deg, #B8431F 0%, #FF6800 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    color: transparent;
-}
-/* Group for milestone box and label */
-.intervention-progress-group {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    flex: 1 1 0;
-}
-/* SECTION: Intervention Modal | intervention-modal, intervention-popup, intervention-tip, etc. */
-.intervention-modal-overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    z-index: 2000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    display: flex;
-    position: fixed;
-    inset: 0;
-    z-index: 2000;
-}
 
-.intervention-modal-backdrop {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: rgba(220, 180, 150, 0.18);
-    z-index: 2001;
-}
-
-.intervention-modal-card {
-    position: relative;
-    background: #fdf8f2;
-    border-radius: 1.5rem;
-    box-shadow: 0 8px 32px rgba(184, 67, 31, 0.13);
-    padding: 2.5rem 2.5rem 2rem 2.5rem;
-    min-width: 320px;
-    min-height: 320px;
-    max-width: 96vw;
-    max-height: 96vh;
-    overflow: auto;
-    z-index: 2002;
-    display: flex;
-    flex-direction: column;
-}
-
-.intervention-modal-content {
-    display: flex;
-    flex-direction: row;
-    gap: 2.5rem;
-}
-
-.intervention-modal-left {
-    flex: 1.2;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-}
-.intervention-label {
-    color: #B8431F;
-    font-size: 0.95rem;
-    font-weight: 700;
-    letter-spacing: 0.08em;
-    margin-bottom: 0.5rem;
-}
-.intervention-title {
-    color: #B8431F;
-    font-size: 2.2rem;
-    font-weight: 800;
-    margin: 0 0 1.1rem 0;
-    line-height: 1.1;
-}
-.intervention-desc {
-    color: #3a2e24;
-    font-size: 1.15rem;
-    margin-bottom: 1.5rem;
-}
-.intervention-desc-bold {
-    font-weight: 700;
-}
-.intervention-desc-highlight {
-    color: #B8431F;
-    font-weight: 700;
-}
-.intervention-progress-row {
-    display: flex;
-    align-items: center;
-    gap: 50px;
-    margin: 0.9rem 0 0.5rem 0;
-}
-.intervention-progress-img {
-        outline: 1px solid #FF6800; /* debug: remove after confirming gap */
-    width: 180px;
-    height: 135px;
-    background: #fff;
-    border-radius: 0.75rem;
-    box-shadow: 0 2px 8px rgba(60, 40, 20, 0.08);
-    background-size: cover;
-    background-position: center;
-    margin-bottom: 20px;
-}
-.intervention-progress-img-start {
-    background-image: url('/assets/progress-start.png');
-}
-.intervention-progress-img-current {
-    background-image: url('/assets/progress-current.png');
-}
-.intervention-progress-labels {
-    display: none;
-}
-.intervention-progress-label {
-    display: block;
-    text-align: center;
-    font-size: 0.98rem;
-    color: #bfae9b;
-    margin-top: 0;
-    margin-bottom: 0;
-    padding-top: 20px;
-    background: rgba(255,104,0,0.08); /* debug: remove after confirming gap */
-    width: 100%;
-}
-
-.intervention-progress-label-current {
-    color: #B8431F;
-    font-weight: 700;
-}
-.intervention-modal-right {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 2.2rem;
-}
-.intervention-breathe-widget {
-    background: #fff;
-    border-radius: 1.1rem;
-    box-shadow: 0 2px 8px rgba(60, 40, 20, 0.08);
-    padding: 1.2rem 1.5rem 1.5rem 1.5rem;
-    margin-bottom: 1.2rem;
-    width: 100%;
-    max-width: 320px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-.intervention-breathe-title {
-    color: #3a2e24;
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 1.1rem;
-    text-align: center;
-}
-.intervention-breathe-circle {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 2px solid #E8E0D4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1.1rem;
-}
-.intervention-breathe-inner {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #F8EDD4;
-    box-shadow: 0 0 0 8px #f8edd4aa;
-}
-.intervention-breathe-btn {
-    margin-top: 0.5rem;
-    background: #f5efe4;
-    color: #3a2e24;
-    border: none;
-    border-radius: 1.5rem;
-    padding: 0.5rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    box-shadow: 0 1px 4px rgba(60, 40, 20, 0.08);
-    cursor: pointer;
-}
-.intervention-tip-box {
-    background: #fdf6e6;
-    border: 2px solid #f8edd4;
-    border-radius: 1.1rem;
-    padding: 2rem 2.5rem;
-    width: 100%;
-    max-width: 600px;
-    min-width: 220px;
-    flex: 1 1 50%;
-    margin-bottom: 1.2rem;
-    box-sizing: border-box;
-}
-.intervention-tip-title {
-    color: #bfae9b;
-    font-size: 1.05rem;
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    display: block;
-}
-.intervention-tip-text {
-    color: #B8431F;
-    font-size: clamp(0.95rem, 2vw, 1.15rem);
-    font-weight: 600;
-    display: block;
-    margin-top: 0.5rem;
-    word-break: break-word;
-    line-height: 1.35;
-}
-.intervention-modal-actions {
-    display: flex;
-    gap: 1.2rem;
-    margin-top: 1.5rem;
-    justify-content: space-between;
-    width: 100%;
-    max-width: none;
-}
-.intervention-modal-btn {
-    border: none;
-    border-radius: 2rem;
-    padding: 0.7rem 2rem;
-    font-size: 1.1rem;
-    font-weight: 700;
-    cursor: pointer;
-    box-shadow: 0 1px 4px rgba(60, 40, 20, 0.08);
-    background: #fff;
-    color: #3a2e24;
-    transition: background 0.15s, color 0.15s;
-}
-.intervention-modal-btn-primary {
-    background: #B8431F;
-    color: #fff;
-}
-.intervention-modal-btn-secondary {
-    background: #f5efe4;
-    color: #3a2e24;
-}
-
-
-
-	/* Kindling UI Global Style System
+/* 
+    Kindling UI Global Style System
 	- Tailwind CSS v4 compatible via @theme tokens
 	- Semantic design tokens for consistent AI-generated screens
 	- iPad/WebKit-safe layout and interaction primitives
@@ -277,9 +28,14 @@
 	15. Notes & Handwriting Surfaces | note-surface, note-text
 	16. Notebook Page Components | notebook-*, milestone-*
 	17. Scheduler Components | scheduler-shell, scheduler-pill
-                18. Check-in Page Components | checkin-* 19. Responsive Media Queries | @media (max-width: 56rem) 20. Lucide Icon Helpers | icon,
-                21. Utility Classes | bg-*,
-                22. Scrollbar Polish | webkit-scrollbar 23. Motion & Accessibility | prefers-reduced-motion */
+    18. Check-in Page Components | checkin-* 
+    19. Responsive Media Queries | @media (max-width: 56rem) 
+    20. Intervention Modal | intervention-*
+    21. Lucide Icon Helpers | icon,
+    22. Utility Classes | bg-*,
+    23. Scrollbar Polish | webkit-scrollbar 
+    24. Motion & Accessibility | prefers-reduced-motion 
+*/
 
 
 /* SECTION: Design Tokens | color palette, spacing, radius, typography scale, shadows, safe-area */
@@ -2377,6 +2133,256 @@ a:focus-visible {
     width: 100%;
 }
 }
+
+/* SECTION: Intervention Modal | intervention-modal, intervention-popup, intervention-tip, etc. */
+.intervention-title-gradient {
+    background: linear-gradient(90deg, #B8431F 0%, #FF6800 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+/* Group for milestone box and label */
+.intervention-progress-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex: 1 1 0;
+}
+.intervention-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: 2000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+}
+
+.intervention-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(220, 180, 150, 0.18);
+    z-index: 2001;
+}
+
+.intervention-modal-card {
+    position: relative;
+    background: #fdf8f2;
+    border-radius: 1.5rem;
+    box-shadow: 0 8px 32px rgba(184, 67, 31, 0.13);
+    padding: 2.5rem 2.5rem 2rem 2.5rem;
+    min-width: 320px;
+    min-height: 320px;
+    max-width: 96vw;
+    max-height: 96vh;
+    overflow: auto;
+    z-index: 2002;
+    display: flex;
+    flex-direction: column;
+}
+
+.intervention-modal-content {
+    display: flex;
+    flex-direction: row;
+    gap: 2.5rem;
+}
+
+.intervention-modal-left {
+    flex: 1.2;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+.intervention-label {
+    color: #B8431F;
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.5rem;
+}
+.intervention-title {
+    color: #B8431F;
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin: 0 0 1.1rem 0;
+    line-height: 1.1;
+}
+.intervention-desc {
+    color: #3a2e24;
+    font-size: 1.15rem;
+    margin-bottom: 1.5rem;
+}
+.intervention-desc-bold {
+    font-weight: 700;
+}
+.intervention-desc-highlight {
+    color: #B8431F;
+    font-weight: 700;
+}
+.intervention-progress-row {
+    display: flex;
+    align-items: center;
+    gap: 50px;
+    margin: 0.9rem 0 0.5rem 0;
+}
+.intervention-progress-img {
+        outline: 1px solid #FF6800; /* debug: remove after confirming gap */
+    width: 180px;
+    height: 135px;
+    background: #fff;
+    border-radius: 0.75rem;
+    box-shadow: 0 2px 8px rgba(60, 40, 20, 0.08);
+    background-size: cover;
+    background-position: center;
+    margin-bottom: 20px;
+}
+.intervention-progress-img-start {
+    background-image: url('/assets/progress-start.png');
+}
+.intervention-progress-img-current {
+    background-image: url('/assets/progress-current.png');
+}
+.intervention-progress-labels {
+    display: none;
+}
+.intervention-progress-label {
+    display: block;
+    text-align: center;
+    font-size: 0.98rem;
+    color: #bfae9b;
+    margin-top: 0;
+    margin-bottom: 0;
+    padding-top: 20px;
+    background: rgba(255,104,0,0.08); /* debug: remove after confirming gap */
+    width: 100%;
+}
+
+.intervention-progress-label-current {
+    color: #B8431F;
+    font-weight: 700;
+}
+.intervention-modal-right {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 2.2rem;
+}
+.intervention-breathe-widget {
+    background: #fff;
+    border-radius: 1.1rem;
+    box-shadow: 0 2px 8px rgba(60, 40, 20, 0.08);
+    padding: 1.2rem 1.5rem 1.5rem 1.5rem;
+    margin-bottom: 1.2rem;
+    width: 100%;
+    max-width: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.intervention-breathe-title {
+    color: #3a2e24;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 1.1rem;
+    text-align: center;
+}
+.intervention-breathe-circle {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 2px solid #E8E0D4;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.1rem;
+}
+.intervention-breathe-inner {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: #F8EDD4;
+    box-shadow: 0 0 0 8px #f8edd4aa;
+}
+.intervention-breathe-btn {
+    margin-top: 0.5rem;
+    background: #f5efe4;
+    color: #3a2e24;
+    border: none;
+    border-radius: 1.5rem;
+    padding: 0.5rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(60, 40, 20, 0.08);
+    cursor: pointer;
+}
+.intervention-tip-box {
+    background: #fdf6e6;
+    border: 2px solid #f8edd4;
+    border-radius: 1.1rem;
+    padding: 2rem 2.5rem;
+    width: 100%;
+    max-width: 600px;
+    min-width: 220px;
+    flex: 1 1 50%;
+    margin-bottom: 1.2rem;
+    box-sizing: border-box;
+}
+.intervention-tip-title {
+    color: #bfae9b;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    display: block;
+}
+.intervention-tip-text {
+    color: #B8431F;
+    font-size: clamp(0.95rem, 2vw, 1.15rem);
+    font-weight: 600;
+    display: block;
+    margin-top: 0.5rem;
+    word-break: break-word;
+    line-height: 1.35;
+}
+.intervention-modal-actions {
+    display: flex;
+    gap: 1.2rem;
+    margin-top: 1.5rem;
+    justify-content: space-between;
+    width: 100%;
+    max-width: none;
+}
+.intervention-modal-btn {
+    border: none;
+    border-radius: 2rem;
+    padding: 0.7rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 1px 4px rgba(60, 40, 20, 0.08);
+    background: #fff;
+    color: #3a2e24;
+    transition: background 0.15s, color 0.15s;
+}
+.intervention-modal-btn-primary {
+    background: #B8431F;
+    color: #fff;
+}
+.intervention-modal-btn-secondary {
+    background: #f5efe4;
+    color: #3a2e24;
+}
+
 /* SECTION: Lucide Icon Helpers | icon, lucide, icon-sm, icon-lg, icon-muted, icon-rust, icon-gold, icon-sage */
 .icon,
 .lucide {

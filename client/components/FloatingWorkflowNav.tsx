@@ -1,4 +1,4 @@
-import { ArrowLeft, Heart, Home, Menu, Sparkle, X } from 'lucide-react';
+import { ArrowLeft, Heart, Home, Menu, Sparkle, X, NotebookPen } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
@@ -35,6 +35,11 @@ export default function FloatingWorkflowNav({
 
   const onCheckIn = () => {
     navigate('/check-in');
+    setIsOpen(false);
+  };
+
+    const onOpenNotebook = () => {
+    navigate('/notebook');
     setIsOpen(false);
   };
 
@@ -117,6 +122,15 @@ export default function FloatingWorkflowNav({
               aria-label="Open quick milestones"
             >
               <Sparkle className="icon icon-gold" />
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-compact shrink-0 rounded-full"
+              onClick={onOpenNotebook}
+              aria-label="Open notebook"
+            >
+              <NotebookPen className="icon icon-rust" />
             </button>
 
             <button
