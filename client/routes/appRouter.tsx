@@ -6,6 +6,8 @@ import ThumbnailPage from '../pages/ThumbnailPage';
 import CanvasPage from '../pages/CanvasPage';
 import CheckInPage from '../pages/CheckInPage';
 import InterventionPage from '../pages/InterventionPage';
+import StylePage from '../pages/StylePage';
+import HelloAppPage from '../pages/HelloAppPage';
 
 export const appRouter = createBrowserRouter([
   {
