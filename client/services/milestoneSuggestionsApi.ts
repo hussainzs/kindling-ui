@@ -21,11 +21,13 @@ type MilestoneSuggestionApiError = {
   error?: string;
 };
 
+const API_BASE_URL = import.meta.env.VITE_API_URL || '';
+
 export async function requestMilestoneSuggestion(
   payload: MilestoneSuggestionApiPayload,
   signal?: AbortSignal,
 ): Promise<string> {
-  const response = await fetch('/api/milestone-suggestions', {
+  const response = await fetch(`${API_BASE_URL}/api/milestone-suggestions`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
