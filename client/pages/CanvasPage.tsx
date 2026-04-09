@@ -1,7 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router';
 import MainCanvas from '../components/MainCanvas';
-import type { Layer, DrawingColor, DrawingStroke, CanvasProject } from '../types/drawing';
+import type {
+  Layer,
+  DrawingColor,
+  DrawingStroke,
+  CanvasProject,
+} from '../types/drawing';
 import { Eye, EyeOff, Trash2, Brush, Eraser } from 'lucide-react';
 import { useOutletContext } from 'react-router';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
@@ -49,7 +54,10 @@ export default function CanvasPage() {
     };
 
     setProject(newProject);
-    sessionStorage.setItem(`kindling_project_${projectId}`, JSON.stringify(newProject));
+    sessionStorage.setItem(
+      `kindling_project_${projectId}`,
+      JSON.stringify(newProject)
+    );
   }, []);
 
   const handleSelectLayer = (layerId: string) => {
@@ -68,7 +76,9 @@ export default function CanvasPage() {
       const updated = {
         ...project,
         layers: project.layers.map((layer) =>
-          layer.id === layerId ? { ...layer, isVisible: !layer.isVisible } : layer
+          layer.id === layerId
+            ? { ...layer, isVisible: !layer.isVisible }
+            : layer
         ),
         updatedAt: Date.now(),
       };
@@ -124,17 +134,14 @@ export default function CanvasPage() {
     }
   };
 
-
-const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
+  const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
 
   const handleStrokesChange = (strokes: DrawingStroke[]) => {
     if (project) {
       const updated = {
         ...project,
         layers: project.layers.map((layer) =>
-          layer.id === project.activeLayerId
-            ? { ...layer, strokes }
-            : layer
+          layer.id === project.activeLayerId ? { ...layer, strokes } : layer
         ),
         updatedAt: Date.now(),
       };
@@ -143,7 +150,7 @@ const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
         `kindling_project_${project.id}`,
         JSON.stringify(updated)
       );
-  
+
       // Sync active layer's strokes up to WorkflowLayout
       setCanvasStrokes(strokes);
     }
@@ -157,10 +164,79 @@ const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
     );
   }
 
-  const activeLayer = project.layers.find((l) => l.id === project.activeLayerId);
+  const activeLayer = project.layers.find(
+    (l) => l.id === project.activeLayerId
+  );
+
+  // 1. Add this helper inside the CanvasPage component, above the return:
+  const handleSaveToGallery = () => {
+    if (!project) return;
+
+    const allStrokes = project.layers
+      .filter((l) => l.isVisible)
+      .flatMap((l) => l.strokes);
+
+    // Render to an offscreen canvas for the thumbnail
+    const offscreen = document.createElement('canvas');
+    offscreen.width = 600;
+    offscreen.height = 450;
+    const ctx = offscreen.getContext('2d')!;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, offscreen.width, offscreen.height);
+
+    const COLOR_MAP: Record<string, string> = {
+      black: '#000000',
+      rust: '#b8431f',
+      gold: '#c9973a',
+      sage: '#5e8060',
+    };
+
+    allStrokes.forEach((stroke) => {
+      ctx.globalCompositeOperation = stroke.isEraser
+        ? 'destination-out'
+        : 'source-over';
+      ctx.strokeStyle = COLOR_MAP[stroke.color] ?? '#000';
+      ctx.lineWidth = stroke.isEraser ? 20 : 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+      if (stroke.points.length > 0) {
+        ctx.beginPath();
+        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+        stroke.points.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
+        ctx.stroke();
+      }
+    });
+
+    const thumbnail = offscreen.toDataURL('image/png');
+
+    const newArtwork = {
+      id: project.id,
+      title: 'Untitled',
+      description: 'Saved from canvas.',
+      folderId: 'all',
+      tag: 'canvas',
+      duration: '—',
+      progress: '—',
+      tone: 'abstract' as const,
+      date: new Date().toLocaleDateString('en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric',
+      }),
+      image: thumbnail,
+    };
+
+    const existing = JSON.parse(
+      sessionStorage.getItem('kindling_saved_artworks') ?? '[]'
+    );
+    // Avoid duplicates if saved twice
+    const deduped = existing.filter((a: { id: string }) => a.id !== project.id);
+    sessionStorage.setItem('kindling_saved_artworks', JSON.stringify([newArtwork, ...deduped]));
+
+    navigate('/');
+  };
 
   return (
-    
     <div className="canvas-app w-screen h-screen flex flex-col bg-black overflow-hidden">
       {/* Top Toolbar */}
       <div className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 gap-4 flex-shrink-0">
@@ -184,8 +260,11 @@ const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
           <button className="text-white text-lg p-2 hover:bg-gray-800 rounded transition-colors">
             ↻
           </button>
-          <button className="text-white text-lg p-2 hover:bg-gray-800 rounded transition-colors">
-            ⋯
+          <button
+            onClick={handleSaveToGallery}
+            className="bg-rust !text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+          >
+            save ✦
           </button>
         </div>
       </div>
@@ -219,7 +298,7 @@ const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
             }`}
             title="Eraser"
           >
-            <Eraser size={24} color = "white" />
+            <Eraser size={24} color="white" />
           </button>
 
           <div className="w-8 h-px bg-gray-800" />
@@ -314,7 +393,9 @@ const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
                         <p className="text-white text-sm font-semibold truncate">
                           {layer.name}
                         </p>
-                        <p className="text-gray-400 text-xs">{layer.opacity}%</p>
+                        <p className="text-gray-400 text-xs">
+                          {layer.opacity}%
+                        </p>
                       </div>
                       <button
                         onClick={(e) => {
@@ -337,7 +418,10 @@ const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
                           }}
                           className="p-1 hover:bg-red-900 rounded transition-colors flex-shrink-0"
                         >
-                          <Trash2 size={16} className="text-white hover:text-red-400" />
+                          <Trash2
+                            size={16}
+                            className="text-white hover:text-red-400"
+                          />
                         </button>
                       )}
                     </div>
@@ -396,7 +480,7 @@ const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
 
       {/* Bottom Right - Check-in Button */}
       <button className="fixed bottom-6 right-6 px-6 py-3 bg-rust !text-white rounded-full font-bold hover:bg-opacity-90 transition-colors shadow-lg">
-        check-in 
+        check-in
       </button>
     </div>
   );
