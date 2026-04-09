@@ -1,7 +1,10 @@
-import { useState, type Dispatch, type SetStateAction } from 'react';
-import { Outlet } from 'react-router';
+import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
+import { Outlet, useNavigate } from 'react-router';
 import FloatingWorkflowNav from './FloatingWorkflowNav';
+import SchedulerReminderModal from './SchedulerReminderModal';
 import type { DrawingStroke } from '../types/drawing';
+
+const MINUTE_IN_MS = 60 * 1000;
 
 export type WorkflowOutletContext = {
   // notesSoFar = most recent notes written in Notebook. Updated only by notebook. 
@@ -19,14 +22,60 @@ export type WorkflowOutletContext = {
   // canvasStrokes = the user's latest drawing, updated live as they draw
   canvasStrokes: DrawingStroke[];
   setCanvasStrokes: Dispatch<SetStateAction<DrawingStroke[]>>;
+  // check-in scheduler state/actions that should persist across page navigation.
+  isCheckInTimerRunning: boolean;
+  startCheckInScheduler: (minutes: number) => void;
 };
 
 export default function WorkflowLayout() {
+  const navigate = useNavigate();
   const [notesSoFar, setNotesSoFar] = useState('');
   const [milestones, setMilestones] = useState<string[]>([]);
   const [milestonesCompleted, setMilestonesCompleted] = useState<string[]>([]);
   const [checkInReflection, setCheckInReflection] = useState('');
   const [canvasStrokes, setCanvasStrokes] = useState<DrawingStroke[]>([]);
+  const [checkInReminderMinutes, setCheckInReminderMinutes] = useState<number>(0);
+  const [checkInTimerEndsAt, setCheckInTimerEndsAt] = useState<number | null>(null);
+  const [isCheckInReminderOpen, setIsCheckInReminderOpen] = useState(false);
+
+  const isCheckInTimerRunning = checkInTimerEndsAt !== null;
+
+  const startCheckInScheduler = (minutes: number) => {
+    const safeMinutes = Math.max(1, Math.round(minutes));
+    setCheckInReminderMinutes(safeMinutes);
+    setCheckInTimerEndsAt(Date.now() + safeMinutes * MINUTE_IN_MS);
+    setIsCheckInReminderOpen(false);
+  };
+
+  const closeCheckInReminder = () => {
+    setIsCheckInReminderOpen(false);
+  };
+
+  const goToCheckIn = () => {
+    setIsCheckInReminderOpen(false);
+    navigate('/check-in');
+  };
+
+  // Monitor timer expiry: when the calculated wait time elapses, show the reminder modal
+  // This effect survives page navigation because state is in parent layout
+  useEffect(() => {
+    if (checkInTimerEndsAt === null) {
+      return;
+    }
+
+    // Calculate remaining time until expiry
+    const timeoutMs = Math.max(0, checkInTimerEndsAt - Date.now());
+    const timeoutId = window.setTimeout(() => {
+      // Clear timer and open reminder modal when time expires
+      setCheckInTimerEndsAt(null);
+      setIsCheckInReminderOpen(true);
+    }, timeoutMs);
+
+    // Cleanup: cancel pending timeout if timer is reset or component unmounts
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [checkInTimerEndsAt]);
 
   return (
     <div className="app-shell safe-area-pad main-scroll">
@@ -48,9 +97,18 @@ export default function WorkflowLayout() {
             setCheckInReflection,
             canvasStrokes,
             setCanvasStrokes,
+            isCheckInTimerRunning,
+            startCheckInScheduler,
           }}
         />
       </main>
+
+      <SchedulerReminderModal
+        isOpen={isCheckInReminderOpen}
+        minutes={checkInReminderMinutes}
+        onClose={closeCheckInReminder}
+        onCheckIn={goToCheckIn}
+      />
     </div>
   );
 }

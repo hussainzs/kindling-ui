@@ -35,6 +35,7 @@
     22. Utility Classes | bg-*,
     23. Scrollbar Polish | webkit-scrollbar 
     24. Motion & Accessibility | prefers-reduced-motion 
+        25. Scheduler Reminder Modal | scheduler-reminder-*
 */
 
 
@@ -2019,6 +2020,7 @@ a:focus-visible {
 }
 
 .scheduler-custom-pill {
+    position: relative;
     display: inline-flex;
     align-items: center;
     gap: var(--space-2);
@@ -2026,7 +2028,41 @@ a:focus-visible {
         padding-inline: 0.55rem;
         cursor: text;
     }
-    
+
+.scheduler-custom-hint {
+    position: absolute;
+    left: 50%;
+    bottom: calc(100% + 0.4rem);
+    transform: translateX(-50%);
+    z-index: 2;
+    padding: 0.3rem 0.55rem;
+    border-radius: var(--radius-sm);
+    border: 1px solid color-mix(in srgb, var(--accent-rust) 34%, var(--ui-divider));
+    background: color-mix(in srgb, var(--accent-rust-pale) 82%, var(--bg-warm-white));
+    color: var(--text-ink-mid);
+    font-size: 0.72rem;
+    font-weight: 700;
+    line-height: 1.2;
+    text-transform: lowercase;
+    white-space: nowrap;
+    pointer-events: none;
+    box-shadow: 0 4px 14px rgb(var(--ui-shadow-rgb) / 14%);
+    animation: scheduler-custom-hint-fade 5000ms ease forwards;
+}
+
+@keyframes scheduler-custom-hint-fade {
+
+    0%,
+    70% {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-0.2rem);
+    }
+}
     .scheduler-custom-label {
         font-size: 0.92rem;
         font-weight: 700;
@@ -2383,6 +2419,90 @@ a:focus-visible {
     color: #3a2e24;
 }
 
+/* SECTION: Scheduler Reminder Modal | scheduler-reminder-overlay, scheduler-reminder-card, scheduler-reminder-actions */
+.scheduler-reminder-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2100;
+    display: grid;
+    place-items: center;
+    padding: max(var(--space-4), var(--safe-top)) var(--space-4) max(var(--space-4), var(--safe-bottom));
+}
+
+.scheduler-reminder-backdrop {
+    position: absolute;
+    inset: 0;
+    border: 0;
+    background: color-mix(in srgb, var(--text-ink) 20%, transparent);
+}
+
+.scheduler-reminder-card {
+    position: relative;
+    z-index: 1;
+    width: min(36rem, 100%);
+    display: grid;
+    gap: var(--space-3);
+    padding: var(--space-6);
+    border-radius: var(--radius-xl);
+    background:
+        radial-gradient(circle at top right, color-mix(in srgb, var(--accent-sage-pale) 75%, transparent) 0%, transparent 42%),
+        radial-gradient(circle at top left, color-mix(in srgb, var(--accent-gold-pale) 70%, transparent) 0%, transparent 45%),
+        var(--bg-warm-white);
+    border: 1px solid color-mix(in srgb, var(--accent-sage) 28%, var(--ui-divider));
+    box-shadow: 0 20px 44px rgb(var(--ui-shadow-rgb) / 20%);
+}
+
+.scheduler-reminder-chip {
+    width: fit-content;
+    margin: 0;
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+    background: color-mix(in srgb, var(--accent-sage-pale) 85%, var(--bg-warm-white));
+    color: var(--accent-sage);
+    border: 1px solid color-mix(in srgb, var(--accent-sage) 34%, var(--ui-divider));
+}
+
+.scheduler-reminder-icon-wrap {
+    width: 2.75rem;
+    height: 2.75rem;
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: color-mix(in srgb, var(--accent-sage-pale) 70%, var(--bg-warm-white));
+    border: 1px solid color-mix(in srgb, var(--accent-sage) 30%, var(--ui-divider));
+}
+
+.scheduler-reminder-icon {
+    color: var(--accent-sage);
+}
+
+.scheduler-reminder-title {
+    margin: 0;
+    color: var(--text-ink);
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    line-height: 1.15;
+    text-transform: lowercase;
+}
+
+.scheduler-reminder-copy {
+    margin: 0;
+    max-width: 34ch;
+    color: var(--text-ink-soft);
+    font-size: 1rem;
+}
+
+.scheduler-reminder-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-top: var(--space-2);
+}
+
+.scheduler-reminder-action {
+    flex: 1;
+    min-height: 2.85rem;
+}
 /* SECTION: Lucide Icon Helpers | icon, lucide, icon-sm, icon-lg, icon-muted, icon-rust, icon-gold, icon-sage */
 .icon,
 .lucide {
