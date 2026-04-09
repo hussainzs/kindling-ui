@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 const TIPS = [
   'Take a deliberate 5-minute breather, step away from your work, and return with a fresh set of eyes that might notice things you couldn’t see before.',
