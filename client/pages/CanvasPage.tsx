@@ -168,7 +168,6 @@ export default function CanvasPage() {
     (l) => l.id === project.activeLayerId
   );
 
-  // 1. Add this helper inside the CanvasPage component, above the return:
   const handleSaveToGallery = () => {
     if (!project) return;
 
