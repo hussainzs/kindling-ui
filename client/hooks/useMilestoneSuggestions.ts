@@ -62,7 +62,7 @@ export default function useMilestoneSuggestions({
 
     const now = Date.now();
     requestTimestampsRef.current = requestTimestampsRef.current.filter(
-      (timestamp) => now - timestamp < WINDOW_MS,
+      (timestamp) => now - timestamp < WINDOW_MS
     );
 
     if (requestTimestampsRef.current.length >= REQUESTS_PER_WINDOW) {
@@ -152,7 +152,7 @@ export default function useMilestoneSuggestions({
         setSuggestionError(
           isNetworkFailure
             ? 'Unable to reach milestone service. Ensure the server is running on port 5000.'
-            : 'Unable to fetch milestone suggestion right now.',
+            : 'Unable to fetch milestone suggestion right now.'
         );
       })
       .finally(() => {

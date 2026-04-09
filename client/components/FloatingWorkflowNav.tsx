@@ -1,4 +1,12 @@
-import { ArrowLeft, Heart, Home, Menu, Sparkle, X, NotebookPen } from 'lucide-react';
+import {
+  ArrowLeft,
+  Heart,
+  Home,
+  Menu,
+  Sparkle,
+  X,
+  NotebookPen,
+} from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router';
 import { useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
@@ -38,7 +46,7 @@ export default function FloatingWorkflowNav({
     setIsOpen(false);
   };
 
-    const onOpenNotebook = () => {
+  const onOpenNotebook = () => {
     navigate('/notebook');
     setIsOpen(false);
   };
@@ -83,8 +91,8 @@ export default function FloatingWorkflowNav({
           <button
             type="button"
             className={`relative z-20 flex h-10 w-10 items-center justify-center rounded-full border outline-none ring-0 transition-all duration-200 focus:outline-none focus-visible:outline-none focus:ring-0 focus-visible:ring-0 ${
-              isOpen 
-                ? 'border-transparent bg-transparent shadow-none' 
+              isOpen
+                ? 'border-transparent bg-transparent shadow-none'
                 : 'surface-nav border-divider shadow-card'
             }`}
             onClick={toggleNav}

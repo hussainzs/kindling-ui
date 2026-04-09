@@ -53,13 +53,23 @@ export default function CheckInPage() {
   return (
     <section className="checkin-page-shell" aria-label="Check-in page">
       <div className="checkin-layout-split">
-        <section className="checkin-left-column" aria-label="Check-in context summary">
+        <section
+          className="checkin-left-column"
+          aria-label="Check-in context summary"
+        >
           <header className="checkin-header-wrap checkin-header-offset">
-            <h1 className="text-section-header checkin-title">how are you doing right now?</h1>
-            <p className="text-caption checkin-subtitle">quickly reflect before your next move.</p>
+            <h1 className="text-section-header checkin-title">
+              how are you doing right now?
+            </h1>
+            <p className="text-caption checkin-subtitle">
+              quickly reflect before your next move.
+            </p>
           </header>
 
-          <article className="surface-notebook checkin-notes-card" aria-label="Intention reminder">
+          <article
+            className="surface-notebook checkin-notes-card"
+            aria-label="Intention reminder"
+          >
             <button
               type="button"
               className="btn btn-ghost checkin-collapse-btn"
@@ -80,29 +90,42 @@ export default function CheckInPage() {
               className={`checkin-notes-content ${isNotesExpanded ? 'checkin-notes-content-open' : 'checkin-notes-content-closed'}`}
             >
               <p className="text-note-hand checkin-notes-text">
-                {notesSoFar.trim() || 'No notebook notes yet. Write in notebook to see your intention here.'}
+                {notesSoFar.trim() ||
+                  'No notebook notes yet. Write in notebook to see your intention here.'}
               </p>
             </div>
           </article>
 
-          <section className="checkin-milestone-summary" aria-label="Completed milestones summary">
+          <section
+            className="checkin-milestone-summary"
+            aria-label="Completed milestones summary"
+          >
             <button
               type="button"
               className="btn btn-ghost checkin-milestone-button"
               onClick={() => setIsMilestoneSheetOpen(true)}
             >
               <span className="text-label checkin-milestone-count">
-                {completedCountLabel} <Star className="icon icon-sm checkin-milestone-star" />
+                {completedCountLabel}{' '}
+                <Star className="icon icon-sm checkin-milestone-star" />
               </span>
             </button>
-            <p className="text-metadata checkin-milestone-detail">{completedMilestonePreview}</p>
+            <p className="text-metadata checkin-milestone-detail">
+              {completedMilestonePreview}
+            </p>
           </section>
         </section>
 
-        <section className="checkin-right-column" aria-label="Check-in reflection">
+        <section
+          className="checkin-right-column"
+          aria-label="Check-in reflection"
+        >
           <div className="checkin-right-stack">
             <div className="checkin-reflection-wrap">
-              <label className="field-label checkin-reflection-label" htmlFor="checkin-reflection-input">
+              <label
+                className="field-label checkin-reflection-label"
+                htmlFor="checkin-reflection-input"
+              >
                 add a note (optional)
               </label>
               <textarea
@@ -114,8 +137,13 @@ export default function CheckInPage() {
               />
             </div>
 
-            <section className="checkin-feeling-shell" aria-label="Emotion selector">
-              <p className="text-caption checkin-feeling-title">drag to where you are</p>
+            <section
+              className="checkin-feeling-shell"
+              aria-label="Emotion selector"
+            >
+              <p className="text-caption checkin-feeling-title">
+                drag to where you are
+              </p>
 
               <div className="checkin-feeling-row">
                 <button
@@ -132,7 +160,9 @@ export default function CheckInPage() {
                   min={0}
                   max={100}
                   value={feelingValue}
-                  onChange={(event) => setFeelingValue(Number(event.target.value))}
+                  onChange={(event) =>
+                    setFeelingValue(Number(event.target.value))
+                  }
                   className="checkin-feeling-range"
                   aria-label="Current mood from frustrated to flowing"
                 />
@@ -148,8 +178,12 @@ export default function CheckInPage() {
               </div>
 
               <div className="checkin-feeling-labels">
-                <p className="text-caption checkin-feeling-label-left">frustrated, not feeling it</p>
-                <p className="text-caption checkin-feeling-label-right">flowing, in the zone</p>
+                <p className="text-caption checkin-feeling-label-left">
+                  frustrated, not feeling it
+                </p>
+                <p className="text-caption checkin-feeling-label-right">
+                  flowing, in the zone
+                </p>
               </div>
 
               {isFrustrated ? (
@@ -164,15 +198,29 @@ export default function CheckInPage() {
               ) : (
                 <div className="checkin-celebration" aria-live="polite">
                   <Sparkles className="icon icon-sm icon-gold" />
-                  <p className="text-caption checkin-celebration-text">flow state unlocked. keep going.</p>
-                  <span className="checkin-confetti-dot checkin-confetti-dot-a" aria-hidden="true" />
-                  <span className="checkin-confetti-dot checkin-confetti-dot-b" aria-hidden="true" />
-                  <span className="checkin-confetti-dot checkin-confetti-dot-c" aria-hidden="true" />
+                  <p className="text-caption checkin-celebration-text">
+                    flow state unlocked. keep going.
+                  </p>
+                  <span
+                    className="checkin-confetti-dot checkin-confetti-dot-a"
+                    aria-hidden="true"
+                  />
+                  <span
+                    className="checkin-confetti-dot checkin-confetti-dot-b"
+                    aria-hidden="true"
+                  />
+                  <span
+                    className="checkin-confetti-dot checkin-confetti-dot-c"
+                    aria-hidden="true"
+                  />
                 </div>
               )}
             </section>
 
-            <div className="checkin-route-actions" aria-label="Check-in navigation actions">
+            <div
+              className="checkin-route-actions"
+              aria-label="Check-in navigation actions"
+            >
               <button
                 type="button"
                 className="btn btn-secondary checkin-route-btn"
@@ -210,7 +258,9 @@ export default function CheckInPage() {
             aria-label="Completed milestones"
           >
             <header className="checkin-sheet-header">
-              <h2 className="text-section-header checkin-sheet-title">completed milestones</h2>
+              <h2 className="text-section-header checkin-sheet-title">
+                completed milestones
+              </h2>
               <button
                 type="button"
                 className="btn btn-ghost checkin-sheet-close"
@@ -222,17 +272,27 @@ export default function CheckInPage() {
             </header>
 
             {milestonesCompleted.length ? (
-              <ul className="checkin-sheet-list" aria-label="List of completed milestones">
+              <ul
+                className="checkin-sheet-list"
+                aria-label="List of completed milestones"
+              >
                 {milestonesCompleted.map((milestone, index) => (
-                  <li key={`${milestone}-${index}`} className="checkin-sheet-list-item">
+                  <li
+                    key={`${milestone}-${index}`}
+                    className="checkin-sheet-list-item"
+                  >
                     <article className="note-surface checkin-sheet-note">
-                      <p className="text-note-hand checkin-sheet-note-text">{milestone}</p>
+                      <p className="text-note-hand checkin-sheet-note-text">
+                        {milestone}
+                      </p>
                     </article>
                   </li>
                 ))}
               </ul>
             ) : (
-              <p className="text-caption checkin-sheet-empty">No milestones are marked complete yet.</p>
+              <p className="text-caption checkin-sheet-empty">
+                No milestones are marked complete yet.
+              </p>
             )}
           </section>
         </>

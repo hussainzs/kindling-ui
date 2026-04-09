@@ -10,9 +10,9 @@ export default function ThumbnailPage() {
   const navigate = useNavigate();
   const [pageState, setPageState] = useState<ThumbnailPageState>('gallery');
   const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
-  const [selectedThumbnailId, setSelectedThumbnailId] = useState<
-    string | null
-  >(null);
+  const [selectedThumbnailId, setSelectedThumbnailId] = useState<string | null>(
+    null
+  );
 
   const handleThumbnailSlotClick = (slotIndex: number) => {
     // If slot is already filled, select it
@@ -33,7 +33,10 @@ export default function ThumbnailPage() {
 
     const updated = [...thumbnails, newThumbnail];
     setThumbnails(updated);
-    sessionStorage.setItem('kindling_thumbnails_session', JSON.stringify(updated));
+    sessionStorage.setItem(
+      'kindling_thumbnails_session',
+      JSON.stringify(updated)
+    );
     setPageState('gallery');
     // Do NOT auto-select - user must click to select
   };
@@ -93,7 +96,8 @@ export default function ThumbnailPage() {
       <div className="space-y-2">
         <h2 className="text-body font-bold text-rust">thumbnail sketches ♦</h2>
         <p className="text-body text-ink-mid">
-          tap a slot to sketch · tap back when done · select your favorite to continue
+          tap a slot to sketch · tap back when done · select your favorite to
+          continue
         </p>
       </div>
 
@@ -136,7 +140,7 @@ export default function ThumbnailPage() {
             cursor: selectedThumbnailId ? 'pointer' : 'default',
           }}
         >
-          continue to canvas 
+          continue to canvas
         </button>
       </div>
     </section>

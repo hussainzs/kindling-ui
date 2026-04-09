@@ -30,8 +30,16 @@ type Artwork = {
 
 const folderStyles: Record<string, FolderStyle> = {
   all: { color: '#B24E2D', badge: 'rgba(178, 78, 45, 0.14)', dot: '#B24E2D' },
-  light: { color: '#B36A1C', badge: 'rgba(179, 106, 28, 0.14)', dot: '#B36A1C' },
-  portraits: { color: '#2C7A5A', badge: 'rgba(44, 122, 90, 0.14)', dot: '#2C7A5A' },
+  light: {
+    color: '#B36A1C',
+    badge: 'rgba(179, 106, 28, 0.14)',
+    dot: '#B36A1C',
+  },
+  portraits: {
+    color: '#2C7A5A',
+    badge: 'rgba(44, 122, 90, 0.14)',
+    dot: '#2C7A5A',
+  },
 };
 
 const initialFolders: Folder[] = [
@@ -44,7 +52,8 @@ const initialArtworks: Artwork[] = [
   {
     id: 'art-1',
     title: 'Portrait series',
-    description: 'Detailed study of faces and expressions across multiple frames.',
+    description:
+      'Detailed study of faces and expressions across multiple frames.',
     folderId: 'light',
     tag: 'light',
     duration: '62 min',
@@ -56,7 +65,8 @@ const initialArtworks: Artwork[] = [
   {
     id: 'art-2',
     title: 'Woman portrait',
-    description: 'Experimental portrait with bold color treatment and atmosphere.',
+    description:
+      'Experimental portrait with bold color treatment and atmosphere.',
     folderId: 'portraits',
     tag: 'portrait',
     duration: '45 min',
@@ -80,7 +90,8 @@ const initialArtworks: Artwork[] = [
   {
     id: 'art-4',
     title: 'Cliffs landscape',
-    description: 'Painted landscape with vibrant atmosphere and geological forms.',
+    description:
+      'Painted landscape with vibrant atmosphere and geological forms.',
     folderId: 'light',
     tag: 'light',
     duration: '55 min',
@@ -104,7 +115,9 @@ export default function GalleryPage() {
   // Load saved artworks from localStorage (written by CanvasPage on save)
   const [savedArtworks] = useState<Artwork[]>(() => {
     try {
-      return JSON.parse(sessionStorage.getItem('kindling_saved_artworks') ?? '[]');
+      return JSON.parse(
+        sessionStorage.getItem('kindling_saved_artworks') ?? '[]'
+      );
     } catch {
       return [];
     }
@@ -117,7 +130,9 @@ export default function GalleryPage() {
     () =>
       selectedFolderId === 'all'
         ? allArtworks
-        : allArtworks.filter((artwork) => artwork.folderId === selectedFolderId),
+        : allArtworks.filter(
+            (artwork) => artwork.folderId === selectedFolderId
+          ),
     [selectedFolderId, allArtworks]
   );
 
@@ -125,13 +140,16 @@ export default function GalleryPage() {
     const counts: Record<string, number> = { all: allArtworks.length };
     folders.forEach((folder) => {
       if (folder.id !== 'all') {
-        counts[folder.id] = allArtworks.filter((art) => art.folderId === folder.id).length;
+        counts[folder.id] = allArtworks.filter(
+          (art) => art.folderId === folder.id
+        ).length;
       }
     });
     return counts;
   }, [folders, allArtworks]);
 
-  const selectedFolder = folders.find((folder) => folder.id === selectedFolderId) ?? folders[0];
+  const selectedFolder =
+    folders.find((folder) => folder.id === selectedFolderId) ?? folders[0];
 
   function handleDeleteFolder(folderId: string) {
     if (folderId === 'all') return;
@@ -180,10 +198,16 @@ export default function GalleryPage() {
 
   return (
     <>
-      <InterventionPopup open={showIntervention} onClose={() => setShowIntervention(false)} />
+      <InterventionPopup
+        open={showIntervention}
+        onClose={() => setShowIntervention(false)}
+      />
       <section className="gallery-page-shell">
         <div className="gallery-top-bar">
-          <button style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }} onClick={() => setShowIntervention(true)}>
+          <button
+            style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
+            onClick={() => setShowIntervention(true)}
+          >
             Show Intervention Popup
           </button>
           <div className="gallery-logo-shell">
@@ -200,7 +224,11 @@ export default function GalleryPage() {
               </div>
             </div>
           </div>
-          <button className="btn btn-primary gallery-new-kindling-button" type="button" onClick={handleNewKindling}>
+          <button
+            className="btn btn-primary gallery-new-kindling-button"
+            type="button"
+            onClick={handleNewKindling}
+          >
             <span className="gallery-new-kindling-icon">
               <span className="gallery-new-kindling-star">★</span>
             </span>
@@ -208,8 +236,26 @@ export default function GalleryPage() {
           </button>
         </div>
 
-        <div style={{ display: 'flex', width: '100%', marginTop: '32px', height: 'calc(100vh - 180px)', minHeight: 0 }}>
-          <aside className="gallery-sidebar" style={{ marginTop: '-2px', width: '18rem', minWidth: 220, height: '100%', maxHeight: '100%', overflowY: 'auto' }}>
+        <div
+          style={{
+            display: 'flex',
+            width: '100%',
+            marginTop: '32px',
+            height: 'calc(100vh - 180px)',
+            minHeight: 0,
+          }}
+        >
+          <aside
+            className="gallery-sidebar"
+            style={{
+              marginTop: '-2px',
+              width: '18rem',
+              minWidth: 220,
+              height: '100%',
+              maxHeight: '100%',
+              overflowY: 'auto',
+            }}
+          >
             <div className="gallery-sidebar-header">
               <p className="gallery-sidebar-title">folders</p>
             </div>
@@ -228,13 +274,21 @@ export default function GalleryPage() {
                         <button
                           type="button"
                           className="gallery-folder-edit-button"
-                          style={{ borderColor: folderStyles[folder.id]?.color ?? '#ccc' }}
+                          style={{
+                            borderColor:
+                              folderStyles[folder.id]?.color ?? '#ccc',
+                          }}
                         >
                           <input
                             className="gallery-folder-edit-input"
                             value={draftNames[folder.id] ?? folder.name}
-                            onChange={(event) => updateFolderName(folder.id, event.target.value)}
-                            style={{ color: folderStyles[folder.id]?.color ?? 'inherit' }}
+                            onChange={(event) =>
+                              updateFolderName(folder.id, event.target.value)
+                            }
+                            style={{
+                              color:
+                                folderStyles[folder.id]?.color ?? 'inherit',
+                            }}
                             onClick={(e) => e.stopPropagation()}
                           />
                           {folder.id !== 'all' && (
@@ -262,16 +316,24 @@ export default function GalleryPage() {
                           <div className="gallery-folder-header">
                             <span
                               className="gallery-folder-dot"
-                              style={{ backgroundColor: folderStyles[folder.id]?.dot ?? '#ccc' }}
+                              style={{
+                                backgroundColor:
+                                  folderStyles[folder.id]?.dot ?? '#ccc',
+                              }}
                             />
                             <span
                               className="gallery-folder-name"
-                              style={{ color: folderStyles[folder.id]?.color ?? 'inherit' }}
+                              style={{
+                                color:
+                                  folderStyles[folder.id]?.color ?? 'inherit',
+                              }}
                             >
                               {folder.name}
                             </span>
                           </div>
-                          <span className="gallery-folder-date">{folder.date}</span>
+                          <span className="gallery-folder-date">
+                            {folder.date}
+                          </span>
                         </div>
                         <span
                           className="gallery-folder-count"
@@ -291,10 +353,18 @@ export default function GalleryPage() {
             </ul>
 
             <div className="gallery-folder-actions">
-              <button className="btn btn-ghost" type="button" onClick={handleAddFolder}>
+              <button
+                className="btn btn-ghost"
+                type="button"
+                onClick={handleAddFolder}
+              >
                 + new folder
               </button>
-              <button className="btn btn-ghost" type="button" onClick={toggleEditing}>
+              <button
+                className="btn btn-ghost"
+                type="button"
+                onClick={toggleEditing}
+              >
                 {isEditing ? 'save folders' : 'edit folders'}
               </button>
             </div>
@@ -302,27 +372,38 @@ export default function GalleryPage() {
 
           <div style={{ width: '25px' }} />
 
-          <div className="gallery-main" style={{ flex: 1, overflowY: 'auto', marginTop: '-150px' }}>
+          <div
+            className="gallery-main"
+            style={{ flex: 1, overflowY: 'auto', marginTop: '-150px' }}
+          >
             <div className="gallery-main-heading">
               <div>
                 <h1 className="text-section-header gallery-title">gallery</h1>
                 <p className="gallery-title-meta">
-                  {selectedFolder.date} · {filteredArtworks.length} {filteredArtworks.length === 1 ? 'piece' : 'pieces'}
+                  {selectedFolder.date} · {filteredArtworks.length}{' '}
+                  {filteredArtworks.length === 1 ? 'piece' : 'pieces'}
                 </p>
                 <p className="text-body gallery-heading-copy">
-                  A view of your previous work, organized into folders for easy browsing.
+                  A view of your previous work, organized into folders for easy
+                  browsing.
                 </p>
               </div>
             </div>
 
             <div className="gallery-artwork-grid">
               {filteredArtworks.map((artwork) => (
-                <article key={artwork.id} className="gallery-artwork-card gallery-artwork-small" tabIndex={0}>
+                <article
+                  key={artwork.id}
+                  className="gallery-artwork-card gallery-artwork-small"
+                  tabIndex={0}
+                >
                   {/* Image on top */}
                   <div
                     className={`gallery-artwork-cover gallery-artwork-cover-${artwork.tone}`}
                     style={{
-                      backgroundImage: artwork.image ? `url('${artwork.image}')` : undefined,
+                      backgroundImage: artwork.image
+                        ? `url('${artwork.image}')`
+                        : undefined,
                       backgroundSize: 'cover',
                       backgroundPosition: 'center',
                       borderRadius: '1.25rem',
@@ -332,7 +413,9 @@ export default function GalleryPage() {
                   />
                   {/* Title and tag row */}
                   <div className="gallery-artwork-header-row">
-                    <h3 className="gallery-artwork-title" style={{ margin: 0 }}>{artwork.title}</h3>
+                    <h3 className="gallery-artwork-title" style={{ margin: 0 }}>
+                      {artwork.title}
+                    </h3>
                     <span
                       className="gallery-artwork-tag"
                       style={{
@@ -391,13 +474,21 @@ export default function GalleryPage() {
                         <button
                           type="button"
                           className="gallery-folder-edit-button"
-                          style={{ borderColor: folderStyles[folder.id]?.color ?? '#ccc' }}
+                          style={{
+                            borderColor:
+                              folderStyles[folder.id]?.color ?? '#ccc',
+                          }}
                         >
                           <input
                             className="gallery-folder-edit-input"
                             value={draftNames[folder.id] ?? folder.name}
-                            onChange={(event) => updateFolderName(folder.id, event.target.value)}
-                            style={{ color: folderStyles[folder.id]?.color ?? 'inherit' }}
+                            onChange={(event) =>
+                              updateFolderName(folder.id, event.target.value)
+                            }
+                            style={{
+                              color:
+                                folderStyles[folder.id]?.color ?? 'inherit',
+                            }}
                             onClick={(e) => e.stopPropagation()}
                           />
                           {folder.id !== 'all' && (
@@ -425,16 +516,24 @@ export default function GalleryPage() {
                           <div className="gallery-folder-header">
                             <span
                               className="gallery-folder-dot"
-                              style={{ backgroundColor: folderStyles[folder.id]?.dot ?? '#ccc' }}
+                              style={{
+                                backgroundColor:
+                                  folderStyles[folder.id]?.dot ?? '#ccc',
+                              }}
                             />
                             <span
                               className="gallery-folder-name"
-                              style={{ color: folderStyles[folder.id]?.color ?? 'inherit' }}
+                              style={{
+                                color:
+                                  folderStyles[folder.id]?.color ?? 'inherit',
+                              }}
                             >
                               {folder.name}
                             </span>
                           </div>
-                          <span className="gallery-folder-date">{folder.date}</span>
+                          <span className="gallery-folder-date">
+                            {folder.date}
+                          </span>
                         </div>
                         <span
                           className="gallery-folder-count"
@@ -454,10 +553,18 @@ export default function GalleryPage() {
             </ul>
 
             <div className="gallery-folder-actions">
-              <button className="btn btn-ghost" type="button" onClick={handleAddFolder}>
+              <button
+                className="btn btn-ghost"
+                type="button"
+                onClick={handleAddFolder}
+              >
                 + new folder
               </button>
-              <button className="btn btn-ghost" type="button" onClick={toggleEditing}>
+              <button
+                className="btn btn-ghost"
+                type="button"
+                onClick={toggleEditing}
+              >
                 {isEditing ? 'save folders' : 'edit folders'}
               </button>
             </div>

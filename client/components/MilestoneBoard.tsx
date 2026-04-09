@@ -37,10 +37,15 @@ export default function MilestoneBoard({
   return (
     <aside className="notebook-right-column" aria-label="Milestone board">
       <div className="milestone-board-canvas">
-        <h2 className="text-caption notebook-milestone-title">your milestones</h2>
+        <h2 className="text-caption notebook-milestone-title">
+          your milestones
+        </h2>
 
         {milestones.length ? (
-          <div className="milestone-card-grid" aria-label="Committed milestones">
+          <div
+            className="milestone-card-grid"
+            aria-label="Committed milestones"
+          >
             {milestones.map((milestone, index) => {
               const style = NOTE_VARIANTS[index % NOTE_VARIANTS.length];
 
@@ -71,7 +76,10 @@ export default function MilestoneBoard({
         statusMessage={draftStatusMessage}
       />
 
-      <div className="notebook-route-actions" aria-label="Notebook navigation actions">
+      <div
+        className="notebook-route-actions"
+        aria-label="Notebook navigation actions"
+      >
         <button
           type="button"
           className="btn btn-secondary notebook-route-btn"

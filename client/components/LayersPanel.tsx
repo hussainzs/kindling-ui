@@ -113,10 +113,7 @@ function LayerItem({
         ctx.moveTo(stroke.points[0].x * scaleX, stroke.points[0].y * scaleY);
 
         for (let i = 1; i < stroke.points.length; i++) {
-          ctx.lineTo(
-            stroke.points[i].x * scaleX,
-            stroke.points[i].y * scaleY
-          );
+          ctx.lineTo(stroke.points[i].x * scaleX, stroke.points[i].y * scaleY);
         }
 
         ctx.stroke();

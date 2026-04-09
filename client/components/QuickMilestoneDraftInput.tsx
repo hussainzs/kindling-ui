@@ -32,8 +32,14 @@ export default function QuickMilestoneDraftInput({
   };
 
   return (
-    <section className="quick-milestone-input-shell" aria-label="Quick milestone input">
-      <label className="text-caption milestone-draft-label" htmlFor="quick-milestone-input">
+    <section
+      className="quick-milestone-input-shell"
+      aria-label="Quick milestone input"
+    >
+      <label
+        className="text-caption milestone-draft-label"
+        htmlFor="quick-milestone-input"
+      >
         milestone idea
       </label>
 

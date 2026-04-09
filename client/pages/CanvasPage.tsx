@@ -230,7 +230,10 @@ export default function CanvasPage() {
     );
     // Avoid duplicates if saved twice
     const deduped = existing.filter((a: { id: string }) => a.id !== project.id);
-    sessionStorage.setItem('kindling_saved_artworks', JSON.stringify([newArtwork, ...deduped]));
+    sessionStorage.setItem(
+      'kindling_saved_artworks',
+      JSON.stringify([newArtwork, ...deduped])
+    );
 
     navigate('/');
   };

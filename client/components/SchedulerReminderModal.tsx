@@ -43,7 +43,8 @@ export default function SchedulerReminderModal({
           hey, it has been {minutes} {minuteLabel}. how are you doing?
         </h2>
         <p className="scheduler-reminder-copy text-caption">
-          you can pause for a quick reflection now or close this and keep creating.
+          you can pause for a quick reflection now or close this and keep
+          creating.
         </p>
 
         <div className="scheduler-reminder-actions">

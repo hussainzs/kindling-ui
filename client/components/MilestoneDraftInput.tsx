@@ -38,7 +38,10 @@ export default function MilestoneDraftInput({
       }`}
       aria-label="Milestone draft editor"
     >
-      <label className="text-caption milestone-draft-label" htmlFor="milestone-draft-input">
+      <label
+        className="text-caption milestone-draft-label"
+        htmlFor="milestone-draft-input"
+      >
         milestone idea
       </label>
 
@@ -72,7 +75,11 @@ export default function MilestoneDraftInput({
       </div>
 
       {statusMessage ? (
-        <p className="milestone-draft-status text-metadata" role="status" aria-live="polite">
+        <p
+          className="milestone-draft-status text-metadata"
+          role="status"
+          aria-live="polite"
+        >
           {statusMessage}
         </p>
       ) : null}

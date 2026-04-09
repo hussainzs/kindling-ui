@@ -25,7 +25,7 @@ const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export async function requestMilestoneSuggestion(
   payload: MilestoneSuggestionApiPayload,
-  signal?: AbortSignal,
+  signal?: AbortSignal
 ): Promise<string> {
   const response = await fetch(`${API_BASE_URL}/api/milestone-suggestions`, {
     method: 'POST',
@@ -57,7 +57,7 @@ export async function requestMilestoneSuggestion(
   if (!successBody || typeof successBody.milestone !== 'string') {
     throw new MilestoneSuggestionRequestError(
       'Milestone suggestion response was invalid.',
-      response.status,
+      response.status
     );
   }
 

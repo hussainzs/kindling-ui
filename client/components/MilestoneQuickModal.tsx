@@ -76,7 +76,9 @@ export default function MilestoneQuickModal({
         aria-label="Quick milestones"
       >
         <header className="quick-milestones-header">
-          <h2 className="text-caption quick-milestones-title">quick milestones</h2>
+          <h2 className="text-caption quick-milestones-title">
+            quick milestones
+          </h2>
           <button
             type="button"
             className="btn btn-ghost quick-milestones-close"
@@ -88,7 +90,10 @@ export default function MilestoneQuickModal({
         </header>
 
         {milestones.length ? (
-          <div className="milestone-card-grid quick-milestones-grid" aria-label="Current milestones">
+          <div
+            className="milestone-card-grid quick-milestones-grid"
+            aria-label="Current milestones"
+          >
             {milestones.map((milestone, index) => {
               const style = NOTE_VARIANTS[index % NOTE_VARIANTS.length];
 

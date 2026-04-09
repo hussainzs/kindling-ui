@@ -82,9 +82,11 @@ function ThumbnailSlot({
       };
 
       // Calculate bounds of drawing to zoom in appropriately
-      let minX = Infinity, maxX = -Infinity;
-      let minY = Infinity, maxY = -Infinity;
-      
+      let minX = Infinity,
+        maxX = -Infinity;
+      let minY = Infinity,
+        maxY = -Infinity;
+
       thumbnail.strokes.forEach((stroke) => {
         stroke.points.forEach((point) => {
           minX = Math.min(minX, point.x);
@@ -95,21 +97,26 @@ function ThumbnailSlot({
       });
 
       // If we have bounds, scale to fit with padding
-      let scaleX = 1, scaleY = 1, offsetX = 0, offsetY = 0;
-      
+      let scaleX = 1,
+        scaleY = 1,
+        offsetX = 0,
+        offsetY = 0;
+
       if (minX !== Infinity && maxX !== -Infinity) {
         const drawingWidth = maxX - minX;
         const drawingHeight = maxY - minY;
         const padding = 10;
-        
-        scaleX = (THUMBNAIL_SIZE - padding * 2) / (drawingWidth || THUMBNAIL_SIZE);
-        scaleY = (THUMBNAIL_SIZE - padding * 2) / (drawingHeight || THUMBNAIL_SIZE);
-        
+
+        scaleX =
+          (THUMBNAIL_SIZE - padding * 2) / (drawingWidth || THUMBNAIL_SIZE);
+        scaleY =
+          (THUMBNAIL_SIZE - padding * 2) / (drawingHeight || THUMBNAIL_SIZE);
+
         const scale = Math.min(scaleX, scaleY, 1); // Don't upscale beyond 1
-        
+
         offsetX = padding - minX * scale;
         offsetY = padding - minY * scale;
-        
+
         scaleX = scale;
         scaleY = scale;
       }
@@ -186,7 +193,9 @@ function ThumbnailSlot({
           width: `${THUMBNAIL_SIZE}px`,
           height: `${THUMBNAIL_SIZE}px`,
           borderRadius: 'var(--radius-lg)',
-          border: isSelected ? '8px solid var(--accent-rust)' : '5px solid #ede5d8',
+          border: isSelected
+            ? '8px solid var(--accent-rust)'
+            : '5px solid #ede5d8',
           padding: 0,
           transition: 'border-color 160ms ease, border-width 160ms ease',
           overflow: 'hidden',

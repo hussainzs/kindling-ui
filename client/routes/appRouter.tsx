@@ -20,9 +20,8 @@ export const appRouter = createBrowserRouter([
       { path: 'canvas', element: <CanvasPage /> },
       { path: 'check-in', element: <CheckInPage /> },
       { path: 'intervention', element: <InterventionPage /> },
-      { path: "style", element: <StylePage /> },
-      { path: "hello-world", element: <HelloAppPage /> },
+      { path: 'style', element: <StylePage /> },
+      { path: 'hello-world', element: <HelloAppPage /> },
     ],
   },
-
 ]);

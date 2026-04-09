@@ -373,7 +373,11 @@ export default function DrawingCanvas({
         </div>
 
         {showDoneButton && (
-          <button type="button" className="btn btn-primary" onClick={handleDone}>
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleDone}
+          >
             done →
           </button>
         )}

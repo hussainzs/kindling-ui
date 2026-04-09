@@ -7,7 +7,7 @@ import type { DrawingStroke } from '../types/drawing';
 const MINUTE_IN_MS = 60 * 1000;
 
 export type WorkflowOutletContext = {
-  // notesSoFar = most recent notes written in Notebook. Updated only by notebook. 
+  // notesSoFar = most recent notes written in Notebook. Updated only by notebook.
   notesSoFar: string;
   setNotesSoFar: Dispatch<SetStateAction<string>>;
   //  milestones = list of all milestones added so far that haven't been marked completed.
@@ -34,8 +34,11 @@ export default function WorkflowLayout() {
   const [milestonesCompleted, setMilestonesCompleted] = useState<string[]>([]);
   const [checkInReflection, setCheckInReflection] = useState('');
   const [canvasStrokes, setCanvasStrokes] = useState<DrawingStroke[]>([]);
-  const [checkInReminderMinutes, setCheckInReminderMinutes] = useState<number>(0);
-  const [checkInTimerEndsAt, setCheckInTimerEndsAt] = useState<number | null>(null);
+  const [checkInReminderMinutes, setCheckInReminderMinutes] =
+    useState<number>(0);
+  const [checkInTimerEndsAt, setCheckInTimerEndsAt] = useState<number | null>(
+    null
+  );
   const [isCheckInReminderOpen, setIsCheckInReminderOpen] = useState(false);
 
   const isCheckInTimerRunning = checkInTimerEndsAt !== null;

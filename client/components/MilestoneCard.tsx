@@ -17,7 +17,8 @@ export default function MilestoneCard({
   onDelete,
   actionType = 'delete',
 }: MilestoneCardProps) {
-  const actionLabel = actionType === 'complete' ? 'Mark milestone complete' : 'Delete milestone';
+  const actionLabel =
+    actionType === 'complete' ? 'Mark milestone complete' : 'Delete milestone';
 
   return (
     <article
@@ -42,7 +43,10 @@ export default function MilestoneCard({
         </button>
       </div>
 
-      <span className={`milestone-card-pin milestone-card-pin-${tone}`} aria-hidden="true" />
+      <span
+        className={`milestone-card-pin milestone-card-pin-${tone}`}
+        aria-hidden="true"
+      />
       <p className="milestone-card-text text-note-hand">{text}</p>
     </article>
   );

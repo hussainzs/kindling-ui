@@ -63,7 +63,7 @@ export default function NotebookPage() {
 
   const deleteMilestone = (indexToDelete: number) => {
     setMilestones((currentMilestones) =>
-      currentMilestones.filter((_, index) => index !== indexToDelete),
+      currentMilestones.filter((_, index) => index !== indexToDelete)
     );
   };
 
