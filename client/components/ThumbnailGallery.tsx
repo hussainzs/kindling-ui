@@ -28,7 +28,6 @@ export default function ThumbnailGallery({
         <div key={index} className="flex-1">
           <ThumbnailSlot
             thumbnail={thumbnail}
-            slotIndex={index}
             slotNumber={index + 1}
             isSelected={thumbnail ? selectedId === thumbnail.id : false}
             onSelectEmpty={() => onSelectEmpty(index)}
@@ -42,7 +41,6 @@ export default function ThumbnailGallery({
 
 interface ThumbnailSlotProps {
   thumbnail: Thumbnail | null;
-  slotIndex: number;
   slotNumber: number;
   isSelected: boolean;
   onSelectEmpty: () => void;
@@ -51,7 +49,6 @@ interface ThumbnailSlotProps {
 
 function ThumbnailSlot({
   thumbnail,
-  slotIndex,
   slotNumber,
   isSelected,
   onSelectEmpty,
