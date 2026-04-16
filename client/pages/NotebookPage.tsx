@@ -15,7 +15,7 @@ export default function NotebookPage() {
   const [draftMilestone, setDraftMilestone] = useState('');
   const [isDraftAttentionActive, setIsDraftAttentionActive] = useState(false);
 
-  const { suggestionError, isRateLimited } = useMilestoneSuggestions({
+  const { isRateLimited } = useMilestoneSuggestions({
     notesSoFar,
     existingMilestones: milestones,
     onSuggestion: (milestone: string) => {
@@ -55,11 +55,9 @@ export default function NotebookPage() {
     setDraftMilestone('');
   };
 
-  const draftStatusMessage = suggestionError
-    ? suggestionError
-    : isRateLimited
-      ? 'milestone suggestions are pausing briefly to stay under the request limit.'
-      : null;
+  const draftStatusMessage = isRateLimited
+    ? 'milestone suggestions are pausing briefly to stay under the request limit.'
+    : null;
 
   const deleteMilestone = (indexToDelete: number) => {
     setMilestones((currentMilestones) =>

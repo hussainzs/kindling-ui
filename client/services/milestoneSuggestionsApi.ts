@@ -17,24 +17,29 @@ type MilestoneSuggestionApiResponse = {
   milestone: string;
 };
 
-type MilestoneSuggestionApiError = {
-  error?: string;
-};
-
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
 
 export async function requestMilestoneSuggestion(
   payload: MilestoneSuggestionApiPayload,
   signal?: AbortSignal
 ): Promise<string> {
-  const response = await fetch(`${API_BASE_URL}/api/milestone-suggestions`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(payload),
-    signal,
-  });
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/milestone-suggestions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
+      signal,
+    });
+  } catch (error) {
+    if (error instanceof DOMException && error.name === 'AbortError') {
+      throw error;
+    }
+
+    throw new MilestoneSuggestionRequestError('Unable to fetch milestone suggestion right now.', 0);
+  }
 
   let responseBody: unknown = null;
   try {
@@ -44,13 +49,10 @@ export async function requestMilestoneSuggestion(
   }
 
   if (!response.ok) {
-    const errorBody = responseBody as MilestoneSuggestionApiError | null;
-    const message =
-      typeof errorBody?.error === 'string'
-        ? errorBody.error
-        : 'Unable to fetch milestone suggestion right now.';
-
-    throw new MilestoneSuggestionRequestError(message, response.status);
+    throw new MilestoneSuggestionRequestError(
+      'Unable to fetch milestone suggestion right now.',
+      response.status
+    );
   }
 
   const successBody = responseBody as MilestoneSuggestionApiResponse | null;
