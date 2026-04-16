@@ -19,6 +19,29 @@ type UseMilestoneSuggestionsResult = {
   isRateLimited: boolean;
 };
 
+function getSuggestionUnavailableMessage(error: MilestoneSuggestionRequestError): string {
+  switch (error.code) {
+    case 'RATE_LIMITED':
+      return 'too many requests right now. please try again shortly.';
+    case 'UPSTREAM_TEMPORARY_FAILURE':
+      return 'suggestion service is temporarily unavailable.';
+    case 'MODEL_UNAVAILABLE':
+      return 'suggestion model is unavailable right now.';
+    case 'UPSTREAM_REQUEST_REJECTED':
+      return 'suggestion request was rejected.';
+    case 'PROVIDER_NOT_CONFIGURED':
+      return 'suggestions are not configured yet.';
+    case 'INVALID_INPUT':
+      return 'please add clearer notes to get suggestions.';
+    default:
+      if (error.status === 503) {
+        return 'suggestion service is temporarily unavailable.';
+      }
+
+      return 'milestone suggestions are unavailable right now.';
+  }
+}
+
 function getEligibleThreshold(notesSoFar: string) {
   const words = notesSoFar.trim().split(/\s+/).filter(Boolean).length;
   return Math.floor(words / WORD_THRESHOLD_STEP) * WORD_THRESHOLD_STEP;
@@ -143,7 +166,13 @@ export default function useMilestoneSuggestions({
         }
 
         if (error instanceof MilestoneSuggestionRequestError) {
-          setSuggestionError(error.message);
+          console.error('[milestone-suggestions] request failed', {
+            status: error.status,
+            code: error.code,
+            providerMessage: error.providerMessage,
+            uiMessage: error.message,
+          });
+          setSuggestionError(getSuggestionUnavailableMessage(error));
           return;
         }
 

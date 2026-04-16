@@ -1,10 +1,18 @@
 export class MilestoneSuggestionRequestError extends Error {
   status: number;
+  code?: string;
+  providerMessage?: string;
 
-  constructor(message: string, status: number) {
+  constructor(
+    message: string,
+    status: number,
+    options?: { code?: string; providerMessage?: string }
+  ) {
     super(message);
     this.name = 'MilestoneSuggestionRequestError';
     this.status = status;
+    this.code = options?.code;
+    this.providerMessage = options?.providerMessage;
   }
 }
 
@@ -15,6 +23,11 @@ type MilestoneSuggestionApiPayload = {
 
 type MilestoneSuggestionApiResponse = {
   milestone: string;
+};
+
+type MilestoneSuggestionApiErrorResponse = {
+  error?: string;
+  code?: string;
 };
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '';
@@ -49,9 +62,16 @@ export async function requestMilestoneSuggestion(
   }
 
   if (!response.ok) {
+    const errorBody = responseBody as MilestoneSuggestionApiErrorResponse | null;
+
     throw new MilestoneSuggestionRequestError(
       'Unable to fetch milestone suggestion right now.',
-      response.status
+      response.status,
+      {
+        code: typeof errorBody?.code === 'string' ? errorBody.code : undefined,
+        providerMessage:
+          typeof errorBody?.error === 'string' ? errorBody.error : undefined,
+      }
     );
   }
 

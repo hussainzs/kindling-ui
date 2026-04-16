@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 import MilestoneBoard from '../components/MilestoneBoard';
+import NotebookErrorToast from '../components/NotebookErrorToast';
 import NotebookInputSurface from '../components/NotebookInputSurface';
 import SchedulerCollapse from '../components/SchedulerCollapse';
 import useMilestoneSuggestions from '../hooks/useMilestoneSuggestions.ts';
 
 const DRAFT_ATTENTION_MS = 1400;
+const ERROR_TOAST_MS = 3000;
 
 export default function NotebookPage() {
   const navigate = useNavigate();
@@ -14,8 +16,11 @@ export default function NotebookPage() {
     useOutletContext<WorkflowOutletContext>();
   const [draftMilestone, setDraftMilestone] = useState('');
   const [isDraftAttentionActive, setIsDraftAttentionActive] = useState(false);
+  const [activeToastMessage, setActiveToastMessage] = useState<string | null>(
+    null
+  );
 
-  const { isRateLimited } = useMilestoneSuggestions({
+  const { suggestionError, isRateLimited } = useMilestoneSuggestions({
     notesSoFar,
     existingMilestones: milestones,
     onSuggestion: (milestone: string) => {
@@ -55,9 +60,29 @@ export default function NotebookPage() {
     setDraftMilestone('');
   };
 
-  const draftStatusMessage = isRateLimited
-    ? 'milestone suggestions are pausing briefly to stay under the request limit.'
-    : null;
+  const draftStatusMessage = suggestionError
+    ? suggestionError
+    : isRateLimited
+      ? 'milestone suggestions are pausing briefly to stay under the request limit.'
+      : null;
+
+  useEffect(() => {
+    if (!draftStatusMessage) {
+      return;
+    }
+
+    setActiveToastMessage(draftStatusMessage);
+
+    const timeoutId = window.setTimeout(() => {
+      setActiveToastMessage((currentMessage) =>
+        currentMessage === draftStatusMessage ? null : currentMessage
+      );
+    }, ERROR_TOAST_MS);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, [draftStatusMessage]);
 
   const deleteMilestone = (indexToDelete: number) => {
     setMilestones((currentMilestones) =>
@@ -90,11 +115,15 @@ export default function NotebookPage() {
           onIgnoreDraft={ignoreDraft}
           onDeleteMilestone={deleteMilestone}
           isDraftAttentionActive={isDraftAttentionActive}
-          draftStatusMessage={draftStatusMessage}
+          draftStatusMessage={null}
           onContinueToThumbnails={() => navigate('/thumbnail')}
           onMoveToCanvas={() => navigate('/canvas')}
         />
       </div>
+
+      {activeToastMessage ? (
+        <NotebookErrorToast message={activeToastMessage} />
+      ) : null}
     </section>
   );
 }
