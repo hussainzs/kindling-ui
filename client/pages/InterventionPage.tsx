@@ -1,5 +1,8 @@
-import WorkflowPlaceholderPage from './WorkflowPlaceholderPage';
+import { useNavigate } from 'react-router';
+import InterventionPopup from '../components/InterventionPopup';
 
 export default function InterventionPage() {
-  return <WorkflowPlaceholderPage code="P6" title="Intervention" />;
+  const navigate = useNavigate();
+
+  return <InterventionPopup open onClose={() => navigate('/')} />;
 }

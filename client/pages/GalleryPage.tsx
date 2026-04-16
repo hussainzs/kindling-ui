@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import InterventionPopup from '../components/InterventionPopup';
 import { useNavigate } from 'react-router';
 
 type Folder = {
@@ -103,7 +102,6 @@ const initialArtworks: Artwork[] = [
 ];
 
 export default function GalleryPage() {
-  const [showIntervention, setShowIntervention] = useState(false);
   const navigate = useNavigate();
   const [folders, setFolders] = useState(initialFolders);
   const [selectedFolderId, setSelectedFolderId] = useState('all');
@@ -198,18 +196,8 @@ export default function GalleryPage() {
 
   return (
     <>
-      <InterventionPopup
-        open={showIntervention}
-        onClose={() => setShowIntervention(false)}
-      />
       <section className="gallery-page-shell">
         <div className="gallery-top-bar">
-          <button
-            style={{ position: 'absolute', top: 16, right: 16, zIndex: 1000 }}
-            onClick={() => setShowIntervention(true)}
-          >
-            Show Intervention Popup
-          </button>
           <div className="gallery-logo-shell">
             <p className="gallery-logo">kindling ✦</p>
             <div className="gallery-sparkles-shell">
