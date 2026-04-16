@@ -2,6 +2,137 @@ import 'dotenv/config';
 import Cerebras from '@cerebras/cerebras_cloud_sdk';
 import { MILESTONE_SUGGESTION_CONFIG } from '../config/milestoneSuggestionConfig.js';
 
+const RATE_LIMIT_WAIT_MS = 1000;
+
+/**
+ * Domain error for milestone suggestion failures with safe API-facing metadata.
+ */
+export class MilestoneSuggestionServiceError extends Error {
+  /**
+   * @param {string} message
+   * @param {{statusCode?: number, code?: string, cause?: unknown}} [options]
+   */
+  constructor(message, options = {}) {
+    super(message, { cause: options.cause });
+    this.name = 'MilestoneSuggestionServiceError';
+    this.statusCode = options.statusCode ?? 500;
+    this.code = options.code ?? 'MILESTONE_SUGGESTION_FAILED';
+  }
+}
+
+/**
+ * Wait helper used for rate-limit backoff.
+ * @param {number} ms
+ * @returns {Promise<void>}
+ */
+function wait(ms) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/**
+ * @param {unknown} error
+ * @returns {boolean}
+ */
+function isCerebrasApiError(error) {
+  return error instanceof Cerebras.APIError;
+}
+
+/**
+ * @param {unknown} error
+ * @returns {number|undefined}
+ */
+function getErrorStatus(error) {
+  return isCerebrasApiError(error) ? error.status : undefined;
+}
+
+/**
+ * @param {unknown} error
+ * @returns {boolean}
+ */
+function isRateLimitError(error) {
+  const status = getErrorStatus(error);
+  return status === 429 || (isCerebrasApiError(error) && error.name === 'RateLimitError');
+}
+
+/**
+ * Normalizes unknown errors into a safe service error for route handlers.
+ * @param {unknown} error
+ * @returns {MilestoneSuggestionServiceError}
+ */
+function toMilestoneServiceError(error) {
+  if (error instanceof MilestoneSuggestionServiceError) {
+    return error;
+  }
+
+  if (isCerebrasApiError(error)) {
+    const status = error.status;
+
+    if (status === 429) {
+      return new MilestoneSuggestionServiceError('Milestone suggestions are temporarily unavailable.', {
+        statusCode: 503,
+        code: 'RATE_LIMITED',
+        cause: error,
+      });
+    }
+
+    if (status === 408 || status >= 500) {
+      return new MilestoneSuggestionServiceError('Milestone suggestions are temporarily unavailable.', {
+        statusCode: 503,
+        code: 'UPSTREAM_TEMPORARY_FAILURE',
+        cause: error,
+      });
+    }
+
+    if (status === 404 || error.name === 'NotFoundError') {
+      return new MilestoneSuggestionServiceError('Milestone model is unavailable right now.', {
+        statusCode: 502,
+        code: 'MODEL_UNAVAILABLE',
+        cause: error,
+      });
+    }
+
+    if (status === 400 || status === 401 || status === 402 || status === 403 || status === 422) {
+      return new MilestoneSuggestionServiceError('Milestone provider rejected this request.', {
+        statusCode: 502,
+        code: 'UPSTREAM_REQUEST_REJECTED',
+        cause: error,
+      });
+    }
+  }
+
+  if (error instanceof Error && error.message === 'CEREBRAS_API_KEY is not configured.') {
+    return new MilestoneSuggestionServiceError('Milestone suggestions are not configured.', {
+      statusCode: 500,
+      code: 'PROVIDER_NOT_CONFIGURED',
+      cause: error,
+    });
+  }
+
+  if (error instanceof Error && error.message === 'notesSoFar must be a string.') {
+    return new MilestoneSuggestionServiceError('Invalid milestone suggestion request.', {
+      statusCode: 400,
+      code: 'INVALID_INPUT',
+      cause: error,
+    });
+  }
+
+  if (error instanceof Error && error.message.includes('existingMilestones')) {
+    return new MilestoneSuggestionServiceError('Invalid milestone suggestion request.', {
+      statusCode: 400,
+      code: 'INVALID_INPUT',
+      cause: error,
+    });
+  }
+
+  return new MilestoneSuggestionServiceError('Failed to generate milestone suggestion.', {
+    statusCode: 500,
+    code: 'MILESTONE_SUGGESTION_FAILED',
+    cause: error,
+  });
+}
+
 /**
  * Creates a Cerebras client after validating API key availability.
  * @returns {Cerebras}
@@ -13,6 +144,7 @@ function getCerebrasClient() {
 
   return new Cerebras({
     apiKey: process.env.CEREBRAS_API_KEY,
+    maxRetries: 0,
   });
 }
 
@@ -64,7 +196,11 @@ function extractMilestoneFromCompletion(completion) {
 export async function generateMilestoneSuggestion(notesSoFar, existingMilestones = []) {
   const validation = validateMilestoneSuggestionInput(notesSoFar, existingMilestones);
   if (!validation.isValid) {
-    throw new Error(validation.error);
+    throw new MilestoneSuggestionServiceError('Invalid milestone suggestion request.', {
+      statusCode: 400,
+      code: 'INVALID_INPUT',
+      cause: new Error(validation.error),
+    });
   }
 
   const cerebrasClient = getCerebrasClient();
@@ -82,31 +218,51 @@ export async function generateMilestoneSuggestion(notesSoFar, existingMilestones
   const maxAttempts = Number(MILESTONE_SUGGESTION_CONFIG.maxAttempts) || 2;
   let lastError = null;
 
-    // We Retry atleast once if the model fails to return a valid suggestion.   
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
       const modelToUse = attempt === 1 ? MILESTONE_SUGGESTION_CONFIG.model : MILESTONE_SUGGESTION_CONFIG.fallbackModel;
-      const completion = await cerebrasClient.chat.completions.create({
-        model: modelToUse,
-        stream: false,
-        temperature: MILESTONE_SUGGESTION_CONFIG.temperature,
-        tool_choice: 'none',
-        messages: [
-          { role: 'system', content: MILESTONE_SUGGESTION_CONFIG.systemPrompt },
-          { role: 'user', content: userPrompt },
-        ],
-      });
+      const completion = await cerebrasClient.chat.completions.create(
+        {
+          model: modelToUse,
+          stream: false,
+          temperature: MILESTONE_SUGGESTION_CONFIG.temperature,
+          tool_choice: 'none',
+          messages: [
+            { role: 'system', content: MILESTONE_SUGGESTION_CONFIG.systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+        },
+        {
+          maxRetries: 0,
+        }
+      );
 
       const parsedMilestone = extractMilestoneFromCompletion(completion);
       if (parsedMilestone) {
         return parsedMilestone;
       }
 
-      lastError = new Error('Model returned an empty or invalid milestone suggestion.');
+      lastError = new MilestoneSuggestionServiceError('Model returned an empty or invalid milestone suggestion.', {
+        statusCode: 502,
+        code: 'INVALID_MODEL_OUTPUT',
+      });
     } catch (error) {
       lastError = error;
+
+      if (isRateLimitError(error)) {
+        if (attempt === 1 && attempt < maxAttempts) {
+          await wait(RATE_LIMIT_WAIT_MS);
+          continue;
+        }
+
+        throw new MilestoneSuggestionServiceError('Milestone suggestions are temporarily unavailable.', {
+          statusCode: 503,
+          code: 'RATE_LIMITED',
+          cause: error,
+        });
+      }
     }
   }
 
-  throw lastError || new Error('Failed to generate milestone suggestion after retry.');
+  throw toMilestoneServiceError(lastError || new Error('Failed to generate milestone suggestion after retry.'));
 }

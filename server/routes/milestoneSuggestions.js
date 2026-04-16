@@ -1,5 +1,8 @@
 import express from 'express';
-import { generateMilestoneSuggestion } from '../services/milestoneSuggestionsService.js';
+import {
+  generateMilestoneSuggestion,
+  MilestoneSuggestionServiceError,
+} from '../services/milestoneSuggestionsService.js';
 
 const milestoneSuggestionsRouter = express.Router();
 
@@ -31,15 +34,17 @@ milestoneSuggestionsRouter.post('/', async (req, res) => {
   } catch (error) {
     console.error('Milestone suggestion error:', error);
 
-    const providerErrorCode = error?.error?.code;
-    if (providerErrorCode === 'model_not_found') {
-      return res.status(502).json({
-        error: 'Milestone model is unavailable for the current API key.',
-        code: providerErrorCode,
+    if (error instanceof MilestoneSuggestionServiceError) {
+      return res.status(error.statusCode).json({
+        error: 'Unable to generate milestone suggestion right now.',
+        code: error.code,
       });
     }
 
-    return res.status(500).json({ error: 'Failed to generate milestone suggestion.' });
+    return res.status(500).json({
+      error: 'Unable to generate milestone suggestion right now.',
+      code: 'MILESTONE_SUGGESTION_FAILED',
+    });
   }
 });
 
