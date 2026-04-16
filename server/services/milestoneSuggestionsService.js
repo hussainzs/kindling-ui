@@ -85,8 +85,9 @@ export async function generateMilestoneSuggestion(notesSoFar, existingMilestones
     // We Retry atleast once if the model fails to return a valid suggestion.   
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
     try {
+      const modelToUse = attempt === 1 ? MILESTONE_SUGGESTION_CONFIG.model : MILESTONE_SUGGESTION_CONFIG.fallbackModel;
       const completion = await cerebrasClient.chat.completions.create({
-        model: MILESTONE_SUGGESTION_CONFIG.model,
+        model: modelToUse,
         stream: false,
         temperature: MILESTONE_SUGGESTION_CONFIG.temperature,
         tool_choice: 'none',
