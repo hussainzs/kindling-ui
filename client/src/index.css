@@ -23,7 +23,9 @@
 	10. Input & Form Controls | input, select, textarea, field-*
 	11. Cards & List Rows | card, card-title, list-row
 	12. Tags / Badges / Chips | tag, badge, chip, variants
-	13. Navigation & Sticky Bars | nav-bar, bottom-bar, overlay
+        13. Navigation & Sticky Bars | sticky,
+        overlay,
+        canvas-color-bar
 	14. Modal & Sheets | overlay, sheet, fixed positioning
 	15. Notes & Handwriting Surfaces | note-surface, note-text
 	16. Notebook Page Components | notebook-*, milestone-*
@@ -390,13 +392,6 @@ button {
     background: transparent;
     color: var(--text-ink-mid);
     border-color: transparent;
-}
-
-.btn-ghost:hover {
-    background: color-mix(in srgb, var(--bg-warm-white) 62%, transparent);
-}
-
-.btn-gold {
     background: var(--accent-gold);
     color: #fff;
     border-color: color-mix(in srgb, var(--accent-gold-light) 54%, var(--accent-gold));
@@ -1051,26 +1046,7 @@ a:focus-visible {
     border-color: color-mix(in srgb, var(--accent-sage) 36%, var(--ui-divider));
 }
 
-/* SECTION: Navigation & Sticky Bars | nav-bar, bottom-bar, sticky, overlay */
-.nav-bar {
-    position: sticky;
-    top: 0;
-    z-index: 40;
-    background: color-mix(in srgb, var(--bg-warm-white) 94%, transparent);
-    border-bottom: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
-    box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 5%);
-    backdrop-filter: saturate(120%);
-}
-
-.bottom-bar {
-    position: sticky;
-    bottom: 0;
-    z-index: 40;
-    background: color-mix(in srgb, var(--bg-warm-white) 94%, transparent);
-    border-top: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
-    padding-bottom: max(var(--space-3), var(--safe-bottom));
-}
-
+/* SECTION: Navigation & Sticky Bars | sticky, overlay, canvas-color-bar */
 .canvas-color-bar {
     display: inline-flex;
     align-items: center;
