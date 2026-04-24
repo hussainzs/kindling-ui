@@ -1,7 +1,9 @@
 import {
   ArrowLeft,
+  Brush,
   Heart,
   Home,
+  Images,
   Menu,
   Sparkle,
   X,
@@ -48,6 +50,16 @@ export default function FloatingWorkflowNav({
 
   const onOpenNotebook = () => {
     navigate('/notebook');
+    setIsOpen(false);
+  };
+
+  const onOpenThumbnails = () => {
+    navigate('/thumbnail');
+    setIsOpen(false);
+  };
+
+  const onOpenCanvas = () => {
+    navigate('/canvas');
     setIsOpen(false);
   };
 
@@ -109,7 +121,7 @@ export default function FloatingWorkflowNav({
           <div
             className={`surface-nav border-divider absolute left-0 z-10 flex items-center gap-2 overflow-hidden rounded-full border py-2 shadow-card transition-all duration-300 ${
               isOpen
-                ? 'max-w-[44rem] pl-12 pr-6 opacity-100'
+                ? 'max-w-[56rem] pl-12 pr-6 opacity-100'
                 : 'max-w-0 px-0 opacity-0'
             }`}
             aria-hidden={!isOpen}
@@ -139,6 +151,25 @@ export default function FloatingWorkflowNav({
               aria-label="Open notebook"
             >
               <NotebookPen className="icon icon-rust" />
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-compact shrink-0 rounded-full"
+              onClick={onOpenThumbnails}
+              aria-label="Open thumbnails gallery"
+            >
+              <Images className="icon icon-sage" />
+            </button>
+
+            <button
+              type="button"
+              className="btn btn-secondary btn-compact shrink-0 rounded-full"
+              onClick={onOpenCanvas}
+              aria-label="Open canvas"
+            >
+              <Brush className="icon icon-muted" />
+              Canvas
             </button>
 
             <button

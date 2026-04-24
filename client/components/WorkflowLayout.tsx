@@ -31,6 +31,7 @@ export type WorkflowOutletContext = {
   // check-in scheduler state/actions that should persist across page navigation.
   isCheckInTimerRunning: boolean;
   startCheckInScheduler: (minutes: number) => void;
+  resetWorkflowSession: () => void;
 };
 
 export default function WorkflowLayout() {
@@ -52,6 +53,19 @@ export default function WorkflowLayout() {
   const [isCheckInReminderOpen, setIsCheckInReminderOpen] = useState(false);
 
   const isCheckInTimerRunning = checkInTimerEndsAt !== null;
+
+  const resetWorkflowSession = () => {
+    setNotesSoFar('');
+    setMilestones([]);
+    setMilestonesCompleted([]);
+    setCheckInReflection('');
+    setCanvasStrokes([]);
+    setThumbnails([]);
+    setSelectedThumbnailId(null);
+    setCheckInReminderMinutes(0);
+    setCheckInTimerEndsAt(null);
+    setIsCheckInReminderOpen(false);
+  };
 
   const startCheckInScheduler = (minutes: number) => {
     const safeMinutes = Math.max(1, Math.round(minutes));
@@ -116,6 +130,7 @@ export default function WorkflowLayout() {
             setSelectedThumbnailId,
             isCheckInTimerRunning,
             startCheckInScheduler,
+            resetWorkflowSession,
           }}
         />
       </main>

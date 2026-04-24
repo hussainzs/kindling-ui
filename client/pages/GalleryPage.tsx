@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
+import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 type Folder = {
   id: string;
@@ -103,6 +104,7 @@ const initialArtworks: Artwork[] = [
 
 export default function GalleryPage() {
   const navigate = useNavigate();
+  const { resetWorkflowSession } = useOutletContext<WorkflowOutletContext>();
   const [folders, setFolders] = useState(initialFolders);
   const [selectedFolderId, setSelectedFolderId] = useState('all');
   const [isEditing, setIsEditing] = useState(false);
@@ -158,6 +160,11 @@ export default function GalleryPage() {
   }
 
   function handleNewKindling() {
+    resetWorkflowSession();
+    sessionStorage.removeItem('kindling_active_canvas_project');
+    sessionStorage.removeItem('kindling_selected_thumbnail_strokes');
+    sessionStorage.removeItem('kindling_thumbnails_session');
+    sessionStorage.setItem('kindling_canvas_should_reset', '1');
     navigate('/notebook');
   }
 

@@ -16,7 +16,8 @@ export default function InterventionPage() {
       open
       startedStrokes={selectedThumbnail?.strokes ?? []}
       currentStrokes={canvasStrokes}
-      onClose={() => navigate('/')}
+      onKeepGoing={() => navigate('/canvas')}
+      onDoneForToday={() => navigate('/')}
     />
   );
 }

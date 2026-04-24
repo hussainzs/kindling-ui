@@ -10,6 +10,9 @@ import type {
 import { Eye, EyeOff, Trash2, Brush, Eraser } from 'lucide-react';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
+const ACTIVE_CANVAS_PROJECT_KEY = 'kindling_active_canvas_project';
+const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
+
 export default function CanvasPage() {
   const navigate = useNavigate();
   const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
@@ -21,6 +24,51 @@ export default function CanvasPage() {
 
   // Initialize canvas
   useEffect(() => {
+    const shouldResetCanvas =
+      sessionStorage.getItem(RESET_CANVAS_PROJECT_KEY) === '1';
+    sessionStorage.removeItem(RESET_CANVAS_PROJECT_KEY);
+
+    if (!shouldResetCanvas) {
+      const storedActiveProject = sessionStorage.getItem(
+        ACTIVE_CANVAS_PROJECT_KEY
+      );
+
+      if (storedActiveProject) {
+        try {
+          const parsedProject = JSON.parse(storedActiveProject) as CanvasProject;
+          const hasLayers =
+            Array.isArray(parsedProject.layers) &&
+            parsedProject.layers.length > 0;
+
+          if (hasLayers && parsedProject.id) {
+            const activeLayerExists = parsedProject.layers.some(
+              (layer) => layer.id === parsedProject.activeLayerId
+            );
+            const restoredProject = activeLayerExists
+              ? parsedProject
+              : {
+                  ...parsedProject,
+                  activeLayerId: parsedProject.layers[0].id,
+                };
+
+            const activeLayer = restoredProject.layers.find(
+              (layer) => layer.id === restoredProject.activeLayerId
+            );
+
+            setProject(restoredProject);
+            setCanvasStrokes(activeLayer?.strokes ?? []);
+            sessionStorage.setItem(
+              `kindling_project_${restoredProject.id}`,
+              JSON.stringify(restoredProject)
+            );
+            return;
+          }
+        } catch {
+          // Invalid stored project data
+        }
+      }
+    }
+
     const projectId = `project_${Date.now()}`;
     const thumbnailStrokes: DrawingStroke[] = [];
 
@@ -60,6 +108,14 @@ export default function CanvasPage() {
       JSON.stringify(newProject)
     );
   }, [setCanvasStrokes]);
+
+  useEffect(() => {
+    if (!project) {
+      return;
+    }
+
+    sessionStorage.setItem(ACTIVE_CANVAS_PROJECT_KEY, JSON.stringify(project));
+  }, [project]);
 
   const handleSelectLayer = (layerId: string) => {
     if (project) {
@@ -242,14 +298,7 @@ export default function CanvasPage() {
       {/* Top Toolbar */}
       <div className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 gap-4 flex-shrink-0">
         {/* Left Section */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate('/thumbnail')}
-            className="bg-rust !text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
-          >
-            ← gallery
-          </button>
-        </div>
+        <div className="w-24" />
 
         {/* Center - Canvas Name */}
         <div className="flex-1 text-center">
@@ -258,6 +307,12 @@ export default function CanvasPage() {
 
         {/* Right Section */}
         <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate('/thumbnail')}
+            className="bg-gray-800 !text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-gray-700 transition-colors"
+          >
+            thumbnails
+          </button>
           <button className="text-white text-lg p-2 hover:bg-gray-800 rounded transition-colors">
             ↻
           </button>
@@ -480,7 +535,10 @@ export default function CanvasPage() {
       </div>
 
       {/* Bottom Right - Check-in Button */}
-      <button className="fixed bottom-6 right-6 px-6 py-3 bg-rust !text-white rounded-full font-bold hover:bg-opacity-90 transition-colors shadow-lg">
+      <button
+        onClick={() => navigate('/check-in')}
+        className="fixed bottom-6 right-6 px-6 py-3 bg-rust !text-white rounded-full font-bold hover:bg-opacity-90 transition-colors shadow-lg"
+      >
         check-in
       </button>
     </div>

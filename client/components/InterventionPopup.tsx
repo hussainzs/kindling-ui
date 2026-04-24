@@ -21,12 +21,14 @@ export default function InterventionPopup({
   open,
   startedStrokes,
   currentStrokes,
-  onClose,
+  onKeepGoing,
+  onDoneForToday,
 }: {
   open: boolean;
   startedStrokes: DrawingStroke[];
   currentStrokes: DrawingStroke[];
-  onClose: () => void;
+  onKeepGoing: () => void;
+  onDoneForToday: () => void;
 }) {
   const [tip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
   if (!open) return null;
@@ -89,7 +91,7 @@ export default function InterventionPopup({
             <div className="intervention-modal-actions">
               <button
                 className="intervention-modal-btn intervention-modal-btn-secondary"
-                onClick={onClose}
+                onClick={onKeepGoing}
               >
                 <span
                   style={{
@@ -115,7 +117,7 @@ export default function InterventionPopup({
               </button>
               <button
                 className="intervention-modal-btn intervention-modal-btn-primary"
-                onClick={onClose}
+                onClick={onDoneForToday}
               >
                 <span
                   style={{
@@ -143,7 +145,7 @@ export default function InterventionPopup({
           </div>
         </div>
       </div>
-      <div className="intervention-modal-backdrop" onClick={onClose} />
+      <div className="intervention-modal-backdrop" onClick={onDoneForToday} />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import type { Thumbnail, DrawingStroke } from '../types/drawing';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 type ThumbnailPageState = 'gallery' | 'creating';
+const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
 
 export default function ThumbnailPage() {
   const navigate = useNavigate();
@@ -67,10 +68,14 @@ export default function ThumbnailPage() {
       }
     }
 
+    sessionStorage.setItem(RESET_CANVAS_PROJECT_KEY, '1');
+
     navigate('/canvas');
   };
 
   const handleContinueWithoutThumbnails = () => {
+    sessionStorage.removeItem('kindling_selected_thumbnail_strokes');
+    sessionStorage.setItem(RESET_CANVAS_PROJECT_KEY, '1');
     navigate('/canvas');
   };
 
