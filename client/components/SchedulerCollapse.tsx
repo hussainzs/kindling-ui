@@ -10,7 +10,7 @@ const CUSTOM_HINT_MS = 5000;
 export default function SchedulerCollapse() {
   const { isCheckInTimerRunning, startCheckInScheduler } =
     useOutletContext<WorkflowOutletContext>();
-  const [isExpanded, setIsExpanded] = useState(false);
+  const [isExpanded, setIsExpanded] = useState(true);
   const [selectedOption, setSelectedOption] = useState<SchedulerOption>('2');
   const [customMinutes, setCustomMinutes] = useState('10');
   // Controls visibility of the hint popup above custom input

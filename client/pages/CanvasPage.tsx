@@ -23,6 +23,11 @@ export default function CanvasPage() {
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
   const colorToggleButtonRef = useRef<HTMLButtonElement>(null);
+  const fullBleedCanvasStyle = {
+    width: '100dvw',
+    marginLeft: 'calc(50% - 50dvw)',
+    marginTop: 'calc(-1 * max(var(--space-4), var(--safe-top)))',
+  } as const;
 
   // Initialize canvas
   useEffect(() => {
@@ -215,7 +220,10 @@ export default function CanvasPage() {
 
   if (!project) {
     return (
-      <div className="w-screen h-screen flex items-center justify-center bg-black">
+      <div
+        className="min-h-[100svh] flex items-center justify-center bg-black"
+        style={fullBleedCanvasStyle}
+      >
         <p className="text-white">Loading...</p>
       </div>
     );
@@ -296,7 +304,10 @@ export default function CanvasPage() {
   };
 
   return (
-    <div className="canvas-app w-screen h-screen flex flex-col bg-black overflow-hidden">
+    <div
+      className="canvas-app min-h-[100svh] flex flex-col bg-black overflow-hidden"
+      style={fullBleedCanvasStyle}
+    >
       {/* Top Toolbar */}
       <div className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 gap-4 flex-shrink-0">
         {/* Left Section */}
