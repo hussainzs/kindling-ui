@@ -1,6 +1,7 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router';
 import MainCanvas from '../components/MainCanvas';
+import ColorPicker from '../components/ColorPicker';
 import type {
   Layer,
   DrawingColor,
@@ -21,6 +22,7 @@ export default function CanvasPage() {
   const [isEraser, setIsEraser] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const colorToggleButtonRef = useRef<HTMLButtonElement>(null);
 
   // Initialize canvas
   useEffect(() => {
@@ -361,7 +363,8 @@ export default function CanvasPage() {
 
           {/* Color Picker */}
           <button
-            onClick={() => setShowColorPicker(!showColorPicker)}
+            ref={colorToggleButtonRef}
+            onClick={() => setShowColorPicker((isOpen) => !isOpen)}
             className="w-12 h-12 rounded-lg flex items-center justify-center hover:bg-gray-800 transition-colors"
             title="Color"
           >
@@ -403,6 +406,20 @@ export default function CanvasPage() {
               isEraser={isEraser}
             />
           )}
+        </div>
+
+        {/* Center Top - Color Picker */}
+        <div className="absolute top-3 left-0 right-0 z-40 flex justify-center">
+          <ColorPicker
+            currentColor={currentColor}
+            onColorChange={(color) => {
+              setCurrentColor(color);
+              setIsEraser(false);
+            }}
+            isOpen={showColorPicker}
+            onClose={() => setShowColorPicker(false)}
+            triggerRef={colorToggleButtonRef}
+          />
         </div>
 
         {/* Overlay Panels Container - Positioned absolutely */}
@@ -487,50 +504,6 @@ export default function CanvasPage() {
             </div>
           )}
 
-          {/* Right Sidebar - Color Picker */}
-          {showColorPicker && (
-            <div className="absolute top-0 right-0 bottom-0 w-64 bg-gray-900 border-l border-gray-800 p-4 overflow-y-auto flex flex-col gap-4 pointer-events-auto">
-              <div className="flex items-center justify-between flex-shrink-0">
-                <h3 className="text-white font-semibold text-sm">Color</h3>
-                <button
-                  onClick={() => setShowColorPicker(false)}
-                  className="text-white hover:text-gray-300"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="space-y-3">
-                <div>
-                  <p className="text-white text-xs mb-2">Presets</p>
-                  <div className="grid grid-cols-4 gap-2">
-                    {(
-                      [
-                        ['black', '#000000'],
-                        ['rust', '#b8431f'],
-                        ['gold', '#c9973a'],
-                        ['sage', '#5e8060'],
-                      ] as [DrawingColor, string][]
-                    ).map(([name, hex]) => (
-                      <button
-                        key={name}
-                        onClick={() => {
-                          setCurrentColor(name);
-                          setIsEraser(false);
-                        }}
-                        className={`w-full aspect-square rounded-lg border-2 transition-all ${
-                          currentColor === name
-                            ? 'border-white'
-                            : 'border-gray-700'
-                        }`}
-                        style={{ backgroundColor: hex }}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 

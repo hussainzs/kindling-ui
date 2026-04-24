@@ -1071,6 +1071,68 @@ a:focus-visible {
     padding-bottom: max(var(--space-3), var(--safe-bottom));
 }
 
+.canvas-color-bar {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-4);
+    width: fit-content;
+    padding: 0.75rem 1.25rem;
+    border-radius: 9999px;
+    border: 1px solid color-mix(in srgb, var(--ui-divider) 88%, transparent);
+    background: color-mix(in srgb, var(--bg-warm-white) 96%, transparent);
+    box-shadow: var(--ui-shadow-card);
+    opacity: 0;
+    transform: translateY(-0.4rem) scale(0.985);
+    pointer-events: none;
+    transition: opacity 180ms ease, transform 200ms ease;
+}
+
+.canvas-color-bar-open {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+}
+
+.canvas-color-pill {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 9999px;
+    border: 2px solid color-mix(in srgb, var(--ui-divider) 92%, transparent);
+    transition: transform 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+}
+
+.canvas-color-pill:hover {
+    transform: translateY(-1px);
+}
+
+.canvas-color-pill:focus-visible {
+    outline: 2px solid color-mix(in srgb, var(--accent-rust) 70%, #fff);
+    outline-offset: 2px;
+}
+
+.canvas-color-pill-active {
+    border-color: var(--text-ink);
+    box-shadow: 0 0 0 2px color-mix(in srgb, var(--bg-warm-white) 88%, transparent);
+}
+
+.canvas-color-close {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 9999px;
+    border: 0;
+    background: transparent;
+    color: var(--text-ink-soft);
+    line-height: 1;
+    padding: 0;
+}
+
+.canvas-color-close:hover {
+    background: color-mix(in srgb, var(--bg-cream) 68%, transparent);
+    color: var(--text-ink);
+}
 /* SECTION: Modal & Sheets | overlay, sheet, fixed positioning, z-index */
 .overlay {
     position: fixed;
