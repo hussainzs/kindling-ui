@@ -1,18 +1,21 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
 import ThumbnailGallery from '../components/ThumbnailGallery';
 import DrawingCanvas from '../components/DrawingCanvas';
 import type { Thumbnail, DrawingStroke } from '../types/drawing';
+import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 type ThumbnailPageState = 'gallery' | 'creating';
 
 export default function ThumbnailPage() {
   const navigate = useNavigate();
+  const {
+    thumbnails,
+    setThumbnails,
+    selectedThumbnailId,
+    setSelectedThumbnailId,
+  } = useOutletContext<WorkflowOutletContext>();
   const [pageState, setPageState] = useState<ThumbnailPageState>('gallery');
-  const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
-  const [selectedThumbnailId, setSelectedThumbnailId] = useState<string | null>(
-    null
-  );
 
   const handleThumbnailSlotClick = (slotIndex: number) => {
     // If slot is already filled, select it

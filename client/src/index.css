@@ -2314,40 +2314,32 @@ a:focus-visible {
 }
 .intervention-progress-row {
     display: flex;
-    align-items: center;
-    gap: 50px;
+    align-items: flex-start;
+        gap: 1.25rem;
     margin: 0.9rem 0 0.5rem 0;
 }
-.intervention-progress-img {
-        outline: 1px solid #FF6800; /* debug: remove after confirming gap */
-    width: 180px;
-    height: 135px;
+.intervention-progress-canvas-frame {
+    width: 200px;
+    height: 200px;
     background: #fff;
-    border-radius: 0.75rem;
+    border-radius: var(--radius-lg);
+        border: 5px solid #ede5d8;
     box-shadow: 0 2px 8px rgba(60, 40, 20, 0.08);
-    background-size: cover;
-    background-position: center;
-    margin-bottom: 20px;
+    overflow: hidden;
 }
-.intervention-progress-img-start {
-    background-image: url('/assets/progress-start.png');
+.intervention-progress-canvas {
+    width: 200px;
+    height: 200px;
 }
-.intervention-progress-img-current {
-    background-image: url('/assets/progress-current.png');
-}
-.intervention-progress-labels {
-    display: none;
-}
+
 .intervention-progress-label {
     display: block;
     text-align: center;
     font-size: 0.98rem;
     color: #bfae9b;
-    margin-top: 0;
+    margin-top: 0.65rem;
     margin-bottom: 0;
-    padding-top: 20px;
-    background: rgba(255,104,0,0.08); /* debug: remove after confirming gap */
-    width: 100%;
+    width: auto;
 }
 
 .intervention-progress-label-current {

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate, useOutletContext } from 'react-router';
 import MainCanvas from '../components/MainCanvas';
 import type {
   Layer,
@@ -8,11 +8,11 @@ import type {
   CanvasProject,
 } from '../types/drawing';
 import { Eye, EyeOff, Trash2, Brush, Eraser } from 'lucide-react';
-import { useOutletContext } from 'react-router';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 export default function CanvasPage() {
   const navigate = useNavigate();
+  const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
   const [project, setProject] = useState<CanvasProject | null>(null);
   const [currentColor, setCurrentColor] = useState<DrawingColor>('black');
   const [isEraser, setIsEraser] = useState(false);
@@ -54,11 +54,12 @@ export default function CanvasPage() {
     };
 
     setProject(newProject);
+    setCanvasStrokes(thumbnailStrokes);
     sessionStorage.setItem(
       `kindling_project_${projectId}`,
       JSON.stringify(newProject)
     );
-  }, []);
+  }, [setCanvasStrokes]);
 
   const handleSelectLayer = (layerId: string) => {
     if (project) {
@@ -133,8 +134,6 @@ export default function CanvasPage() {
       );
     }
   };
-
-  const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
 
   const handleStrokesChange = (strokes: DrawingStroke[]) => {
     if (project) {

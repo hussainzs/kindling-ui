@@ -1,4 +1,8 @@
 import { useState } from 'react';
+import type { DrawingStroke } from '../types/drawing';
+import StrokePreviewCanvas from './StrokePreviewCanvas';
+
+const INTERVENTION_PREVIEW_SIZE = 200;
 
 const TIPS = [
   'Take a deliberate 5-minute breather, step away from your work, and return with a fresh set of eyes that might notice things you couldn’t see before.',
@@ -15,9 +19,13 @@ const TIPS = [
 
 export default function InterventionPopup({
   open,
+  startedStrokes,
+  currentStrokes,
   onClose,
 }: {
   open: boolean;
+  startedStrokes: DrawingStroke[];
+  currentStrokes: DrawingStroke[];
   onClose: () => void;
 }) {
   const [tip] = useState(() => TIPS[Math.floor(Math.random() * TIPS.length)]);
@@ -47,17 +55,27 @@ export default function InterventionPopup({
             </p>
             <div className="intervention-progress-row">
               <div className="intervention-progress-group">
-                <div className="intervention-progress-img intervention-progress-img-start" />
-                <span className="intervention-progress-label">&nbsp;</span>
+                <div className="intervention-progress-canvas-frame">
+                  <StrokePreviewCanvas
+                    strokes={startedStrokes}
+                    size={INTERVENTION_PREVIEW_SIZE}
+                    className="intervention-progress-canvas"
+                  />
+                </div>
                 <span className="intervention-progress-label">
-                  where you started · 0/3 milestones
+                  where you started
                 </span>
               </div>
               <div className="intervention-progress-group">
-                <div className="intervention-progress-img intervention-progress-img-current" />
-                <span className="intervention-progress-label">&nbsp;</span>
+                <div className="intervention-progress-canvas-frame">
+                  <StrokePreviewCanvas
+                    strokes={currentStrokes}
+                    size={INTERVENTION_PREVIEW_SIZE}
+                    className="intervention-progress-canvas"
+                  />
+                </div>
                 <span className="intervention-progress-label intervention-progress-label-current">
-                  where you are right now · 0/3 milestones
+                  where you are right now
                 </span>
               </div>
             </div>
@@ -65,7 +83,7 @@ export default function InterventionPopup({
           {/* Right column */}
           <div className="intervention-modal-right">
             <div className="intervention-tip-box">
-              <span className="intervention-tip-title">now try this ✦</span>
+              <span className="intervention-tip-title">now try this</span>
               <span className="intervention-tip-text">{tip}</span>
             </div>
             <div className="intervention-modal-actions">

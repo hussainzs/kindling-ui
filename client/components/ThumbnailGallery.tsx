@@ -1,5 +1,5 @@
-import { useRef, useEffect } from 'react';
 import type { Thumbnail } from '../types/drawing';
+import StrokePreviewCanvas from './StrokePreviewCanvas';
 
 interface ThumbnailGalleryProps {
   thumbnails: Thumbnail[];
@@ -54,103 +54,6 @@ function ThumbnailSlot({
   onSelectEmpty,
   onSelectFilled,
 }: ThumbnailSlotProps) {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    canvas.width = THUMBNAIL_SIZE;
-    canvas.height = THUMBNAIL_SIZE;
-
-    // Only fill with white if there's content (thumbnail exists)
-    if (thumbnail) {
-      ctx.fillStyle = '#ffffff';
-      ctx.fillRect(0, 0, THUMBNAIL_SIZE, THUMBNAIL_SIZE);
-
-      const COLOR_MAP: Record<string, string> = {
-        black: '#000000',
-        rust: '#b8431f',
-        gold: '#c9973a',
-        sage: '#5e8060',
-      };
-
-      // Calculate bounds of drawing to zoom in appropriately
-      let minX = Infinity,
-        maxX = -Infinity;
-      let minY = Infinity,
-        maxY = -Infinity;
-
-      thumbnail.strokes.forEach((stroke) => {
-        stroke.points.forEach((point) => {
-          minX = Math.min(minX, point.x);
-          maxX = Math.max(maxX, point.x);
-          minY = Math.min(minY, point.y);
-          maxY = Math.max(maxY, point.y);
-        });
-      });
-
-      // If we have bounds, scale to fit with padding
-      let scaleX = 1,
-        scaleY = 1,
-        offsetX = 0,
-        offsetY = 0;
-
-      if (minX !== Infinity && maxX !== -Infinity) {
-        const drawingWidth = maxX - minX;
-        const drawingHeight = maxY - minY;
-        const padding = 10;
-
-        scaleX =
-          (THUMBNAIL_SIZE - padding * 2) / (drawingWidth || THUMBNAIL_SIZE);
-        scaleY =
-          (THUMBNAIL_SIZE - padding * 2) / (drawingHeight || THUMBNAIL_SIZE);
-
-        const scale = Math.min(scaleX, scaleY, 1); // Don't upscale beyond 1
-
-        offsetX = padding - minX * scale;
-        offsetY = padding - minY * scale;
-
-        scaleX = scale;
-        scaleY = scale;
-      }
-
-      thumbnail.strokes.forEach((stroke) => {
-        if (stroke.isEraser) {
-          ctx.globalCompositeOperation = 'destination-out';
-        } else {
-          ctx.globalCompositeOperation = 'source-over';
-          ctx.strokeStyle = COLOR_MAP[stroke.color] || '#000000';
-        }
-
-        ctx.lineWidth = stroke.isEraser ? 20 * scaleX : 2 * scaleX;
-        ctx.lineCap = 'round';
-        ctx.lineJoin = 'round';
-
-        if (stroke.points.length > 0) {
-          ctx.beginPath();
-          ctx.moveTo(
-            stroke.points[0].x * scaleX + offsetX,
-            stroke.points[0].y * scaleY + offsetY
-          );
-
-          for (let i = 1; i < stroke.points.length; i++) {
-            ctx.lineTo(
-              stroke.points[i].x * scaleX + offsetX,
-              stroke.points[i].y * scaleY + offsetY
-            );
-          }
-
-          ctx.stroke();
-        }
-      });
-    }
-    // If no thumbnail, canvas stays transparent
-  }, [thumbnail]);
-
   if (!thumbnail) {
     // Empty slot with dashed border - clickable to create
     return (
@@ -198,14 +101,7 @@ function ThumbnailSlot({
           overflow: 'hidden',
         }}
       >
-        <canvas
-          ref={canvasRef}
-          style={{
-            width: `${THUMBNAIL_SIZE}px`,
-            height: `${THUMBNAIL_SIZE}px`,
-            display: 'block',
-          }}
-        />
+        <StrokePreviewCanvas strokes={thumbnail.strokes} size={THUMBNAIL_SIZE} />
       </div>
       <span className="text-metadata text-muted uppercase">
         thumbnail {slotNumber}

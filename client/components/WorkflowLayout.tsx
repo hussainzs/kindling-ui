@@ -2,7 +2,7 @@ import { useEffect, useState, type Dispatch, type SetStateAction } from 'react';
 import { Outlet, useNavigate } from 'react-router';
 import FloatingWorkflowNav from './FloatingWorkflowNav';
 import SchedulerReminderModal from './SchedulerReminderModal';
-import type { DrawingStroke } from '../types/drawing';
+import type { DrawingStroke, Thumbnail } from '../types/drawing';
 
 const MINUTE_IN_MS = 60 * 1000;
 
@@ -22,6 +22,12 @@ export type WorkflowOutletContext = {
   // canvasStrokes = the user's latest drawing, updated live as they draw
   canvasStrokes: DrawingStroke[];
   setCanvasStrokes: Dispatch<SetStateAction<DrawingStroke[]>>;
+  // thumbnails = up to 3 quick sketches created in the thumbnail step.
+  thumbnails: Thumbnail[];
+  setThumbnails: Dispatch<SetStateAction<Thumbnail[]>>;
+  // selectedThumbnailId = which thumbnail is currently chosen as starting point.
+  selectedThumbnailId: string | null;
+  setSelectedThumbnailId: Dispatch<SetStateAction<string | null>>;
   // check-in scheduler state/actions that should persist across page navigation.
   isCheckInTimerRunning: boolean;
   startCheckInScheduler: (minutes: number) => void;
@@ -34,6 +40,10 @@ export default function WorkflowLayout() {
   const [milestonesCompleted, setMilestonesCompleted] = useState<string[]>([]);
   const [checkInReflection, setCheckInReflection] = useState('');
   const [canvasStrokes, setCanvasStrokes] = useState<DrawingStroke[]>([]);
+  const [thumbnails, setThumbnails] = useState<Thumbnail[]>([]);
+  const [selectedThumbnailId, setSelectedThumbnailId] = useState<string | null>(
+    null
+  );
   const [checkInReminderMinutes, setCheckInReminderMinutes] =
     useState<number>(0);
   const [checkInTimerEndsAt, setCheckInTimerEndsAt] = useState<number | null>(
@@ -100,6 +110,10 @@ export default function WorkflowLayout() {
             setCheckInReflection,
             canvasStrokes,
             setCanvasStrokes,
+            thumbnails,
+            setThumbnails,
+            selectedThumbnailId,
+            setSelectedThumbnailId,
             isCheckInTimerRunning,
             startCheckInScheduler,
           }}
