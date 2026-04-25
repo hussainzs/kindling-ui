@@ -135,7 +135,7 @@ export default function ThumbnailPage() {
           className="text-body text-muted hover:text-ink-mid transition-colors"
           onClick={handleContinueWithoutThumbnails}
         >
-          or continue without thumbnails →
+          clear canvas and continue without thumbnail →
         </button>
 
         <button

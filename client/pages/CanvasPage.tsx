@@ -333,7 +333,7 @@ export default function CanvasPage() {
             onClick={handleSaveToGallery}
             className="bg-rust !text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
           >
-            save ✦
+            save new ✦
           </button>
         </div>
       </div>
