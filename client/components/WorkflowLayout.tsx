@@ -28,6 +28,9 @@ export type WorkflowOutletContext = {
   // selectedThumbnailId = which thumbnail is currently chosen as starting point.
   selectedThumbnailId: string | null;
   setSelectedThumbnailId: Dispatch<SetStateAction<string | null>>;
+  // resumedArtworkId = saved artwork id when resuming from gallery.
+  resumedArtworkId: string | null;
+  setResumedArtworkId: Dispatch<SetStateAction<string | null>>;
   // check-in scheduler state/actions that should persist across page navigation.
   isCheckInTimerRunning: boolean;
   startCheckInScheduler: (minutes: number) => void;
@@ -45,6 +48,7 @@ export default function WorkflowLayout() {
   const [selectedThumbnailId, setSelectedThumbnailId] = useState<string | null>(
     null
   );
+  const [resumedArtworkId, setResumedArtworkId] = useState<string | null>(null);
   const [checkInReminderMinutes, setCheckInReminderMinutes] =
     useState<number>(0);
   const [checkInTimerEndsAt, setCheckInTimerEndsAt] = useState<number | null>(
@@ -62,6 +66,7 @@ export default function WorkflowLayout() {
     setCanvasStrokes([]);
     setThumbnails([]);
     setSelectedThumbnailId(null);
+    setResumedArtworkId(null);
     setCheckInReminderMinutes(0);
     setCheckInTimerEndsAt(null);
     setIsCheckInReminderOpen(false);
@@ -128,6 +133,8 @@ export default function WorkflowLayout() {
             setThumbnails,
             selectedThumbnailId,
             setSelectedThumbnailId,
+            resumedArtworkId,
+            setResumedArtworkId,
             isCheckInTimerRunning,
             startCheckInScheduler,
             resetWorkflowSession,

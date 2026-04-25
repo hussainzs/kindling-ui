@@ -1,6 +1,10 @@
-import { useMemo, useState } from 'react';
+import { type MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router';
+import NotebookErrorToast from '../components/NotebookErrorToast';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
+
+const ACTIVE_CANVAS_PROJECT_KEY = 'kindling_active_canvas_project';
+const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
 
 type Folder = {
   id: string;
@@ -110,15 +114,20 @@ const initialArtworks: Artwork[] = [
 
 export default function GalleryPage() {
   const navigate = useNavigate();
-  const { resetWorkflowSession } = useOutletContext<WorkflowOutletContext>();
+  const { resetWorkflowSession, setResumedArtworkId } =
+    useOutletContext<WorkflowOutletContext>();
   const [folders, setFolders] = useState(initialFolders);
   const [selectedFolderId, setSelectedFolderId] = useState('all');
+  const [selectedArtworkId, setSelectedArtworkId] = useState<string | null>(
+    null
+  );
   const [isEditing, setIsEditing] = useState(false);
   const [draftNames, setDraftNames] = useState(
     Object.fromEntries(initialFolders.map((folder) => [folder.id, folder.name]))
   );
+  const [saveToastMessage, setSaveToastMessage] = useState<string | null>(null);
 
-  // Load saved artworks from localStorage (written by CanvasPage on save)
+  // Load saved artworks from sessionStorage (written by CanvasPage on save)
   const [savedArtworks] = useState<Artwork[]>(() => {
     try {
       return JSON.parse(
@@ -131,13 +140,17 @@ export default function GalleryPage() {
 
   // Saved artworks appear first so the most recent work is at the top
   const allArtworks = [...savedArtworks, ...initialArtworks];
+  const savedArtworkIds = new Set(savedArtworks.map((artwork) => artwork.id));
+
+  const isArtworkInFolder = (artwork: Artwork, folderId: string) =>
+    artwork.folderId === folderId || artwork.tag === folderId;
 
   const filteredArtworks = useMemo(
     () =>
       selectedFolderId === 'all'
         ? allArtworks
-        : allArtworks.filter(
-            (artwork) => artwork.folderId === selectedFolderId
+        : allArtworks.filter((artwork) =>
+            isArtworkInFolder(artwork, selectedFolderId)
           ),
     [selectedFolderId, allArtworks]
   );
@@ -146,8 +159,8 @@ export default function GalleryPage() {
     const counts: Record<string, number> = { all: allArtworks.length };
     folders.forEach((folder) => {
       if (folder.id !== 'all') {
-        counts[folder.id] = allArtworks.filter(
-          (art) => art.folderId === folder.id
+        counts[folder.id] = allArtworks.filter((art) =>
+          isArtworkInFolder(art, folder.id)
         ).length;
       }
     });
@@ -156,6 +169,24 @@ export default function GalleryPage() {
 
   const selectedFolder =
     folders.find((folder) => folder.id === selectedFolderId) ?? folders[0];
+
+  useEffect(() => {
+    const message = sessionStorage.getItem('kindling_gallery_toast_message');
+    if (!message) {
+      return;
+    }
+
+    sessionStorage.removeItem('kindling_gallery_toast_message');
+    setSaveToastMessage(message);
+
+    const timeoutId = window.setTimeout(() => {
+      setSaveToastMessage(null);
+    }, 2200);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+    };
+  }, []);
 
   function handleDeleteFolder(folderId: string) {
     if (folderId === 'all') return;
@@ -167,6 +198,7 @@ export default function GalleryPage() {
 
   function handleNewKindling() {
     resetWorkflowSession();
+    setResumedArtworkId(null);
     sessionStorage.removeItem('kindling_active_canvas_project');
     sessionStorage.removeItem('kindling_selected_thumbnail_strokes');
     sessionStorage.removeItem('kindling_thumbnails_session');
@@ -193,9 +225,37 @@ export default function GalleryPage() {
     }));
   }
 
+  function handleSelectArtwork(artworkId: string) {
+    setSelectedArtworkId((currentId) =>
+      currentId === artworkId ? null : artworkId
+    );
+  }
+
+  function handlePageShellClick(event: MouseEvent<HTMLElement>) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.gallery-artwork-card')) {
+      setSelectedArtworkId(null);
+    }
+  }
+
+  function handleResumeArtwork(artwork: Artwork) {
+    const storedProject = sessionStorage.getItem(`kindling_project_${artwork.id}`);
+    if (storedProject) {
+      sessionStorage.setItem(ACTIVE_CANVAS_PROJECT_KEY, storedProject);
+      sessionStorage.removeItem(RESET_CANVAS_PROJECT_KEY);
+      setResumedArtworkId(artwork.id);
+      navigate('/canvas');
+      return;
+    }
+
+    // Fallback: still route user to canvas even if the project payload is unavailable.
+    setResumedArtworkId(artwork.id);
+    navigate('/canvas');
+  }
+
   return (
     <>
-      <section className="gallery-page-shell">
+      <section className="gallery-page-shell" onClick={handlePageShellClick}>
         <div className="gallery-top-bar">
           <div className="gallery-logo-shell">
             <p className="gallery-logo">kindling ✦</p>
@@ -385,12 +445,35 @@ export default function GalleryPage() {
             </div>
 
             <div className="gallery-artwork-grid">
-              {filteredArtworks.map((artwork) => (
-                <article
-                  key={artwork.id}
-                  className="gallery-artwork-card gallery-artwork-small"
-                  tabIndex={0}
-                >
+              {filteredArtworks.map((artwork) => {
+                const isUserGenerated = savedArtworkIds.has(artwork.id);
+                const isSelected = selectedArtworkId === artwork.id;
+
+                return (
+                  <article
+                    key={artwork.id}
+                    className={`gallery-artwork-card gallery-artwork-small${
+                      isUserGenerated ? ' gallery-artwork-card-selectable' : ''
+                    }${isSelected ? ' gallery-artwork-card-selected' : ''}`}
+                    tabIndex={0}
+                    onClick={() => {
+                      if (isUserGenerated) {
+                        handleSelectArtwork(artwork.id);
+                      }
+                    }}
+                  >
+                    {isUserGenerated && isSelected ? (
+                      <button
+                        type="button"
+                        className="btn btn-sage gallery-artwork-resume-btn"
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleResumeArtwork(artwork);
+                        }}
+                      >
+                        resume
+                      </button>
+                    ) : null}
                   {/* Image on top */}
                   <div
                     className={`gallery-artwork-cover gallery-artwork-cover-${artwork.tone}`}
@@ -442,8 +525,9 @@ export default function GalleryPage() {
                   <div className="gallery-artwork-description">
                     {artwork.description}
                   </div>
-                </article>
-              ))}
+                  </article>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -559,6 +643,10 @@ export default function GalleryPage() {
             </div>
           </aside>
         </div>
+
+        {saveToastMessage ? (
+          <NotebookErrorToast message={saveToastMessage} />
+        ) : null}
       </section>
     </>
   );

@@ -9,7 +9,7 @@ import type {
   DrawingStroke,
   CanvasProject,
 } from '../types/drawing';
-import { Eye, EyeOff, Trash2, Brush, Eraser } from 'lucide-react';
+import { Eye, EyeOff, Trash2, Brush, Eraser, Save } from 'lucide-react';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 const ACTIVE_CANVAS_PROJECT_KEY = 'kindling_active_canvas_project';
@@ -17,8 +17,12 @@ const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
 
 export default function CanvasPage() {
   const navigate = useNavigate();
-  const { setCanvasStrokes, milestones, milestonesCompleted } =
-    useOutletContext<WorkflowOutletContext>();
+  const {
+    setCanvasStrokes,
+    milestones,
+    milestonesCompleted,
+    resumedArtworkId,
+  } = useOutletContext<WorkflowOutletContext>();
   const [project, setProject] = useState<CanvasProject | null>(null);
   const [currentColor, setCurrentColor] = useState<DrawingColor>('black');
   const [isEraser, setIsEraser] = useState(false);
@@ -236,20 +240,7 @@ export default function CanvasPage() {
     (l) => l.id === project.activeLayerId
   );
 
-  const handleSaveToGallery = (payload: {
-    title: string;
-    description: string;
-    tags: string;
-  }) => {
-    if (!project) return;
-
-    const { title, description, tags } = payload;
-
-    const allStrokes = project.layers
-      .filter((l) => l.isVisible)
-      .flatMap((l) => l.strokes);
-
-    // Render to an offscreen canvas for the thumbnail
+  const buildThumbnail = (strokes: DrawingStroke[]) => {
     const offscreen = document.createElement('canvas');
     offscreen.width = 600;
     offscreen.height = 450;
@@ -264,7 +255,7 @@ export default function CanvasPage() {
       sage: '#5e8060',
     };
 
-    allStrokes.forEach((stroke) => {
+    strokes.forEach((stroke) => {
       ctx.globalCompositeOperation = stroke.isEraser
         ? 'destination-out'
         : 'source-over';
@@ -280,7 +271,23 @@ export default function CanvasPage() {
       }
     });
 
-    const thumbnail = offscreen.toDataURL('image/png');
+    return offscreen.toDataURL('image/png');
+  };
+
+  const handleSaveToGallery = (payload: {
+    title: string;
+    description: string;
+    tags: string;
+  }) => {
+    if (!project) return;
+
+    const { title, description, tags } = payload;
+
+    const allStrokes = project.layers
+      .filter((l) => l.isVisible)
+      .flatMap((l) => l.strokes);
+
+    const thumbnail = buildThumbnail(allStrokes);
 
     const newArtwork = {
       id: project.id,
@@ -316,6 +323,47 @@ export default function CanvasPage() {
     setShowSaveModal(true);
   };
 
+  const isSaveEnabled = Boolean(
+    resumedArtworkId && project && project.id === resumedArtworkId
+  );
+
+  const handleSaveExisting = () => {
+    if (!project || !isSaveEnabled) return;
+
+    const allStrokes = project.layers
+      .filter((l) => l.isVisible)
+      .flatMap((l) => l.strokes);
+
+    const thumbnail = buildThumbnail(allStrokes);
+    const stored = JSON.parse(
+      sessionStorage.getItem('kindling_saved_artworks') ?? '[]'
+    ) as Array<Record<string, unknown>>;
+
+    const updated = stored.map((artwork) => {
+      if (artwork.id !== project.id) {
+        return artwork;
+      }
+
+      return {
+        ...artwork,
+        image: thumbnail,
+        progress: `${milestonesCompleted.length}/${milestones.length} goals`,
+        date: new Date().toLocaleDateString('en-US', {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        }),
+      };
+    });
+
+    sessionStorage.setItem('kindling_saved_artworks', JSON.stringify(updated));
+    sessionStorage.setItem(
+      'kindling_gallery_toast_message',
+      'latest canvas updated and saved'
+    );
+    navigate('/');
+  };
+
   return (
     <div
       className="canvas-app min-h-[100svh] flex flex-col bg-black overflow-hidden"
@@ -339,12 +387,22 @@ export default function CanvasPage() {
           >
             thumbnails
           </button>
-          <button className="text-white text-lg p-2 hover:bg-gray-800 rounded transition-colors">
-            ↻
+          <button
+            type="button"
+            className="btn bg-sage !text-white text-sm font-semibold rounded-lg transition-colors"
+            onClick={handleSaveExisting}
+            disabled={!isSaveEnabled}
+            style={{
+              opacity: isSaveEnabled ? 1 : 0.25,
+              cursor: isSaveEnabled ? 'pointer' : 'not-allowed',
+            }}
+          >
+            <Save className="icon icon-sm" />
+            save
           </button>
           <button
             onClick={handleSaveNewClick}
-            className="bg-rust !text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
+            className="bg-rust !text-white text-sm font-semibold px-4 py-2 rounded-lg transition-colors"
           >
             save new ✦
           </button>
@@ -550,6 +608,7 @@ export default function CanvasPage() {
           }}
         />
       )}
+
     </div>
   );
 }

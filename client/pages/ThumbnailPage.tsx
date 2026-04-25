@@ -15,6 +15,7 @@ export default function ThumbnailPage() {
     setThumbnails,
     selectedThumbnailId,
     setSelectedThumbnailId,
+    setResumedArtworkId,
   } = useOutletContext<WorkflowOutletContext>();
   const [pageState, setPageState] = useState<ThumbnailPageState>('gallery');
 
@@ -58,6 +59,7 @@ export default function ThumbnailPage() {
   };
 
   const handleContinueToCanvas = () => {
+    setResumedArtworkId(null);
     if (selectedThumbnailId) {
       const selected = thumbnails.find((t) => t.id === selectedThumbnailId);
       if (selected) {
@@ -74,6 +76,7 @@ export default function ThumbnailPage() {
   };
 
   const handleContinueWithoutThumbnails = () => {
+    setResumedArtworkId(null);
     sessionStorage.removeItem('kindling_selected_thumbnail_strokes');
     sessionStorage.setItem(RESET_CANVAS_PROJECT_KEY, '1');
     navigate('/canvas');
