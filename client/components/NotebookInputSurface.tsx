@@ -14,7 +14,6 @@ export default function NotebookInputSurface({
 }: NotebookInputSurfaceProps) {
   const [draftText, setDraftText] = useState(initialText);
   const [scrollTop, setScrollTop] = useState(0);
-  const showDefaultPrompt = draftText.trim().length === 0;
 
   useEffect(() => {
     setDraftText(initialText);
@@ -36,7 +35,6 @@ export default function NotebookInputSurface({
         className="notebook-input-default text-note-hand"
         style={{
           transform: `translateY(${-scrollTop}px)`,
-          opacity: showDefaultPrompt ? 1 : 0,
         }}
         aria-hidden="true"
       >

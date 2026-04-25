@@ -392,6 +392,9 @@ button {
     background: transparent;
     color: var(--text-ink-mid);
     border-color: transparent;
+}
+
+.btn-gold {
     background: var(--accent-gold);
     color: #fff;
     border-color: color-mix(in srgb, var(--accent-gold-light) 54%, var(--accent-gold));
@@ -1418,12 +1421,13 @@ a:focus-visible {
     .milestone-draft-shell {
         display: flex;
         flex-direction: column;
-        gap: var(--space-2);
+        gap: 0.32rem;
         border-radius: var(--radius-lg);
         border: 1px solid color-mix(in srgb, var(--text-muted) 35%, var(--ui-divider));
         background: color-mix(in srgb, var(--bg-warm-white) 72%, var(--bg-parchment));
         box-shadow: 0 2px 10px rgb(var(--ui-shadow-rgb) / 7%);
-        padding: 0.75rem;
+        padding: 0.44rem;
+            margin-top: -0.24rem;
     }
 
         .milestone-draft-shell-attention {
@@ -1444,19 +1448,19 @@ a:focus-visible {
         }
     .milestone-draft-label {
         margin: 0;
-        font-size: 0.9rem;
+        font-size: 0.78rem;
         color: var(--text-ink-soft);
     }
     
     .milestone-draft-input {
         width: 100%;
-        min-height: 4rem;
+        min-height: 2.35rem;
         border: 1px dashed color-mix(in srgb, var(--text-muted) 46%, var(--ui-divider));
         border-radius: var(--radius-md);
         background: color-mix(in srgb, var(--bg-warm-white) 88%, var(--bg-cream));
         color: var(--text-ink-mid);
-        padding: 0.6rem 0.8rem;
-        font-size: 1.25rem;
+        padding: 0.35rem 0.55rem;
+            font-size: 1rem;
         resize: none;
     }
     
@@ -1468,27 +1472,28 @@ a:focus-visible {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: var(--space-3);
+    gap: var(--space-2);
 }
 
 .milestone-draft-add {
-    min-height: 2.5rem;
+    min-height: 1.8rem;
     border-radius: 9999px;
-    padding-inline: 1rem;
-        font-size: 1rem;
+    padding-inline: 0.72rem;
+        font-size: 0.84rem;
 }
 
 .milestone-draft-ignore {
-    min-height: 2.5rem;
+    min-height: 1.8rem;
     color: var(--text-muted);
     text-decoration: underline;
     text-underline-offset: 0.18em;
-    font-size: 0.95rem;
+    font-size: 0.8rem;
 }
 
 .milestone-draft-status {
     margin: 0;
-    min-height: 1.05rem;
+    min-height: 0.72rem;
+        font-size: 0.75rem;
     color: var(--text-ink-soft);
 }
 

@@ -36,6 +36,15 @@ export default function MilestoneBoard({
 }: MilestoneBoardProps) {
   return (
     <aside className="notebook-right-column" aria-label="Milestone board">
+      <MilestoneDraftInput
+        draftMilestone={draftMilestone}
+        onDraftChange={onDraftChange}
+        onAddMilestone={onAddMilestone}
+        onIgnoreDraft={onIgnoreDraft}
+        isAttentionActive={isDraftAttentionActive}
+        statusMessage={draftStatusMessage}
+      />
+
       <div className="milestone-board-canvas">
         <h2 className="text-caption notebook-milestone-title">
           your milestones
@@ -66,15 +75,6 @@ export default function MilestoneBoard({
           </p>
         )}
       </div>
-
-      <MilestoneDraftInput
-        draftMilestone={draftMilestone}
-        onDraftChange={onDraftChange}
-        onAddMilestone={onAddMilestone}
-        onIgnoreDraft={onIgnoreDraft}
-        isAttentionActive={isDraftAttentionActive}
-        statusMessage={draftStatusMessage}
-      />
 
       <div
         className="notebook-route-actions"
