@@ -6,7 +6,6 @@ import ThumbnailPage from '../pages/ThumbnailPage';
 import CanvasPage from '../pages/CanvasPage';
 import CheckInPage from '../pages/CheckInPage';
 import InterventionPage from '../pages/InterventionPage';
-import StylePage from '../pages/StylePage';
 
 export const appRouter = createBrowserRouter([
   {
@@ -19,7 +18,6 @@ export const appRouter = createBrowserRouter([
       { path: 'canvas', element: <CanvasPage /> },
       { path: 'check-in', element: <CheckInPage /> },
       { path: 'intervention', element: <InterventionPage /> },
-      { path: 'style', element: <StylePage /> },
     ],
   },
 ]);
