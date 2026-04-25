@@ -3,17 +3,24 @@ import { useNavigate, useOutletContext } from 'react-router';
 import MainCanvas from '../components/MainCanvas';
 import ColorPicker from '../components/ColorPicker';
 import SaveArtworkModal from '../components/SaveArtworkModal';
-import type {
-  Layer,
-  DrawingColor,
-  DrawingStroke,
-  CanvasProject,
-} from '../types/drawing';
-import { Eye, EyeOff, Trash2, Brush, Eraser, Save } from 'lucide-react';
+import type { DrawingColor, DrawingStroke } from '../types/drawing';
+import { Brush, Eraser, Save } from 'lucide-react';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
-const ACTIVE_CANVAS_PROJECT_KEY = 'kindling_active_canvas_project';
-const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
+const ACTIVE_CANVAS_KEY = 'kindling_active_canvas_strokes';
+const RESET_CANVAS_KEY = 'kindling_canvas_should_reset';
+const CANVAS_SESSION_START_KEY = 'kindling_canvas_session_start';
+const CANVAS_ELAPSED_KEY = 'kindling_canvas_elapsed_ms';
+const CANVAS_PROJECT_ID_KEY = 'kindling_canvas_project_id';
+
+const parseDurationToMs = (duration: string): number => {
+  if (!duration || duration === '--') return 0;
+  const hoursMatch = duration.match(/(\d+)h/);
+  const minsMatch = duration.match(/(\d+)\s*min/);
+  const h = hoursMatch ? parseInt(hoursMatch[1]) : 0;
+  const m = minsMatch ? parseInt(minsMatch[1]) : 0;
+  return (h * 60 + m) * 60000;
+};
 
 export default function CanvasPage() {
   const navigate = useNavigate();
@@ -23,231 +30,132 @@ export default function CanvasPage() {
     milestonesCompleted,
     resumedArtworkId,
   } = useOutletContext<WorkflowOutletContext>();
-  const [project, setProject] = useState<CanvasProject | null>(null);
+
+  const [strokes, setStrokes] = useState<DrawingStroke[]>([]);
+  const [projectId, setProjectId] = useState<string>('');
   const [currentColor, setCurrentColor] = useState<DrawingColor>('black');
   const [isEraser, setIsEraser] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
-  const [showLayerMenu, setShowLayerMenu] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
   const colorToggleButtonRef = useRef<HTMLButtonElement>(null);
+
   const fullBleedCanvasStyle = {
     width: '100dvw',
     marginLeft: 'calc(50% - 50dvw)',
     marginTop: 'calc(-1 * max(var(--space-4), var(--safe-top)))',
   } as const;
 
-  // Initialize canvas
+  // Initialize canvas + start timer in one effect so elapsed seeding
+  // always happens before the session start timestamp is recorded
   useEffect(() => {
-    const shouldResetCanvas =
-      sessionStorage.getItem(RESET_CANVAS_PROJECT_KEY) === '1';
-    sessionStorage.removeItem(RESET_CANVAS_PROJECT_KEY);
+    const shouldReset = sessionStorage.getItem(RESET_CANVAS_KEY) === '1';
+    sessionStorage.removeItem(RESET_CANVAS_KEY);
 
-    if (!shouldResetCanvas) {
-      const storedActiveProject = sessionStorage.getItem(
-        ACTIVE_CANVAS_PROJECT_KEY
-      );
+    if (!shouldReset) {
+      const storedStrokes = sessionStorage.getItem(ACTIVE_CANVAS_KEY);
+      const storedId = sessionStorage.getItem(CANVAS_PROJECT_ID_KEY);
 
-      if (storedActiveProject) {
+      if (storedStrokes && storedId) {
         try {
-          const parsedProject = JSON.parse(storedActiveProject) as CanvasProject;
-          const hasLayers =
-            Array.isArray(parsedProject.layers) &&
-            parsedProject.layers.length > 0;
+          const parsed = JSON.parse(storedStrokes) as DrawingStroke[];
+          setStrokes(parsed);
+          setProjectId(storedId);
+          setCanvasStrokes(parsed);
 
-          if (hasLayers && parsedProject.id) {
-            const activeLayerExists = parsedProject.layers.some(
-              (layer) => layer.id === parsedProject.activeLayerId
-            );
-            const restoredProject = activeLayerExists
-              ? parsedProject
-              : {
-                  ...parsedProject,
-                  activeLayerId: parsedProject.layers[0].id,
-                };
-
-            const activeLayer = restoredProject.layers.find(
-              (layer) => layer.id === restoredProject.activeLayerId
-            );
-
-            setProject(restoredProject);
-            setCanvasStrokes(activeLayer?.strokes ?? []);
-            sessionStorage.setItem(
-              `kindling_project_${restoredProject.id}`,
-              JSON.stringify(restoredProject)
-            );
-            return;
+          // Seed banked time from the saved artwork's duration when resuming,
+          // but only if there's no banked time already (i.e. a mid-session refresh
+          // should not re-seed and double-count)
+          if (!sessionStorage.getItem(CANVAS_ELAPSED_KEY)) {
+            const savedArtworks = JSON.parse(
+              sessionStorage.getItem('kindling_saved_artworks') ?? '[]'
+            ) as Array<{ id: string; duration?: string }>;
+            const match = savedArtworks.find((a) => a.id === storedId);
+            if (match?.duration) {
+              sessionStorage.setItem(
+                CANVAS_ELAPSED_KEY,
+                String(parseDurationToMs(match.duration))
+              );
+            }
           }
+
+          // Start timer AFTER seeding elapsed time
+          sessionStorage.setItem(CANVAS_SESSION_START_KEY, String(Date.now()));
+
+          return () => {
+            const start = Number(sessionStorage.getItem(CANVAS_SESSION_START_KEY));
+            if (start) {
+              const prev = Number(sessionStorage.getItem(CANVAS_ELAPSED_KEY) ?? '0');
+              sessionStorage.setItem(CANVAS_ELAPSED_KEY, String(prev + (Date.now() - start)));
+              sessionStorage.removeItem(CANVAS_SESSION_START_KEY);
+            }
+          };
         } catch {
-          // Invalid stored project data
+          // Invalid stored data, fall through to fresh canvas
         }
       }
     }
 
-    const projectId = `project_${Date.now()}`;
-    const thumbnailStrokes: DrawingStroke[] = [];
+    // Fresh canvas — clear any stale timer keys from a previous project
+    sessionStorage.removeItem(CANVAS_ELAPSED_KEY);
+    sessionStorage.removeItem(CANVAS_SESSION_START_KEY);
+
+    const newId = `project_${Date.now()}`;
+    let initialStrokes: DrawingStroke[] = [];
 
     const storedThumbnailStrokes = sessionStorage.getItem(
       'kindling_selected_thumbnail_strokes'
     );
     if (storedThumbnailStrokes) {
       try {
-        const strokes = JSON.parse(storedThumbnailStrokes);
-        thumbnailStrokes.push(...strokes);
+        initialStrokes = JSON.parse(storedThumbnailStrokes);
       } catch {
         // Invalid data
       }
     }
 
-    const baseLayer: Layer = {
-      id: `layer_${Date.now()}`,
-      name: 'Layer 1',
-      strokes: thumbnailStrokes,
-      opacity: 100,
-      isVisible: true,
-      createdAt: Date.now(),
-    };
+    setProjectId(newId);
+    setStrokes(initialStrokes);
+    setCanvasStrokes(initialStrokes);
+    sessionStorage.setItem(CANVAS_PROJECT_ID_KEY, newId);
+    sessionStorage.setItem(ACTIVE_CANVAS_KEY, JSON.stringify(initialStrokes));
 
-    const newProject: CanvasProject = {
-      id: projectId,
-      layers: [baseLayer],
-      activeLayerId: baseLayer.id,
-      createdAt: Date.now(),
-      updatedAt: Date.now(),
-    };
+    // Start timer for fresh canvas
+    sessionStorage.setItem(CANVAS_SESSION_START_KEY, String(Date.now()));
 
-    setProject(newProject);
-    setCanvasStrokes(thumbnailStrokes);
-    sessionStorage.setItem(
-      `kindling_project_${projectId}`,
-      JSON.stringify(newProject)
-    );
+    return () => {
+      const start = Number(sessionStorage.getItem(CANVAS_SESSION_START_KEY));
+      if (start) {
+        const prev = Number(sessionStorage.getItem(CANVAS_ELAPSED_KEY) ?? '0');
+        sessionStorage.setItem(CANVAS_ELAPSED_KEY, String(prev + (Date.now() - start)));
+        sessionStorage.removeItem(CANVAS_SESSION_START_KEY);
+      }
+    };
   }, [setCanvasStrokes]);
 
-  useEffect(() => {
-    if (!project) {
-      return;
-    }
-
-    sessionStorage.setItem(ACTIVE_CANVAS_PROJECT_KEY, JSON.stringify(project));
-  }, [project]);
-
-  const handleSelectLayer = (layerId: string) => {
-    if (project) {
-      const updated = { ...project, activeLayerId: layerId };
-      setProject(updated);
-      sessionStorage.setItem(
-        `kindling_project_${project.id}`,
-        JSON.stringify(updated)
-      );
-    }
+  const handleStrokesChange = (newStrokes: DrawingStroke[]) => {
+    setStrokes(newStrokes);
+    setCanvasStrokes(newStrokes);
+    sessionStorage.setItem(ACTIVE_CANVAS_KEY, JSON.stringify(newStrokes));
   };
 
-  const handleToggleVisibility = (layerId: string) => {
-    if (project) {
-      const updated = {
-        ...project,
-        layers: project.layers.map((layer) =>
-          layer.id === layerId
-            ? { ...layer, isVisible: !layer.isVisible }
-            : layer
-        ),
-        updatedAt: Date.now(),
-      };
-      setProject(updated);
-      sessionStorage.setItem(
-        `kindling_project_${project.id}`,
-        JSON.stringify(updated)
-      );
-    }
+  const getElapsedDuration = (): string => {
+    const start = Number(sessionStorage.getItem(CANVAS_SESSION_START_KEY) ?? '0');
+    const banked = Number(sessionStorage.getItem(CANVAS_ELAPSED_KEY) ?? '0');
+    const totalMs = banked + (start ? Date.now() - start : 0);
+    if (totalMs < 60000) return '< 1 min';
+    const totalMin = Math.round(totalMs / 60000);
+    if (totalMin < 60) return `${totalMin} min`;
+    const h = Math.floor(totalMin / 60);
+    const m = totalMin % 60;
+    return m > 0 ? `${h}h ${m}min` : `${h}h`;
   };
 
-  const handleDeleteLayer = (layerId: string) => {
-    if (project && project.layers.length > 1) {
-      const updated = {
-        ...project,
-        layers: project.layers.filter((layer) => layer.id !== layerId),
-        activeLayerId:
-          project.activeLayerId === layerId
-            ? project.layers[0].id
-            : project.activeLayerId,
-        updatedAt: Date.now(),
-      };
-      setProject(updated);
-      sessionStorage.setItem(
-        `kindling_project_${project.id}`,
-        JSON.stringify(updated)
-      );
-    }
+  const clearTimerKeys = () => {
+    sessionStorage.removeItem(CANVAS_SESSION_START_KEY);
+    sessionStorage.removeItem(CANVAS_ELAPSED_KEY);
   };
 
-  const handleCreateLayer = () => {
-    if (project) {
-      const newLayer: Layer = {
-        id: `layer_${Date.now()}`,
-        name: `Layer ${project.layers.length + 1}`,
-        strokes: [],
-        opacity: 100,
-        isVisible: true,
-        createdAt: Date.now(),
-      };
-
-      const updated = {
-        ...project,
-        layers: [newLayer, ...project.layers],
-        activeLayerId: newLayer.id,
-        updatedAt: Date.now(),
-      };
-      setProject(updated);
-      sessionStorage.setItem(
-        `kindling_project_${project.id}`,
-        JSON.stringify(updated)
-      );
-    }
-  };
-
-  const handleStrokesChange = (strokes: DrawingStroke[]) => {
-    if (project) {
-      const updated = {
-        ...project,
-        layers: project.layers.map((layer) =>
-          layer.id === project.activeLayerId ? { ...layer, strokes } : layer
-        ),
-        updatedAt: Date.now(),
-      };
-      setProject(updated);
-      sessionStorage.setItem(
-        `kindling_project_${project.id}`,
-        JSON.stringify(updated)
-      );
-
-      // Sync active layer's strokes up to WorkflowLayout
-      setCanvasStrokes(strokes);
-    }
-  };
-
-  if (!project) {
-    return (
-      <div
-        className="min-h-[100svh] flex items-center justify-center bg-black"
-        style={fullBleedCanvasStyle}
-      >
-        <p className="text-white">Loading...</p>
-      </div>
-    );
-  }
-
-  const activeLayer = project.layers.find(
-    (l) => l.id === project.activeLayerId
-  );
-
-  const buildThumbnail = (strokes: DrawingStroke[]) => {
-    const offscreen = document.createElement('canvas');
-    offscreen.width = 600;
-    offscreen.height = 450;
-    const ctx = offscreen.getContext('2d')!;
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, offscreen.width, offscreen.height);
-
+  const buildThumbnail = (allStrokes: DrawingStroke[]) => {
     const COLOR_MAP: Record<string, string> = {
       black: '#000000',
       rust: '#b8431f',
@@ -255,21 +163,58 @@ export default function CanvasPage() {
       sage: '#5e8060',
     };
 
-    strokes.forEach((stroke) => {
-      ctx.globalCompositeOperation = stroke.isEraser
+    const W = 600;
+    const H = 450;
+
+    // Draw strokes on a transparent canvas
+    const drawingCanvas = document.createElement('canvas');
+    drawingCanvas.width = W;
+    drawingCanvas.height = H;
+    const drawingCtx = drawingCanvas.getContext('2d')!;
+
+    allStrokes.forEach((stroke) => {
+      drawingCtx.globalCompositeOperation = stroke.isEraser
         ? 'destination-out'
         : 'source-over';
-      ctx.strokeStyle = COLOR_MAP[stroke.color] ?? '#000';
-      ctx.lineWidth = stroke.isEraser ? 20 : 2;
-      ctx.lineCap = 'round';
-      ctx.lineJoin = 'round';
+      drawingCtx.strokeStyle = COLOR_MAP[stroke.color] ?? '#000';
+      drawingCtx.lineWidth = stroke.isEraser ? 20 : 2;
+      drawingCtx.lineCap = 'round';
+      drawingCtx.lineJoin = 'round';
       if (stroke.points.length > 0) {
-        ctx.beginPath();
-        ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
-        stroke.points.slice(1).forEach((p) => ctx.lineTo(p.x, p.y));
-        ctx.stroke();
+        drawingCtx.beginPath();
+        drawingCtx.moveTo(stroke.points[0].x, stroke.points[0].y);
+        stroke.points.slice(1).forEach((p) => drawingCtx.lineTo(p.x, p.y));
+        drawingCtx.stroke();
       }
     });
+
+    // Compute bounding box of non-eraser stroke points
+    const inkStrokes = allStrokes.filter((s) => !s.isEraser);
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    inkStrokes.forEach((stroke) => {
+      stroke.points.forEach((p) => {
+        if (p.x < minX) minX = p.x;
+        if (p.y < minY) minY = p.y;
+        if (p.x > maxX) maxX = p.x;
+        if (p.y > maxY) maxY = p.y;
+      });
+    });
+
+    const hasInk = inkStrokes.length > 0 && minX !== Infinity;
+    const PADDING = 40;
+    const cropX = hasInk ? Math.max(0, minX - PADDING) : 0;
+    const cropY = hasInk ? Math.max(0, minY - PADDING) : 0;
+    const cropW = hasInk ? Math.min(W - cropX, maxX - minX + PADDING * 2) : W;
+    const cropH = hasInk ? Math.min(H - cropY, maxY - minY + PADDING * 2) : H;
+
+    // Composite cropped region onto a solid white background
+    const offscreen = document.createElement('canvas');
+    offscreen.width = cropW;
+    offscreen.height = cropH;
+    const ctx = offscreen.getContext('2d')!;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, cropW, cropH);
+    ctx.drawImage(drawingCanvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
 
     return offscreen.toDataURL('image/png');
   };
@@ -279,24 +224,17 @@ export default function CanvasPage() {
     description: string;
     tags: string;
   }) => {
-    if (!project) return;
-
     const { title, description, tags } = payload;
-
-    const allStrokes = project.layers
-      .filter((l) => l.isVisible)
-      .flatMap((l) => l.strokes);
-
-    const thumbnail = buildThumbnail(allStrokes);
+    const thumbnail = buildThumbnail(strokes);
 
     const newArtwork = {
-      id: project.id,
+      id: projectId,
       title,
       description,
       folderId: 'all',
       tag: tags.trim() || 'canvas',
-      duration: '--',
-      progress: `${milestonesCompleted.length}/${milestones.length} goals`,
+      duration: getElapsedDuration(),
+      progress: `${milestonesCompleted.length}/${milestones.length + milestonesCompleted.length} goals`,
       tone: 'abstract' as const,
       date: new Date().toLocaleDateString('en-US', {
         year: 'numeric',
@@ -309,13 +247,13 @@ export default function CanvasPage() {
     const existing = JSON.parse(
       sessionStorage.getItem('kindling_saved_artworks') ?? '[]'
     );
-    // Avoid duplicates if saved twice
-    const deduped = existing.filter((a: { id: string }) => a.id !== project.id);
+    const deduped = existing.filter((a: { id: string }) => a.id !== projectId);
     sessionStorage.setItem(
       'kindling_saved_artworks',
       JSON.stringify([newArtwork, ...deduped])
     );
 
+    clearTimerKeys();
     navigate('/');
   };
 
@@ -323,31 +261,23 @@ export default function CanvasPage() {
     setShowSaveModal(true);
   };
 
-  const isSaveEnabled = Boolean(
-    resumedArtworkId && project && project.id === resumedArtworkId
-  );
+  const isSaveEnabled = Boolean(resumedArtworkId && projectId === resumedArtworkId);
 
   const handleSaveExisting = () => {
-    if (!project || !isSaveEnabled) return;
+    if (!isSaveEnabled) return;
 
-    const allStrokes = project.layers
-      .filter((l) => l.isVisible)
-      .flatMap((l) => l.strokes);
-
-    const thumbnail = buildThumbnail(allStrokes);
+    const thumbnail = buildThumbnail(strokes);
     const stored = JSON.parse(
       sessionStorage.getItem('kindling_saved_artworks') ?? '[]'
     ) as Array<Record<string, unknown>>;
 
     const updated = stored.map((artwork) => {
-      if (artwork.id !== project.id) {
-        return artwork;
-      }
-
+      if (artwork.id !== projectId) return artwork;
       return {
         ...artwork,
         image: thumbnail,
-        progress: `${milestonesCompleted.length}/${milestones.length} goals`,
+        duration: getElapsedDuration(),
+        progress: `${milestonesCompleted.length}/${milestones.length + milestonesCompleted.length} goals`,
         date: new Date().toLocaleDateString('en-US', {
           year: 'numeric',
           month: 'long',
@@ -361,6 +291,8 @@ export default function CanvasPage() {
       'kindling_gallery_toast_message',
       'latest canvas updated and saved'
     );
+
+    clearTimerKeys();
     navigate('/');
   };
 
@@ -371,15 +303,12 @@ export default function CanvasPage() {
     >
       {/* Top Toolbar */}
       <div className="h-14 bg-gray-900 border-b border-gray-800 flex items-center justify-between px-4 gap-4 flex-shrink-0">
-        {/* Left Section */}
         <div className="w-24" />
 
-        {/* Center - Canvas Name */}
         <div className="flex-1 text-center">
           <h2 className="text-white font-semibold text-sm">Canvas</h2>
         </div>
 
-        {/* Right Section */}
         <div className="flex items-center gap-2">
           <button
             onClick={() => navigate('/thumbnail')}
@@ -409,32 +338,24 @@ export default function CanvasPage() {
         </div>
       </div>
 
-      {/* Main Content - Fixed layout */}
+      {/* Main Content */}
       <div className="flex-1 flex overflow-hidden relative">
         {/* Left Sidebar - Tools */}
-        <div className="w-20 bg-gray-950 border-r border-gray-800 flex flex-col items-center py-4 gap-2 overflow-y-auto flex-shrink-0">
-          {/* Brush Tool */}
+        <div className="w-20 bg-gray-950 border-r border-gray-800 flex flex-col items-center py-4 gap-2 flex-shrink-0">
           <button
-            onClick={() => {
-              setIsEraser(false);
-            }}
+            onClick={() => setIsEraser(false)}
             className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${
-              !isEraser
-                ? 'bg-orange-800 text-white'
-                : 'text-white hover:bg-gray-800'
+              !isEraser ? 'bg-orange-800 text-white' : 'text-white hover:bg-gray-800'
             }`}
             title="Brush"
           >
             <Brush size={24} color="white" />
           </button>
 
-          {/* Eraser Tool */}
           <button
-            onClick={() => setIsEraser(!isEraser)}
+            onClick={() => setIsEraser(true)}
             className={`w-12 h-12 rounded-lg flex items-center justify-center transition-colors ${
-              isEraser
-                ? 'bg-orange-800 text-white'
-                : 'text-white hover:bg-gray-800'
+              isEraser ? 'bg-orange-800 text-white' : 'text-white hover:bg-gray-800'
             }`}
             title="Eraser"
           >
@@ -443,7 +364,6 @@ export default function CanvasPage() {
 
           <div className="w-8 h-px bg-gray-800" />
 
-          {/* Color Picker */}
           <button
             ref={colorToggleButtonRef}
             onClick={() => setShowColorPicker((isOpen) => !isOpen)}
@@ -464,132 +384,37 @@ export default function CanvasPage() {
               }}
             />
           </button>
-
-          <div className="w-8 h-px bg-gray-800" />
-
-          {/* Layers Menu */}
-          <button
-            onClick={() => setShowLayerMenu(!showLayerMenu)}
-            className="w-12 h-12 rounded-lg flex items-center justify-center text-white hover:bg-gray-800 transition-colors"
-            title="Layers"
-          >
-            <Eraser size={24} />
-          </button>
         </div>
 
-        {/* Canvas Area - Keep this fixed and stable */}
-        <div className="flex-1 bg-gray-950 relative overflow-hidden flex-shrink-0">
-          {activeLayer && (
-            <MainCanvas
-              key={activeLayer.id}
-              initialStrokes={activeLayer.strokes}
-              onStrokesChange={handleStrokesChange}
-              currentColor={currentColor}
-              isEraser={isEraser}
-            />
-          )}
-        </div>
-
-        {/* Center Top - Color Picker */}
-        <div className="absolute top-3 left-0 right-0 z-40 flex justify-center">
-          <ColorPicker
+        {/* Canvas Area */}
+        <div className="flex-1 bg-gray-950 relative overflow-hidden">
+          <MainCanvas
+            key={projectId}
+            initialStrokes={strokes}
+            onStrokesChange={handleStrokesChange}
             currentColor={currentColor}
-            onColorChange={(color) => {
-              setCurrentColor(color);
-              setIsEraser(false);
-            }}
-            isOpen={showColorPicker}
-            onClose={() => setShowColorPicker(false)}
-            triggerRef={colorToggleButtonRef}
+            isEraser={isEraser}
           />
         </div>
 
-        {/* Overlay Panels Container - Positioned absolutely */}
-        <div className="absolute top-14 right-0 bottom-0 pointer-events-none">
-          {/* Right Sidebar - Layers Panel */}
-          {showLayerMenu && (
-            <div className="absolute top-0 right-0 bottom-0 w-64 bg-gray-900 border-l border-gray-800 flex flex-col overflow-hidden pointer-events-auto">
-              {/* Header */}
-              <div className="h-12 border-b border-gray-800 flex items-center justify-between px-4 flex-shrink-0">
-                <h3 className="text-white font-semibold text-sm">Layers</h3>
-                <button
-                  onClick={() => setShowLayerMenu(false)}
-                  className="text-white hover:text-gray-300"
-                >
-                  ✕
-                </button>
-              </div>
-
-              {/* New Layer Button */}
-              <div className="p-3 border-b border-gray-800 flex-shrink-0">
-                <button
-                  onClick={handleCreateLayer}
-                  className="w-full px-3 py-2 bg-blue-600 text-white rounded-lg font-semibold text-sm hover:bg-blue-700 transition-colors"
-                >
-                  + New Layer
-                </button>
-              </div>
-
-              {/* Layers List */}
-              <div className="flex-1 overflow-y-auto">
-                {project.layers.map((layer) => (
-                  <div
-                    key={layer.id}
-                    className={`p-3 border-b border-gray-800 cursor-pointer transition-colors ${
-                      project.activeLayerId === layer.id
-                        ? 'bg-gray-800'
-                        : 'hover:bg-gray-800 bg-gray-900'
-                    }`}
-                    onClick={() => handleSelectLayer(layer.id)}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-10 h-10 bg-gray-700 rounded border border-gray-600" />
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white text-sm font-semibold truncate">
-                          {layer.name}
-                        </p>
-                        <p className="text-gray-400 text-xs">
-                          {layer.opacity}%
-                        </p>
-                      </div>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleToggleVisibility(layer.id);
-                        }}
-                        className="p-1 hover:bg-gray-700 rounded transition-colors flex-shrink-0"
-                      >
-                        {layer.isVisible ? (
-                          <Eye size={16} className="text-white" />
-                        ) : (
-                          <EyeOff size={16} className="text-gray-500" />
-                        )}
-                      </button>
-                      {project.layers.length > 1 && (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDeleteLayer(layer.id);
-                          }}
-                          className="p-1 hover:bg-red-900 rounded transition-colors flex-shrink-0"
-                        >
-                          <Trash2
-                            size={16}
-                            className="text-white hover:text-red-400"
-                          />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
+        {/* Color Picker */}
+        <div className="absolute top-3 left-0 right-0 z-40 flex justify-center pointer-events-none">
+          <div className="pointer-events-auto">
+            <ColorPicker
+              currentColor={currentColor}
+              onColorChange={(color) => {
+                setCurrentColor(color);
+                setIsEraser(false);
+              }}
+              isOpen={showColorPicker}
+              onClose={() => setShowColorPicker(false)}
+              triggerRef={colorToggleButtonRef}
+            />
+          </div>
         </div>
       </div>
 
-      {/* Bottom Right - Check-in Button */}
+      {/* Check-in Button */}
       <button
         onClick={() => navigate('/check-in')}
         className="fixed bottom-6 right-6 px-6 py-3 bg-rust !text-white rounded-full font-bold hover:bg-opacity-90 transition-colors shadow-lg"
@@ -602,13 +427,11 @@ export default function CanvasPage() {
           isOpen={showSaveModal}
           onClose={() => setShowSaveModal(false)}
           onSave={(payload) => {
-            // auto-assign 'canvas' tag for gallery filtering
             handleSaveToGallery({ ...payload, tags: 'canvas' });
             setShowSaveModal(false);
           }}
         />
       )}
-
     </div>
   );
 }
