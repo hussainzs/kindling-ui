@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useOutletContext } from 'react-router';
 import MainCanvas from '../components/MainCanvas';
 import ColorPicker from '../components/ColorPicker';
+import SaveArtworkModal from '../components/SaveArtworkModal';
 import type {
   Layer,
   DrawingColor,
@@ -16,12 +17,14 @@ const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
 
 export default function CanvasPage() {
   const navigate = useNavigate();
-  const { setCanvasStrokes } = useOutletContext<WorkflowOutletContext>();
+  const { setCanvasStrokes, milestones, milestonesCompleted } =
+    useOutletContext<WorkflowOutletContext>();
   const [project, setProject] = useState<CanvasProject | null>(null);
   const [currentColor, setCurrentColor] = useState<DrawingColor>('black');
   const [isEraser, setIsEraser] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showLayerMenu, setShowLayerMenu] = useState(false);
+  const [showSaveModal, setShowSaveModal] = useState(false);
   const colorToggleButtonRef = useRef<HTMLButtonElement>(null);
   const fullBleedCanvasStyle = {
     width: '100dvw',
@@ -233,8 +236,14 @@ export default function CanvasPage() {
     (l) => l.id === project.activeLayerId
   );
 
-  const handleSaveToGallery = () => {
+  const handleSaveToGallery = (payload: {
+    title: string;
+    description: string;
+    tags: string;
+  }) => {
     if (!project) return;
+
+    const { title, description, tags } = payload;
 
     const allStrokes = project.layers
       .filter((l) => l.isVisible)
@@ -275,12 +284,12 @@ export default function CanvasPage() {
 
     const newArtwork = {
       id: project.id,
-      title: 'Untitled',
-      description: 'Saved from canvas.',
+      title,
+      description,
       folderId: 'all',
-      tag: 'canvas',
-      duration: '—',
-      progress: '—',
+      tag: tags.trim() || 'canvas',
+      duration: '--',
+      progress: `${milestonesCompleted.length}/${milestones.length} goals`,
       tone: 'abstract' as const,
       date: new Date().toLocaleDateString('en-US', {
         year: 'numeric',
@@ -301,6 +310,10 @@ export default function CanvasPage() {
     );
 
     navigate('/');
+  };
+
+  const handleSaveNewClick = () => {
+    setShowSaveModal(true);
   };
 
   return (
@@ -330,7 +343,7 @@ export default function CanvasPage() {
             ↻
           </button>
           <button
-            onClick={handleSaveToGallery}
+            onClick={handleSaveNewClick}
             className="bg-rust !text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-opacity-90 transition-colors"
           >
             save new ✦
@@ -525,6 +538,18 @@ export default function CanvasPage() {
       >
         check-in
       </button>
+
+      {showSaveModal && (
+        <SaveArtworkModal
+          isOpen={showSaveModal}
+          onClose={() => setShowSaveModal(false)}
+          onSave={(payload) => {
+            // auto-assign 'canvas' tag for gallery filtering
+            handleSaveToGallery({ ...payload, tags: 'canvas' });
+            setShowSaveModal(false);
+          }}
+        />
+      )}
     </div>
   );
 }
