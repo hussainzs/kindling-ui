@@ -186,7 +186,6 @@ button {
 .text-section-header {
     font-size: var(--font-size-xl);
     font-weight: 700;
-    text-transform: lowercase;
     letter-spacing: 0.005em;
     color: var(--text-ink);
 }

@@ -96,9 +96,8 @@ export default function ThumbnailPage() {
 
   return (
     <section className="card space-y-4">
-      <div className="space-y-1">
-        <p className="text-mini-header">P3</p>
-        <h1 className="text-section-header">thumbnail</h1>
+      <div className="space-y-1 ml-10">
+        <h1 className="text-section-header">Thumbnails</h1>
       </div>
 
       <div className="space-y-2">
