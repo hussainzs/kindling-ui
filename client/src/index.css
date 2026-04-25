@@ -496,7 +496,7 @@ a:focus-visible {
     background: color-mix(in srgb, var(--bg-warm-white) 62%, var(--bg-cream));
     box-shadow: var(--ui-shadow-card);
     padding: var(--space-6);
-    padding-top: 5.5rem;
+    padding-top: var(--space-4);
     padding-bottom: var(--space-6);
 }
 
@@ -516,6 +516,8 @@ a:focus-visible {
 
 .gallery-logo {
     margin: 0;
+    margin-left: var(--space-8);
+    margin-top: -6px;
     font-size: 32px;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -661,6 +663,7 @@ a:focus-visible {
     padding: 0;
     display: grid;
     gap: 0.95rem;
+    align-content: start;
     overflow-y: auto;
     overflow-x: hidden;
     min-height: 0;
@@ -703,7 +706,8 @@ a:focus-visible {
 .gallery-new-kindling-button {
     min-width: 12rem;
     gap: var(--space-3);
-    margin-top: -50px;
+    margin-top: var(--space-1);
+    margin-right: var(--space-10);
     background: linear-gradient(90deg, #B8431F 0%, #EF6907 100%);
     border: none;
     box-shadow: 0 8px 24px rgba(184, 67, 31, 0.3);

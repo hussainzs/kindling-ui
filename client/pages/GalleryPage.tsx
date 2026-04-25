@@ -6,7 +6,7 @@ type Folder = {
   id: string;
   name: string;
   count: number;
-  date: string;
+  date?: string;
 };
 
 type FolderStyle = {
@@ -40,12 +40,18 @@ const folderStyles: Record<string, FolderStyle> = {
     badge: 'rgba(44, 122, 90, 0.14)',
     dot: '#2C7A5A',
   },
+  canvas: {
+    color: '#5E8060',
+    badge: 'rgba(94, 128, 96, 0.14)',
+    dot: '#5E8060',
+  },
 };
 
 const initialFolders: Folder[] = [
-  { id: 'all', name: 'all work', count: 0, date: 'March 2026' },
-  { id: 'light', name: 'light', count: 0, date: 'February 2026' },
-  { id: 'portraits', name: 'portraits', count: 0, date: 'January 2026' },
+  { id: 'all', name: 'all work', count: 0 },
+  { id: 'light', name: 'light', count: 0 },
+  { id: 'portraits', name: 'portraits', count: 0 },
+  { id: 'canvas', name: 'canvas', count: 0 },
 ];
 
 const initialArtworks: Artwork[] = [
@@ -187,20 +193,6 @@ export default function GalleryPage() {
     }));
   }
 
-  function handleAddFolder() {
-    const newFolderId = `folder-${Date.now()}`;
-    setFolders((current) => [
-      ...current,
-      { id: newFolderId, name: 'new folder', count: 0, date: 'April 2026' },
-    ]);
-    setDraftNames((current) => ({
-      ...current,
-      [newFolderId]: 'new folder',
-    }));
-    setSelectedFolderId(newFolderId);
-    setIsEditing(true);
-  }
-
   return (
     <>
       <section className="gallery-page-shell">
@@ -223,9 +215,20 @@ export default function GalleryPage() {
             className="btn btn-primary gallery-new-kindling-button"
             type="button"
             onClick={handleNewKindling}
+            style={{
+              fontSize: '0.85rem',
+              padding: '0.75rem 0.75rem',
+                minHeight: '2.5rem',
+                height: '2.5rem',
+                gap: '0.5rem',
+                marginBottom: '9rem',
+            }}
           >
-            <span className="gallery-new-kindling-icon">
-              <span className="gallery-new-kindling-star">★</span>
+            <span
+              className="gallery-new-kindling-icon"
+              style={{ width: '1.5rem', height: '1.5rem' }}
+            >
+              <span className="gallery-new-kindling-star" style={{ fontSize: '0.9rem' }}>★</span>
             </span>
             new kindling
           </button>
@@ -235,7 +238,7 @@ export default function GalleryPage() {
           style={{
             display: 'flex',
             width: '100%',
-            marginTop: '32px',
+            marginTop: 'var(--space-3)',
             height: 'calc(100vh - 180px)',
             minHeight: 0,
           }}
@@ -243,7 +246,7 @@ export default function GalleryPage() {
           <aside
             className="gallery-sidebar"
             style={{
-              marginTop: '-2px',
+              marginTop: 0,
               width: '18rem',
               minWidth: 220,
               height: '100%',
@@ -326,9 +329,11 @@ export default function GalleryPage() {
                               {folder.name}
                             </span>
                           </div>
-                          <span className="gallery-folder-date">
-                            {folder.date}
-                          </span>
+                          {folder.date ? (
+                            <span className="gallery-folder-date">
+                              {folder.date}
+                            </span>
+                          ) : null}
                         </div>
                         <span
                           className="gallery-folder-count"
@@ -351,13 +356,6 @@ export default function GalleryPage() {
               <button
                 className="btn btn-ghost"
                 type="button"
-                onClick={handleAddFolder}
-              >
-                + new folder
-              </button>
-              <button
-                className="btn btn-ghost"
-                type="button"
                 onClick={toggleEditing}
               >
                 {isEditing ? 'save folders' : 'edit folders'}
@@ -375,7 +373,8 @@ export default function GalleryPage() {
               <div>
                 <h1 className="text-section-header gallery-title">gallery</h1>
                 <p className="gallery-title-meta">
-                  {selectedFolder.date} · {filteredArtworks.length}{' '}
+                  {selectedFolder.date ? `${selectedFolder.date} · ` : ''}
+                  {filteredArtworks.length}{' '}
                   {filteredArtworks.length === 1 ? 'piece' : 'pieces'}
                 </p>
                 <p className="text-body gallery-heading-copy">
@@ -526,9 +525,11 @@ export default function GalleryPage() {
                               {folder.name}
                             </span>
                           </div>
-                          <span className="gallery-folder-date">
-                            {folder.date}
-                          </span>
+                          {folder.date ? (
+                            <span className="gallery-folder-date">
+                              {folder.date}
+                            </span>
+                          ) : null}
                         </div>
                         <span
                           className="gallery-folder-count"
@@ -548,13 +549,6 @@ export default function GalleryPage() {
             </ul>
 
             <div className="gallery-folder-actions">
-              <button
-                className="btn btn-ghost"
-                type="button"
-                onClick={handleAddFolder}
-              >
-                + new folder
-              </button>
               <button
                 className="btn btn-ghost"
                 type="button"
