@@ -7,6 +7,7 @@ import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 type ThumbnailPageState = 'gallery' | 'creating';
 const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
+const CANVAS_THUMBNAIL_ID_KEY = 'kindling_canvas_thumbnail_id';
 
 export default function ThumbnailPage() {
   const navigate = useNavigate();
@@ -68,6 +69,9 @@ export default function ThumbnailPage() {
           JSON.stringify(selected.strokes)
         );
       }
+      sessionStorage.setItem(CANVAS_THUMBNAIL_ID_KEY, selectedThumbnailId);
+    } else {
+      sessionStorage.removeItem(CANVAS_THUMBNAIL_ID_KEY);
     }
 
     sessionStorage.setItem(RESET_CANVAS_PROJECT_KEY, '1');
@@ -78,6 +82,7 @@ export default function ThumbnailPage() {
   const handleContinueWithoutThumbnails = () => {
     setResumedArtworkId(null);
     sessionStorage.removeItem('kindling_selected_thumbnail_strokes');
+    sessionStorage.removeItem(CANVAS_THUMBNAIL_ID_KEY);
     sessionStorage.setItem(RESET_CANVAS_PROJECT_KEY, '1');
     navigate('/canvas');
   };

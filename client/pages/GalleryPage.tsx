@@ -2,9 +2,14 @@ import { type MouseEvent, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useOutletContext } from 'react-router';
 import NotebookErrorToast from '../components/NotebookErrorToast';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
+import type { DrawingStroke, Thumbnail } from '../types/drawing';
 
 const ACTIVE_CANVAS_PROJECT_KEY = 'kindling_active_canvas_project';
+const ACTIVE_CANVAS_KEY = 'kindling_active_canvas_strokes';
 const RESET_CANVAS_PROJECT_KEY = 'kindling_canvas_should_reset';
+const CANVAS_THUMBNAIL_ID_KEY = 'kindling_canvas_thumbnail_id';
+const CANVAS_PROJECT_ID_KEY = 'kindling_canvas_project_id';
+const THUMBNAILS_SESSION_KEY = 'kindling_thumbnails_session';
 
 type Folder = {
   id: string;
@@ -114,8 +119,12 @@ const initialArtworks: Artwork[] = [
 
 export default function GalleryPage() {
   const navigate = useNavigate();
-  const { resetWorkflowSession, setResumedArtworkId } =
-    useOutletContext<WorkflowOutletContext>();
+  const {
+    resetWorkflowSession,
+    setResumedArtworkId,
+    setThumbnails,
+    setSelectedThumbnailId,
+  } = useOutletContext<WorkflowOutletContext>();
   const [folders, setFolders] = useState(initialFolders);
   const [selectedFolderId, setSelectedFolderId] = useState('all');
   const [selectedArtworkId, setSelectedArtworkId] = useState<string | null>(
@@ -202,6 +211,7 @@ export default function GalleryPage() {
     sessionStorage.removeItem('kindling_active_canvas_project');
     sessionStorage.removeItem('kindling_selected_thumbnail_strokes');
     sessionStorage.removeItem('kindling_thumbnails_session');
+    sessionStorage.removeItem(CANVAS_THUMBNAIL_ID_KEY);
     sessionStorage.setItem('kindling_canvas_should_reset', '1');
     navigate('/notebook');
   }
@@ -239,9 +249,63 @@ export default function GalleryPage() {
   }
 
   function handleResumeArtwork(artwork: Artwork) {
+    sessionStorage.removeItem(CANVAS_THUMBNAIL_ID_KEY);
+    sessionStorage.removeItem('kindling_selected_thumbnail_strokes');
     const storedProject = sessionStorage.getItem(`kindling_project_${artwork.id}`);
     if (storedProject) {
+      let strokes: DrawingStroke[] = [];
+      let thumbnails: Thumbnail[] | null = null;
+      let storedSelectedId: string | null = null;
+
+      try {
+        const parsed = JSON.parse(storedProject) as unknown;
+        if (Array.isArray(parsed)) {
+          strokes = parsed as DrawingStroke[];
+        } else if (parsed && typeof parsed === 'object') {
+          const parsedRecord = parsed as Record<string, unknown>;
+          if (Array.isArray(parsedRecord.strokes)) {
+            strokes = parsedRecord.strokes as DrawingStroke[];
+          }
+          if (Array.isArray(parsedRecord.thumbnails)) {
+            thumbnails = parsedRecord.thumbnails as Thumbnail[];
+          }
+          if (
+            typeof parsedRecord.selectedThumbnailId === 'string' ||
+            parsedRecord.selectedThumbnailId === null
+          ) {
+            storedSelectedId =
+              (parsedRecord.selectedThumbnailId as string | null) ?? null;
+          }
+
+          if (!strokes.length && Array.isArray(parsedRecord.layers)) {
+            const layers = parsedRecord.layers as Array<Record<string, unknown>>;
+            const activeLayerId =
+              typeof parsedRecord.activeLayerId === 'string'
+                ? parsedRecord.activeLayerId
+                : null;
+            const activeLayer =
+              layers.find((layer) => layer.id === activeLayerId) ?? layers[0];
+            if (activeLayer && Array.isArray(activeLayer.strokes)) {
+              strokes = activeLayer.strokes as DrawingStroke[];
+            }
+          }
+        }
+      } catch {
+        // Invalid stored project payload
+      }
+
       sessionStorage.setItem(ACTIVE_CANVAS_PROJECT_KEY, storedProject);
+      sessionStorage.setItem(ACTIVE_CANVAS_KEY, JSON.stringify(strokes));
+      sessionStorage.setItem(CANVAS_PROJECT_ID_KEY, artwork.id);
+      if (thumbnails) {
+        setThumbnails(thumbnails);
+        sessionStorage.setItem(THUMBNAILS_SESSION_KEY, JSON.stringify(thumbnails));
+        setSelectedThumbnailId(storedSelectedId);
+      } else {
+        setThumbnails([]);
+        sessionStorage.removeItem(THUMBNAILS_SESSION_KEY);
+        setSelectedThumbnailId(null);
+      }
       sessionStorage.removeItem(RESET_CANVAS_PROJECT_KEY);
       setResumedArtworkId(artwork.id);
       navigate('/canvas');

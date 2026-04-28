@@ -3,15 +3,34 @@ import { useNavigate, useOutletContext } from 'react-router';
 import MainCanvas from '../components/MainCanvas';
 import ColorPicker from '../components/ColorPicker';
 import SaveArtworkModal from '../components/SaveArtworkModal';
-import type { DrawingColor, DrawingStroke } from '../types/drawing';
+import type { DrawingColor, DrawingStroke, Thumbnail } from '../types/drawing';
 import { Brush, Eraser, Save } from 'lucide-react';
 import type { WorkflowOutletContext } from '../components/WorkflowLayout';
 
 const ACTIVE_CANVAS_KEY = 'kindling_active_canvas_strokes';
 const RESET_CANVAS_KEY = 'kindling_canvas_should_reset';
+const CANVAS_THUMBNAIL_ID_KEY = 'kindling_canvas_thumbnail_id';
 const CANVAS_SESSION_START_KEY = 'kindling_canvas_session_start';
 const CANVAS_ELAPSED_KEY = 'kindling_canvas_elapsed_ms';
 const CANVAS_PROJECT_ID_KEY = 'kindling_canvas_project_id';
+
+const buildThumbnailCanvasKey = (thumbnailId: string, suffix: string) =>
+  `kindling_thumbnail_canvas_${suffix}_${thumbnailId}`;
+
+const getThumbnailStorageKeys = (thumbnailId: string) => ({
+  strokesKey: buildThumbnailCanvasKey(thumbnailId, 'strokes'),
+  projectIdKey: buildThumbnailCanvasKey(thumbnailId, 'project_id'),
+  elapsedKey: buildThumbnailCanvasKey(thumbnailId, 'elapsed_ms'),
+  sessionStartKey: buildThumbnailCanvasKey(thumbnailId, 'session_start'),
+});
+
+const bankElapsedTime = (sessionStartKey: string, elapsedKey: string) => {
+  const start = Number(sessionStorage.getItem(sessionStartKey));
+  if (!start) return;
+  const prev = Number(sessionStorage.getItem(elapsedKey) ?? '0');
+  sessionStorage.setItem(elapsedKey, String(prev + (Date.now() - start)));
+  sessionStorage.removeItem(sessionStartKey);
+};
 
 const parseDurationToMs = (duration: string): number => {
   if (!duration || duration === '--') return 0;
@@ -28,6 +47,8 @@ export default function CanvasPage() {
     setCanvasStrokes,
     milestones,
     milestonesCompleted,
+    thumbnails,
+    selectedThumbnailId,
     resumedArtworkId,
   } = useOutletContext<WorkflowOutletContext>();
 
@@ -37,6 +58,9 @@ export default function CanvasPage() {
   const [isEraser, setIsEraser] = useState(false);
   const [showColorPicker, setShowColorPicker] = useState(false);
   const [showSaveModal, setShowSaveModal] = useState(false);
+  const [activeThumbnailId, setActiveThumbnailId] = useState<string | null>(
+    null
+  );
   const colorToggleButtonRef = useRef<HTMLButtonElement>(null);
 
   const fullBleedCanvasStyle = {
@@ -48,8 +72,81 @@ export default function CanvasPage() {
   // Initialize canvas + start timer in one effect so elapsed seeding
   // always happens before the session start timestamp is recorded
   useEffect(() => {
+    const currentThumbnailId = sessionStorage.getItem(CANVAS_THUMBNAIL_ID_KEY);
+    setActiveThumbnailId(currentThumbnailId);
+
     const shouldReset = sessionStorage.getItem(RESET_CANVAS_KEY) === '1';
     sessionStorage.removeItem(RESET_CANVAS_KEY);
+
+    if (currentThumbnailId) {
+      const { strokesKey, projectIdKey, elapsedKey, sessionStartKey } =
+        getThumbnailStorageKeys(currentThumbnailId);
+      const storedStrokes = sessionStorage.getItem(strokesKey);
+      const storedId = sessionStorage.getItem(projectIdKey);
+
+      if (storedStrokes && storedId) {
+        try {
+          const parsed = JSON.parse(storedStrokes) as DrawingStroke[];
+          setStrokes(parsed);
+          setProjectId(storedId);
+          setCanvasStrokes(parsed);
+          sessionStorage.setItem(ACTIVE_CANVAS_KEY, storedStrokes);
+          sessionStorage.setItem(CANVAS_PROJECT_ID_KEY, storedId);
+
+          if (!sessionStorage.getItem(elapsedKey)) {
+            const savedArtworks = JSON.parse(
+              sessionStorage.getItem('kindling_saved_artworks') ?? '[]'
+            ) as Array<{ id: string; duration?: string }>;
+            const match = savedArtworks.find((a) => a.id === storedId);
+            if (match?.duration) {
+              sessionStorage.setItem(
+                elapsedKey,
+                String(parseDurationToMs(match.duration))
+              );
+            }
+          }
+
+          sessionStorage.setItem(sessionStartKey, String(Date.now()));
+
+          return () => {
+            bankElapsedTime(sessionStartKey, elapsedKey);
+          };
+        } catch {
+          // Invalid stored data, fall through to fresh canvas
+        }
+      }
+
+      sessionStorage.removeItem(elapsedKey);
+      sessionStorage.removeItem(sessionStartKey);
+
+      const newId = `project_${Date.now()}`;
+      let initialStrokes: DrawingStroke[] = [];
+
+      const storedThumbnailStrokes = sessionStorage.getItem(
+        'kindling_selected_thumbnail_strokes'
+      );
+      if (storedThumbnailStrokes) {
+        try {
+          initialStrokes = JSON.parse(storedThumbnailStrokes);
+        } catch {
+          // Invalid data
+        }
+      }
+
+      setProjectId(newId);
+      setStrokes(initialStrokes);
+      setCanvasStrokes(initialStrokes);
+      sessionStorage.setItem(CANVAS_PROJECT_ID_KEY, newId);
+      sessionStorage.setItem(ACTIVE_CANVAS_KEY, JSON.stringify(initialStrokes));
+      sessionStorage.setItem(projectIdKey, newId);
+      sessionStorage.setItem(strokesKey, JSON.stringify(initialStrokes));
+
+      sessionStorage.setItem(sessionStartKey, String(Date.now()));
+
+      return () => {
+        bankElapsedTime(sessionStartKey, elapsedKey);
+      };
+    }
 
     if (!shouldReset) {
       const storedStrokes = sessionStorage.getItem(ACTIVE_CANVAS_KEY);
@@ -82,12 +179,7 @@ export default function CanvasPage() {
           sessionStorage.setItem(CANVAS_SESSION_START_KEY, String(Date.now()));
 
           return () => {
-            const start = Number(sessionStorage.getItem(CANVAS_SESSION_START_KEY));
-            if (start) {
-              const prev = Number(sessionStorage.getItem(CANVAS_ELAPSED_KEY) ?? '0');
-              sessionStorage.setItem(CANVAS_ELAPSED_KEY, String(prev + (Date.now() - start)));
-              sessionStorage.removeItem(CANVAS_SESSION_START_KEY);
-            }
+            bankElapsedTime(CANVAS_SESSION_START_KEY, CANVAS_ELAPSED_KEY);
           };
         } catch {
           // Invalid stored data, fall through to fresh canvas
@@ -123,24 +215,32 @@ export default function CanvasPage() {
     sessionStorage.setItem(CANVAS_SESSION_START_KEY, String(Date.now()));
 
     return () => {
-      const start = Number(sessionStorage.getItem(CANVAS_SESSION_START_KEY));
-      if (start) {
-        const prev = Number(sessionStorage.getItem(CANVAS_ELAPSED_KEY) ?? '0');
-        sessionStorage.setItem(CANVAS_ELAPSED_KEY, String(prev + (Date.now() - start)));
-        sessionStorage.removeItem(CANVAS_SESSION_START_KEY);
-      }
+      bankElapsedTime(CANVAS_SESSION_START_KEY, CANVAS_ELAPSED_KEY);
     };
   }, [setCanvasStrokes]);
+
+  useEffect(() => {
+    if (!resumedArtworkId) return;
+    setProjectId(resumedArtworkId);
+    sessionStorage.setItem(CANVAS_PROJECT_ID_KEY, resumedArtworkId);
+  }, [resumedArtworkId]);
 
   const handleStrokesChange = (newStrokes: DrawingStroke[]) => {
     setStrokes(newStrokes);
     setCanvasStrokes(newStrokes);
     sessionStorage.setItem(ACTIVE_CANVAS_KEY, JSON.stringify(newStrokes));
+    if (activeThumbnailId) {
+      const { strokesKey } = getThumbnailStorageKeys(activeThumbnailId);
+      sessionStorage.setItem(strokesKey, JSON.stringify(newStrokes));
+    }
   };
 
   const getElapsedDuration = (): string => {
-    const start = Number(sessionStorage.getItem(CANVAS_SESSION_START_KEY) ?? '0');
-    const banked = Number(sessionStorage.getItem(CANVAS_ELAPSED_KEY) ?? '0');
+    const { sessionStartKey, elapsedKey } = activeThumbnailId
+      ? getThumbnailStorageKeys(activeThumbnailId)
+      : { sessionStartKey: CANVAS_SESSION_START_KEY, elapsedKey: CANVAS_ELAPSED_KEY };
+    const start = Number(sessionStorage.getItem(sessionStartKey) ?? '0');
+    const banked = Number(sessionStorage.getItem(elapsedKey) ?? '0');
     const totalMs = banked + (start ? Date.now() - start : 0);
     if (totalMs < 60000) return '< 1 min';
     const totalMin = Math.round(totalMs / 60000);
@@ -151,8 +251,37 @@ export default function CanvasPage() {
   };
 
   const clearTimerKeys = () => {
+    if (activeThumbnailId) {
+      const { sessionStartKey, elapsedKey } =
+        getThumbnailStorageKeys(activeThumbnailId);
+      sessionStorage.removeItem(sessionStartKey);
+      sessionStorage.removeItem(elapsedKey);
+      return;
+    }
     sessionStorage.removeItem(CANVAS_SESSION_START_KEY);
     sessionStorage.removeItem(CANVAS_ELAPSED_KEY);
+  };
+
+  const persistProjectSnapshot = (
+    targetId: string,
+    snapshotStrokes: DrawingStroke[]
+  ) => {
+    const payload: {
+      id: string;
+      strokes: DrawingStroke[];
+      thumbnails: Thumbnail[];
+      selectedThumbnailId: string | null;
+    } = {
+      id: targetId,
+      strokes: snapshotStrokes,
+      thumbnails,
+      selectedThumbnailId,
+    };
+
+    sessionStorage.setItem(
+      `kindling_project_${targetId}`,
+      JSON.stringify(payload)
+    );
   };
 
   const buildThumbnail = (allStrokes: DrawingStroke[]) => {
@@ -252,6 +381,7 @@ export default function CanvasPage() {
       'kindling_saved_artworks',
       JSON.stringify([newArtwork, ...deduped])
     );
+    persistProjectSnapshot(projectId, strokes);
 
     clearTimerKeys();
     navigate('/');
@@ -261,10 +391,12 @@ export default function CanvasPage() {
     setShowSaveModal(true);
   };
 
-  const isSaveEnabled = Boolean(resumedArtworkId && projectId === resumedArtworkId);
+  const isSaveEnabled = Boolean(resumedArtworkId);
 
   const handleSaveExisting = () => {
     if (!isSaveEnabled) return;
+
+    const targetId = resumedArtworkId ?? projectId;
 
     const thumbnail = buildThumbnail(strokes);
     const stored = JSON.parse(
@@ -272,7 +404,7 @@ export default function CanvasPage() {
     ) as Array<Record<string, unknown>>;
 
     const updated = stored.map((artwork) => {
-      if (artwork.id !== projectId) return artwork;
+      if (artwork.id !== targetId) return artwork;
       return {
         ...artwork,
         image: thumbnail,
@@ -291,6 +423,7 @@ export default function CanvasPage() {
       'kindling_gallery_toast_message',
       'latest canvas updated and saved'
     );
+    persistProjectSnapshot(targetId, strokes);
 
     clearTimerKeys();
     navigate('/');
